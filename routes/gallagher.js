@@ -11,17 +11,20 @@ console.log(req.url,"@", Date.now());
 next();
 });
 router
-.route('/add_cardholder')
+.route('/add_cardholder:cardholder_id')
 .get((req,res)=>{
 
  res.send("Hy this is gallagher get cards");  
-})
-.post((req,res)=>{
+
+});
+router
+.route('/add_cardholder').post((req,res)=>{
     var user_id = req.body.id;
     var token = req.body.token;
     var geo = req.body.geo;
 
-    res.send(user_id + ' ' + token + ' ' + geo);
+    // res.send(user_id + ' ' + token + ' ' + geo);
+    return res.json(req.body);
   //  res.send("Hy this is gallagher POST cards");  
 
 });
