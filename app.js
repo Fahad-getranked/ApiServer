@@ -2,20 +2,29 @@ const express= require("express");
 const https=require("https");
 const path=require("path");
 const fs=require("fs");
-
-const axios = require('axios');
 const app=express();
 require ('custom-env').env('staging');
-const gallagher=require("./routes/gallagher");
-const mqtt=require("./routes/mqtt");
 app.use(express.json());
-app.use("/gallagher",gallagher);
-app.use("/mqtt",mqtt);
 
-
+//======================GALLAGHER API GATEWAY========================
+const gallagher_api_gateway=require("./routes/gallagher/gallagher_api_gateway");
+app.use("/gallagher_api_gateway",gallagher_api_gateway);
+//====================================================================
+//======================FR API GATEWAY========================
+const fr_api_gateway=require("./routes/fr/fr_api_gateway");
+app.use("/fr_api_gateway",fr_api_gateway);
+//====================================================================
+//======================Schilder LIFT API GATEWAY========================
+const schindler_lift_api_gateway=require("./routes/lift/schindler_lift_api_gateway");
+app.use("/schindler_lift_api_gateway",schindler_lift_api_gateway);
+//====================================================================
+//======================MQTT CLIENT========================
+const mqtt_client=require("./routes/mqtt_client");
+app.use("/mqtt_client",mqtt_client);
+//====================================================================
 
 app.get('/',function(req,res){
-res.send(process.env.GALLAGHER_KEY);
+res.send("Gatewayyyyyy");
 
 });
 var sslServer=https.createServer({

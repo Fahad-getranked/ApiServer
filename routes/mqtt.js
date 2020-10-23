@@ -1,19 +1,10 @@
-const express= require("express");
-let router=express.Router();
-router.use(function(req,res,next)
-{
-console.log(req.url,"@", Date.now());
-next();
-});
-router
-.route('/configuration')
-.get((req,res)=>{
+var MqttClient = require('./lib/client')
+var connect = require('./lib/connect')
+var Store = require('./lib/store')
 
- res.send("Hy this is mqtt get config");  
-})
-.post((req,res)=>{
-    res.send("Hy this is mqtt post config");  
+module.exports.connect = connect
 
-});
-
-module.exports=router;
+// Expose MqttClient
+module.exports.MqttClient = MqttClient
+module.exports.Client = MqttClient
+module.exports.Store = Store
