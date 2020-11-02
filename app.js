@@ -18,6 +18,10 @@ app.use("/fr_api_gateway",fr_api_gateway);
 const schindler_lift_api_gateway=require("./routes/lift/schindler_lift_api_gateway");
 app.use("/schindler_lift_api_gateway",schindler_lift_api_gateway);
 //====================================================================
+//======================Cron API GATEWAY========================
+const cron_api_gateway=require("./routes/cron/cron_api_gateway");
+app.use("/cron_api_gateway",cron_api_gateway);
+//====================================================================
 //======================MQTT CLIENT========================
 const mqtt_client=require("./routes/mqtt_client");
 app.use("/mqtt_client",mqtt_client);
