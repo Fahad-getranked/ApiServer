@@ -72,41 +72,55 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
                    if(response.data.data['status']=='success')
                    {
                     var myarray=[];
-                    myarray.push({"SL":{"person_id":gallagher_id}});
+                    myarray.push({"SL":{"person_id":gallagher_id,"message":"success"}});
                     resolve(myarray);
                    }else{
-                    resolve(2);
+                    var myarray=[];
+                    myarray.push({"SL":{"person_id":0,"message":"gateway offline"}});
+                    resolve(myarray);
                    }
                
                }else{
-                resolve(2); 
+                var myarray=[];
+                myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+                resolve(myarray);
                }
                   
                   
     
                 }else{
-                    console.log("No adding");
+                    var myarray=[];
+                    myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+                    resolve(myarray);
                 }
     
             });
         }catch(error)
         {
-           console.log(error);
+            var myarray=[];
+            myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+            resolve(myarray);
         }
            }else{
-            resolve(1); 
+            var myarray=[];
+            myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+            resolve(myarray);
            }
          
               
 
             }else{
-                resolve(1); 
+                var myarray=[];
+                myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+                resolve(myarray);
             }
 
         });
     }catch(error)
     {
-        resolve(error);
+        var myarray=[];
+        myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
+        resolve(myarray);
     }
   
     });
@@ -270,105 +284,3 @@ exports. delete_lift_user = function (lift_id)
     
 }
 
-//================================VISITORS SECTION====================
-exports. add_lift_visitor = function (personal_info,gallagher_id,lift_groups,cards)
-{
-   
-  
-    return new Promise((resolve) => {
-        try {
-            var obj={
-                'username':process.env.LOGIN_LIFT_USER,
-                'password':process.env.LOGIN_LIFT_PASSWORD
-            }
-        axios({
-            method: 'POST', 
-            httpsAgent: extagent,
-            url: process.env.LIFT_HOST+'/schindler/v1/api/login',
-            headers: { 
-                'Content-Type': 'application/json'
-              },
-            data :obj,
-        
-            })
-        .then(response=>{
-         if (response.status == 200) {
-          if(response.data!='')
-           {
-            // resolve(response.data[0]['token']);
-            try {
-                var data = JSON.stringify({"gateway_id":"","jdata":{"command":"addUser_setZoneAccess","device_id":"","parameter":{"personID":""+gallagher_id+"","familyName":""+personal_info['lastname']+"","firstName":""+personal_info['firstname']+"","company":"","enterprise":"","department":"","profileName":"","badgeNo1":""+cards['card_number']+"","badgeNo2":"","badgeNo3":"","entryDate":""+cards['valid_from']+"","exitDate":""+cards['valid_to']+"","autoZone":"specific,"+personal_info['level']+"","accessZonesAlways":""+lift_groups+""}}});
-            axios({
-                method: 'POST', 
-                httpsAgent: extagent,
-                url: process.env.LIFT_HOST+'/schindler/v1/api/command',
-                headers: { 
-                    'Content-Type': 'application/json', 
-                    'Authorization': 'Bearer '+response.data[0]['token']
-                  },
-                data :data,
-            
-                })
-            .then(response=>{
-                //console.log(response.data);
-             if (response.status == 200) {
-                if(response.data!='')
-               {
-                   if(response.data.data['status']=='success')
-                   {
-                    var myarray=[];
-                    myarray.push({"SL":{"person_id":gallagher_id,"message":"success"}});
-                    resolve(myarray);
-                   }else{
-                    var myarray=[];
-                    myarray.push({"SL":{"person_id":0,"message":response.data["data"]}});
-                    resolve(myarray);
-                   }
-               
-               }else{
-                var myarray=[];
-                myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
-                resolve(myarray);
-               }
-                  
-                  
-    
-                }else{
-                    var myarray=[];
-                myarray.push({"SL":{"person_id":0,"message":"Invalid Request"}});
-                resolve(myarray);
-                }
-    
-            });
-        }catch(error)
-        {
-            var myarray=[];
-            myarray.push({"SL":{"person_id":0,"message":"Gateway is offline"}});
-            resolve(myarray);
-        }
-           }else{
-            var myarray=[];
-            myarray.push({"SL":{"person_id":0,"message":"Gateway is offline"}});
-            resolve(myarray);
-           }
-         
-              
-
-            }else{
-                var myarray=[];
-            myarray.push({"SL":{"person_id":0,"message":"Gateway is offline"}});
-            resolve(myarray);
-            }
-
-        });
-    }catch(error)
-    {
-        var myarray=[];
-        myarray.push({"SL":{"person_id":0,"message":"Invalid Reuest"}});
-        resolve(myarray);
-    }
-  
-    });
-          
-    
-}

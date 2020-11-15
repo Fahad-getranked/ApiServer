@@ -172,7 +172,7 @@ client.on('message', function (topic, message, packet) {
 // console.log(data_obj);
 		if(typeof data_obj['GG'] !== 'undefined') {
 
-			var groups = JSON.stringify(data_obj['GG']['groups'].join(",") );
+			var groups = data_obj['GG']['groups'].join(",");
 			var cardtypes = data_obj['GG']['cards'];
 
 			var cardholder_id = gr_mod.save_user_in_gallagher(personal_info,cardtypes,groups)
@@ -190,7 +190,7 @@ client.on('message', function (topic, message, packet) {
 
 							var card_number = data_obj['FR']['cards'][0];
 							
-							var face_id = fr_mod.add_fr_user(personal_info,card_number)
+							var face_id = fr_mod.add_fr_user(personal_info,card_number,7)
 							face_id.then(facerep=>{
 							
 								result_array.push(facerep[0]);
@@ -488,7 +488,7 @@ client.on('message', function (topic, message, packet) {
 			 var data_obj = JSON.parse( msg_arr[1] ); 
 			 var personal_info = data_obj['personal'];
 			 var card_number = data_obj['FR']['cards'][0];				
-			 var face_id = fr_mod.add_fr_visitor(personal_info,card_number)
+			 var face_id = fr_mod.add_fr_user(personal_info,card_number,1)
 			 face_id.then(facerep=>{ 	 
 				 var fr = facerep[0]['FR']['person_id'];
 				 console.log("FR="+fr);
@@ -503,7 +503,7 @@ client.on('message', function (topic, message, packet) {
 				var lift_groups = data_obj['SL']['groups'].join(",") ;
 				var person_id=data_obj['SL']['personID'];
 				var lift_cards = data_obj['SL']['cards'][0];
-				var lift_id = lift_mod.add_lift_visitor(personal_info,person_id,lift_groups,lift_cards)
+				var lift_id = lift_mod.add_lift_user(personal_info,person_id,lift_groups,lift_cards)
 				lift_id.then( liftrep => {
 
 					var sl = liftrep[0]['SL']['person_id'];

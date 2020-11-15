@@ -51,7 +51,7 @@ function get_user_image(url){
 
 }
 
-exports. add_fr_user = function (personal_info,card_number)
+exports. add_fr_user = function (personal_info,card_number,orgIndexCode)
 {
    
     
@@ -73,7 +73,7 @@ var data = qs.stringify({
 'ProtocolType': process.env.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/add',
 'BodyParameters': 
-'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"7","phoneNo":"","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}],"beginTime": "'+new Date(card_number["valid_from"]).toISOString()+'","endTime": "'+new Date(card_number["valid_to"]).toISOString()+'"}' 
+'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}],"beginTime": "'+new Date(card_number["valid_from"]).toISOString()+'","endTime": "'+new Date(card_number["valid_to"]).toISOString()+'"}' 
 });
 
 var config = {
@@ -88,7 +88,7 @@ var config = {
 axios(config)
 .then(function (response) {
 	var myarray=[];
-	myarray.push({"FR":{"person_id":response.data.data}});
+	myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
  resolve(myarray);
  
  axios({
@@ -108,17 +108,23 @@ if(restp.data.code==0)
 }
 
 }).catch(error =>  {
-    resolve(2);
+  var myarray=[];
+	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+ resolve(myarray);
 });
 })
 .catch(function (error) {
-  resolve(2);
+  var myarray=[];
+	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+ resolve(myarray);
 });
 
             });
         }catch(error)
         {
-            resolve(2);
+          var myarray=[];
+          myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+         resolve(myarray);
         }
   
     });
@@ -293,83 +299,4 @@ resolve(true);
     });
 }
 
-//==============================VISITOR SECTION======================
-exports. add_fr_visitor = function (personal_info,card_number)
-{
-   
-    
-  
-	return new Promise((resolve) => {
-		try {
-    
-            var imges=get_user_image( personal_info['photo']);
-            imges.then(profileimage=>{
-                var imagesy=profileimage.replace(/\s/g, '');
-			 var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&PortNumber="+process.env.FR_PORT+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
-  var url=process.env.FR_HOST+'/api/FrData/';
-var data = qs.stringify({
- 'ApiKey': process.env.FR_KEY,
-'MethodType': 'POST',
-'ApiSecret': process.env.FR_SECRET_KEY,
-'IP': '127.0.0.1',
-'PortNumber': process.env.FR_PORT,
-'ProtocolType': process.env.FR_PROTOCOL,
-'ApiMethod': '/api/resource/v1/person/single/add',
-'BodyParameters': 
-'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"1","phoneNo":"","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}],"beginTime": "'+new Date(card_number["valid_from"]).toISOString()+'","endTime": "'+new Date(card_number["valid_to"]).toISOString()+'"}' 
-});
 
-var config = {
-  method: 'post',
-  url: url,
-  headers: { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  },
-  data : data
-};
-
-axios(config)
-.then(function (response) {
- 
-	var myarray=[];
-	myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
- resolve(myarray);
- 
- axios({
-    method: 'POST', 
-    httpsAgent: extagent,
-    url: url,
-    data :devicestring,
-
-    })
-.then(function (restp){
-
-if(restp.data.code==0)
-{			
-
-}else{
-
-}
-
-}).catch(error =>  {
-  var myarray=[];
-	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
-  resolve(myarray);
-});
-})
-.catch(function (error) {
-  var myarray=[];
-	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
-  resolve(myarray);
-});
-
-            });
-        }catch(error)
-        {
-   var myarray=[];
-	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
-  resolve(myarray);
-        }
-  
-    });
-}
