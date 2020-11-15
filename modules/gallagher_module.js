@@ -50,6 +50,7 @@ function get_user_image(url){
 		
 
 }
+//================================USERS SECTION================================
 exports.save_user_in_gallagher = function(personal_info,cardtypes,access_groups)
 {
 	
@@ -58,23 +59,6 @@ var accessgroupdetails=[];
 	for(var i=0;i<cardtypes.length;i++)
 	{
 		if(cardtypes[i]['is_mobile_card']!="mobile"){
-		var cards={		
-			"type": {
-			  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
-			},
-			"status": {
-			  "value": "Active",
-			  "type":"active"
-			},
-			 "invitation":{
-             "email":personal_info['email'],
-            //"singleFactorOnly"=> true
-			 },
-			 "from": cardtypes[i]['valid_from'],
-			 "until": cardtypes[i]['valid_to']
-		  }
-		  carddetails.push(cards);
-		}else{
 			var cards={		
 				"type": {
 				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
@@ -88,6 +72,24 @@ var accessgroupdetails=[];
 				"until": cardtypes[i]['valid_to']
 			  }
 			  carddetails.push(cards);
+		}else{
+			var cards={		
+				"type": {
+				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+				},
+				"status": {
+				  "value": "Active",
+				  "type":"active"
+				},
+				 "invitation":{
+				 "email":personal_info['email'],
+				//"singleFactorOnly"=> true
+				 },
+				 "from": cardtypes[i]['valid_from'],
+				 "until": cardtypes[i]['valid_to']
+			  }
+			  carddetails.push(cards);
+			
 		}
 	}
 	
@@ -394,7 +396,7 @@ resolve(myarray);
 		}
 		});
 	}
-
+//=========================FOR USER AND VISITORS===================
 	exports.update_card_status = function(card_holder_id,cardtypes)
 	{
 		var carddetails=[];
@@ -450,7 +452,7 @@ resolve(myarray);
 		}
 		});
 	}
-
+//=======================================================================
 
 	exports.add_cards_and_groups_in_gallagher = function(card_holder_id,cardtypes,access_groups)
 	{
@@ -481,13 +483,14 @@ resolve(myarray);
 					"type": {
 					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 					},
+					"number":cardtypes[i]['card_number'],
+					"from": cardtypes[i]['valid_from'],
+					"until": cardtypes[i]['valid_to'],
 					"status": {
 					  "value": "Active",
 					  "type":"active"
 					},
-					"number":cardtypes[i]['card_number'],
-					"from": cardtypes[i]['valid_from'],
-					"until": cardtypes[i]['valid_to']
+				  
 				  }
 				  carddetails.push(cards);
 			}
@@ -537,6 +540,169 @@ resolve(myarray);
 		}catch(error)
 		{
 			resolve(3);
+		}
+		});
+	}
+//======================================VISITORS SECTION============================
+//==================================================================================
+exports.save_visitor_in_gallagher = function(personal_info,cardtypes,access_groups)
+{
+	
+var carddetails=[];
+var accessgroupdetails=[];
+	for(var i=0;i<cardtypes.length;i++)
+	{
+		if(cardtypes[i]['is_mobile_card']!="mobile"){
+			var cards={		
+				"type": {
+				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+				},
+				"status": {
+				  "value": "Active",
+				  "type":"active"
+				},
+				"number":cardtypes[i]['card_number'],
+				"from": cardtypes[i]['valid_from'],
+				"until": cardtypes[i]['valid_to']
+			  }
+			  carddetails.push(cards);
+		}
+	}
+	
+	access_groups=access_groups.split(',');
+	
+	for(var i=0;i<access_groups.length;i++)
+	{
+		var vals={			
+			"accessgroup": {
+				"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+			},	   
+		  }
+		  accessgroupdetails.push(vals);
+	}
+	
+	return new Promise((resolve) => {
+		try {
+		
+  var imges=get_user_image(personal_info['photo']);
+     imges.then(profileimage=>{
+       
+	let obj = {
+		"authorised": true,
+		'firstName' : personal_info['firstname'],
+		'lastName'  :personal_info['lastname'],
+		'description':'',
+		'division' : {
+			'href' : process.env.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
+		},
+		'@photo':profileimage,
+		'@email':personal_info['email'],
+		'@phone':personal_info['phone'],
+
+		  "cards":carddetails,
+		  "accessGroups": accessgroupdetails
+	
+		  
+	};
+	var url=process.env.GALLAGHER_HOST+'/api/cardholders';
+	axios({
+		method: 'post', 
+		 httpsAgent: extagent,
+		url: url,
+		data : obj,
+		headers: {
+			  'Authorization': apiKey,
+			  'Content-Type' : 'application/json'
+			}
+		})
+	.then(function (response){
+		if (response.status == 201) {
+			var valssss=response.headers.location;
+			var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
+	
+			var myarray=[];
+			myarray.push({"GG":{"person_id":cardholder_id,"message":"success"}});
+			resolve(myarray);
+				
+	
+          	
+		}else{
+			var myarray=[];
+			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+			resolve(myarray);
+        }
+	}).catch(error =>  {
+		var myarray=[];
+			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+			resolve(myarray);
+		});
+	});
+	}catch(error)
+	{
+		var myarray=[];
+			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+			resolve(myarray);
+	}
+	});
+	
+	
+
+
+
+}
+
+
+
+exports.update_visitor_card_status = function(card_holder_id,cardtypes)
+	{
+		var carddetails=[];
+	
+			for(var i=0;i<cardtypes.length;i++)
+			{
+				
+				var cards={		
+					"href": process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+cardtypes[i]['card_external_id'],
+							 "status": {
+							   "value": cardtypes[i]['status'],
+							 }
+							}
+				  carddetails.push(cards);
+				}
+		return new Promise((resolve) => {
+			try { 
+				let obj = {
+					"cards": {
+					  "update":carddetails
+					}
+							  
+				}; 	
+		var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+	
+		
+		axios({
+			method: 'PATCH', 
+			 httpsAgent: extagent,
+			url: url,
+			data : obj,
+			headers: {
+				  'Authorization': apiKey,
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+		
+			resolve(true);
+			
+				
+					
+			
+		}).catch(error =>  {
+			resolve(false);
+			});
+	
+		}catch(error)
+		{
+			resolve(false);
 		}
 		});
 	}

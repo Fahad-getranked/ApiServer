@@ -78,7 +78,6 @@ exports. get_gallagher_access_groups= function ()
   
     });
 }
-
 exports. get_gallagher_zones= function ()
 {
     var obj = [];
@@ -202,7 +201,102 @@ if(objs!="")
   
     });
 }
+exports. get_gallagher_checkin_events=function(before,after)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  process.env.GALLAGHER_HOST + '/api/events?type=20001&after='+after+'&before='+before+'',
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+            var events=response.data.events;
+    events.forEach(function(element) {
+      
+		
+				;	
+				if(element.card)
+				{
+					var cardnumber=element.card.number;
+				}else{
+                    var cardnumber=0;
+                }
+            var checkin_events={
+                'external_id':element.id,
+                'cardholder_id':element.cardholder.id,
+                'door_id':element.source.id,
+                'type':1,
+                'datetime':element.time,
+                'cardnumber':cardnumber,
+                'message':element.message
 
+   
+           };
+        obj.push(checkin_events);
+    
+    
+    });
+    resolve(obj);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. get_gallagher_checkout_events=function(before,after)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  process.env.GALLAGHER_HOST + '/api/events?type=20003&after='+after+'&before='+before+'',
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+            var events=response.data.events;
+    events.forEach(function(element) {
+      
+		
+				;	
+				if(element.card)
+				{
+					var cardnumber=element.card.number;
+				}else{
+                    var cardnumber=0;
+                }
+            var checkin_events={
+                'external_id':element.id,
+                'cardholder_id':element.cardholder.id,
+                'door_id':element.source.id,
+                'type':0,
+                'datetime':element.time,
+                'cardnumber':cardnumber,
+                'message':element.message
+
+   
+           };
+        obj.push(checkin_events);
+    
+    
+    });
+    resolve(obj);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. save_gg_access_groups_in_server= function (access_groups)
 {
     var obj = [];
@@ -291,6 +385,13 @@ exports. save_gg_card_types_in_server= function (card_types)
   
     });
 }
+
+
+
+
+
+
+
 function get_gallagher_door_info(id)
 {
     
