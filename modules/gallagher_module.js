@@ -51,149 +51,84 @@ function get_user_image(url){
 
 }
 //================================USERS SECTION================================
-exports.save_user_in_gallagher = function(personal_info,cardtypes,access_groups)
-{
-	
-var carddetails=[];
-var accessgroupdetails=[];
-	for(var i=0;i<cardtypes.length;i++)
-	{
-		if(cardtypes[i]['is_mobile_card']!="mobile"){
-			var cards={		
-				"type": {
-				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
-				},
-				"status": {
-				  "value": "Active",
-				  "type":"active"
-				},
-				"number":cardtypes[i]['card_number'],
-				"from": cardtypes[i]['valid_from'],
-				"until": cardtypes[i]['valid_to']
-			  }
-			  carddetails.push(cards);
-		}else{
-			var cards={		
-				"type": {
-				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
-				},
-				"status": {
-				  "value": "Active",
-				  "type":"active"
-				},
-				 "invitation":{
-				 "email":personal_info['email'],
-				//"singleFactorOnly"=> true
-				 },
-				 "from": cardtypes[i]['valid_from'],
-				 "until": cardtypes[i]['valid_to']
-			  }
-			  carddetails.push(cards);
-			
-		}
-	}
-	
-	access_groups=access_groups.split(',');
-	for(var i=0;i<access_groups.length;i++)
-	{
-		var vals={			
-			"accessgroup": {
-				"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
-			},	   
-		  }
-		  accessgroupdetails.push(vals);
-	}
-	
-	return new Promise((resolve) => {
-		try {
-		
-  var imges=get_user_image(personal_info['photo']);
-     imges.then(profileimage=>{
-       
-	let obj = {
-		"authorised": true,
-		'firstName' : personal_info['firstname'],
-		'lastName'  :personal_info['lastname'],
-		'description':'',
-		'division' : {
-			'href' : process.env.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
-		},
-		'@photo':profileimage,
-		'@email':personal_info['email'],
-		'@phone':personal_info['phone'],
-	
-		  
-	};
-	var url=process.env.GALLAGHER_HOST+'/api/cardholders';
-	axios({
-		method: 'post', 
-		 httpsAgent: extagent,
-		url: url,
-		data : obj,
-		headers: {
-			  'Authorization': apiKey,
-			  'Content-Type' : 'application/json'
-			}
-		})
-	.then(function (response){
-		if (response.status == 201) {
-			var valssss=response.headers.location;
-			var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
-			var checkcardsresult=gr_mod.save_cards_and_groups_in_gallagher(cardholder_id,carddetails,accessgroupdetails);
-			checkcardsresult.then(res=>{
-				var interval = setInterval(function() {
-					if(res!=2){
-                   clearInterval(interval);
-				var cardholder_detail=gr_mod.get_cardholder_details(cardholder_id);
-				cardholder_detail.then(rest=>{
-
-					resolve(rest);
-
-				});
+	exports.save_user_in_gallagher = function(personal_info,cardtypes,access_groups)
+	{	
+	var carddetails=[];
+	var accessgroupdetails=[];
+		for(var i=0;i<cardtypes.length;i++)
+		{
+			if(cardtypes[i]['is_mobile_card']!="mobile"){
+				var cards={		
+					"type": {
+					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					},
+					"status": {
+					  "value": "Active",
+					  "type":"active"
+					},
+					"number":cardtypes[i]['card_number'],
+					"from": new Date(cardtypes[i]['valid_from']).toISOString(),
+					"until": new Date(cardtypes[i]['valid_to']).toISOString()
+				  }
+				  carddetails.push(cards);
 			}else{
-			  resolve(2);	
+				var cards={		
+					"type": {
+					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					},
+					"status": {
+					  "value": "Active",
+					  "type":"active"
+					},
+					 "invitation":{
+					 "email":personal_info['email'],
+					//"singleFactorOnly"=> true
+					 },
+					 "from": new Date(cardtypes[i]['valid_from']).toISOString(),
+					 "until": new Date(cardtypes[i]['valid_to']).toISOString()
+				  }
+				  carddetails.push(cards);
 			}
-			}, 2000);
-
-
-			});
-			
-          	
-		}else{
-            resolve(2);
-        }
-	}).catch(error =>  {
-		resolve(2);
-		});
-	});
-	}catch(error)
-	{
-		resolve(2);
-	}
-	});
-	
-	
-
-
-
-}
-exports.save_cards_and_groups_in_gallagher = function(card_holder_id,cardtypes,access_groups)
-	{
-
+		}
+		
+		access_groups=access_groups.split(',');
+		
+		for(var i=0;i<access_groups.length;i++)
+		{
+			var vals={			
+				"accessgroup": {
+					"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+				},	   
+			  }
+			  accessgroupdetails.push(vals);
+		}
+		
 		return new Promise((resolve) => {
-			try {  
+			try {
+			
+	  var imges=get_user_image(personal_info['photo']);
+		 imges.then(profileimage=>{
+		   
 		let obj = {
-			"cards": {
-			  "add":cardtypes
+			"authorised": true,
+			'firstName' : personal_info['firstname'],
+			'lastName'  :personal_info['lastname'],
+			'description':'',
+			'division' : {
+				'href' : process.env.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
 			},
-			"accessGroups": {
-				"add": access_groups
-			}
-					  
+			'@photo':profileimage,
+			'@email':personal_info['email'],
+			'@phone':personal_info['phone'],
+	
+			  "cards":carddetails,
+			  "accessGroups": accessgroupdetails
+		
+			  
 		};
-		var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		var url=process.env.GALLAGHER_HOST+'/api/cardholders';
 		axios({
-			method: 'PATCH', 
+			method: 'post', 
 			 httpsAgent: extagent,
 			url: url,
 			data : obj,
@@ -203,21 +138,43 @@ exports.save_cards_and_groups_in_gallagher = function(card_holder_id,cardtypes,a
 				}
 			})
 		.then(function (response){
-			//console.log(response);
-				
-				resolve(true);	
-			
+			if (response.status == 201) {
+				var valssss=response.headers.location;
+				var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
+				var interval = setInterval(function() {
+				var cardholder_detail=gr_mod.get_cardholder_details(cardholder_id);
+				cardholder_detail.then(rest=>{
+
+					resolve(rest);
+
+				});
+			}, 900);
+			  
+			}else{
+				var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
+			}
 		}).catch(error =>  {
-			resolve(3);
+			
+			var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
 			});
-	
+		});
 		}catch(error)
 		{
-			resolve(3);
+			var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
 		}
 		});
-	}
-
+		
+		
+	
+	
+	
+	}	
 	exports.get_cardholder_details = function(card_holder_id)
 	{
 
@@ -241,7 +198,7 @@ exports.save_cards_and_groups_in_gallagher = function(card_holder_id,cardtypes,a
 			var myarray=[];
 			var array_cards=[];
 			
-      
+      try{
 for(var i=0;i<response.data.cards.length;i++)
 {
 	var p=response.data.cards[i].href;
@@ -276,8 +233,12 @@ for(var i=0;i<response.data.cards.length;i++)
 	}
 	
 }
-
-myarray.push({"GG":{"person_id":response.data.id,"cards":{array_cards}}});
+	  }
+	  catch(error)
+	  {
+		 // console.log("Exception");
+	  }
+myarray.push({"GG":{"person_id":response.data.id,"message":"success","cards":{array_cards}}});
 resolve(myarray);
 					}
 			else{
@@ -296,7 +257,6 @@ resolve(myarray);
 		}
 		});
 	}
-
 	exports.delete_cardholder_details = function(card_holder_id)
 	{
 
@@ -397,7 +357,7 @@ resolve(myarray);
 		});
 	}
 //=========================FOR USER AND VISITORS===================
-	exports.update_card_status = function(card_holder_id,cardtypes)
+	exports.update_card_status = function(firstname,lastname,card_holder_id,cardtypes)
 	{
 		var carddetails=[];
 	
@@ -409,14 +369,17 @@ resolve(myarray);
 							 "status": {
 							   "value": cardtypes[i]['status'],
 							 },
-							  "from": cardtypes[i]['valid_from'],
-							  "until": cardtypes[i]['valid_to']
+							  "from": new Date(cardtypes[i]['valid_from']).toISOString(),
+							  "until": new Date(cardtypes[i]['valid_to']).toISOString()
 							}
 				  carddetails.push(cards);
 				}
 		return new Promise((resolve) => {
 			try { 
 				let obj = {
+					"authorised": true,
+					'firstName' : firstname,
+					'lastName'  :lastname,
 					"cards": {
 					  "update":carddetails
 					}
@@ -562,8 +525,8 @@ var accessgroupdetails=[];
 				  "type":"active"
 				},
 				"number":cardtypes[i]['card_number'],
-				"from": cardtypes[i]['valid_from'],
-				"until": cardtypes[i]['valid_to']
+				"from": new Date(cardtypes[i]['valid_from']).toISOString(),
+				"until": new Date(cardtypes[i]['valid_to']).toISOString()
 			  }
 			  carddetails.push(cards);
 		}

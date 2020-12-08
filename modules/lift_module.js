@@ -52,7 +52,7 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
            {
             // resolve(response.data[0]['token']);
             try {
-                var data = JSON.stringify({"gateway_id":"","jdata":{"command":"addUser_setZoneAccess","device_id":"","parameter":{"personID":""+gallagher_id+"","familyName":""+personal_info['lastname']+"","firstName":""+personal_info['firstname']+"","company":"","enterprise":"","department":"","profileName":"","badgeNo1":""+cards['card_number']+"","badgeNo2":"","badgeNo3":"","entryDate":""+cards['valid_from']+"","exitDate":""+cards['valid_to']+"","autoZone":"specific,"+personal_info['level']+"","accessZonesAlways":""+lift_groups+""}}});
+                var data = JSON.stringify({"gateway_id":"","jdata":{"command":"addUser_setZoneAccess","device_id":"","parameter":{"personID":""+gallagher_id+"","familyName":""+personal_info['lastname']+"","firstName":""+personal_info['firstname']+"","company":"","enterprise":"","department":"","profileName":""+personal_info['pname']+"","badgeNo1":""+cards['card_number']+"","badgeNo2":"","badgeNo3":"","entryDate":""+cards['valid_from']+"","exitDate":""+cards['valid_to']+"","autoZone":"specific,"+personal_info['level']+"","accessZonesAlways":""+lift_groups+""}}});
             axios({
                 method: 'POST', 
                 httpsAgent: extagent,
@@ -127,7 +127,7 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
           
     
 }
-exports. update_lift_user = function (firstname,lastname,gallagher_id,cards)
+exports. update_lift_user = function (firstname,lastname,pname,gallagher_id,cards,level,lift_groups)
 {
  
     return new Promise((resolve) => {
@@ -152,7 +152,7 @@ exports. update_lift_user = function (firstname,lastname,gallagher_id,cards)
            {
             // resolve(response.data[0]['token']);
             try {
-                var data = JSON.stringify({"gateway_id":"","jdata":{"command":"addUser_setZoneAccess","device_id":"","parameter":{"personID":""+gallagher_id+"","familyName":""+lastname+"","firstName":""+firstname+"","company":"","enterprise":"","department":"","profileName":"","badgeNo1":"AB0000000012345678","badgeNo2":"","badgeNo3":"","entryDate":""+cards['valid_from']+"","exitDate":""+cards['valid_to']+"","autoZone":"specific,5,1","accessZonesAlways":"1,2,3,4,5,6,7,8,9,10"}}});
+                var data = JSON.stringify({"gateway_id":"","jdata":{"command":"addUser_setZoneAccess","device_id":"","parameter":{"personID":""+gallagher_id+"","familyName":""+lastname+"","firstName":""+firstname+"","company":"","enterprise":"","department":"","profileName":""+pname+"","badgeNo1":""+cards['card_number']+"","badgeNo2":"","badgeNo3":"","entryDate":""+cards['valid_from']+"","exitDate":""+cards['valid_to']+"","autoZone":"specific,"+level+"","accessZonesAlways":""+lift_groups+""}}});
             axios({
                 method: 'POST', 
                 httpsAgent: extagent,

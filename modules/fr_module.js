@@ -20,7 +20,13 @@ const isAuthorized = (req, res, next) => {
 		next ("error")
 	}	
 }
+function formatDate(date){
 
+  var t=1;
+  var months=date.getMonth();
+  var mon=Number(months)+Number(t);
+  return ('{0}-{1}-{3}T{4}:{5}:{6}+08:00').replace('{0}', date.getFullYear()).replace('{1}', (date.getMonth() < 10 ? '0' : '')+mon).replace('{3}', (date.getDate() < 10 ? '0' : '')+date.getDate()).replace('{4}', (date.getHours() < 10 ? '0' : '')+date.getHours()).replace('{5}', (date.getMinutes() < 10 ? '0' : '')+date.getMinutes()).replace('{6}', (date.getSeconds() < 10 ? '0' : '')+date.getSeconds())
+}
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
@@ -54,26 +60,27 @@ function get_user_image(url){
 exports. add_fr_user = function (personal_info,card_number,orgIndexCode)
 {
    
-    
   
+  var beginTimey=formatDate(new Date(card_number['valid_from']));
+  var endTimey=formatDate(new Date(card_number['valid_to']));
+  console.log(beginTimey +"   "+endTimey);
 	return new Promise((resolve) => {
 		try {
     
             var imges=get_user_image( personal_info['photo']);
             imges.then(profileimage=>{
                 var imagesy=profileimage.replace(/\s/g, '');
-			 var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&PortNumber="+process.env.FR_PORT+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
+			 var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
   var url=process.env.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
  'ApiKey': process.env.FR_KEY,
 'MethodType': 'POST',
 'ApiSecret': process.env.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'PortNumber': process.env.FR_PORT,
 'ProtocolType': process.env.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/add',
 'BodyParameters': 
-'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}],"beginTime": "'+new Date(card_number["valid_from"]).toISOString()+'","endTime": "'+new Date(card_number["valid_to"]).toISOString()+'"}' 
+'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"'+personal_info['phone']+'","beginTime":"'+beginTimey+'","endTime":"'+endTimey+'","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}]}' 
 });
 
 var config = {
@@ -87,9 +94,18 @@ var config = {
 
 axios(config)
 .then(function (response) {
-	var myarray=[];
-	myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
- resolve(myarray);
+   //console.log(response);
+   if(response.data.data!='')
+   {
+    var myarray=[];
+    myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
+   resolve(myarray);
+   }else{
+    var myarray=[];
+    myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+   resolve(myarray);
+   }
+
  
  axios({
     method: 'POST', 
@@ -108,12 +124,14 @@ if(restp.data.code==0)
 }
 
 }).catch(error =>  {
+  // console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
 })
 .catch(function (error) {
+  // console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
@@ -122,6 +140,7 @@ if(restp.data.code==0)
             });
         }catch(error)
         {
+          //  console.log(error);
           var myarray=[];
           myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
          resolve(myarray);
@@ -135,14 +154,13 @@ exports. delete_fr_user = function (personal_id)
    
 	return new Promise((resolve) => {
 		try {
-      var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&PortNumber="+process.env.FR_PORT+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	           
+      var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	           
   var url=process.env.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
  'ApiKey': process.env.FR_KEY,
 'MethodType': 'POST',
 'ApiSecret': process.env.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'PortNumber': process.env.FR_PORT,
 'ProtocolType': process.env.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/delete',
 'BodyParameters': 
@@ -200,28 +218,25 @@ if(restp.data.code==0)
     });
 }
 
-function between(min, max) {  
-  return Math.floor(
-    Math.random() * (max - min) + min
-  )
-}
 
-exports. delete_fr_card = function (personId)
+exports. add_update_fr_card = function (firstname,lastname,personId,card_arry)
 {
-  var munum=between(0, 5000);
+ 
+ var beginTime=formatDate(new Date(card_arry['valid_from']));
+  var endTime=formatDate(new Date(card_arry['valid_to']));
 	return new Promise((resolve) => {
-		try {    
+		try {
+        var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	     
   var url=process.env.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
  'ApiKey': process.env.FR_KEY,
 'MethodType': 'POST',
 'ApiSecret': process.env.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'PortNumber': process.env.FR_PORT,
 'ProtocolType': process.env.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/update',
 'BodyParameters': 
-'{"personId":"'+personId+'","orgIndexCode":"7","cards":[{"cardNo": "'+munum+'"}]}' 
+'{"personId":"'+personId+'","personFamilyName":"'+lastname+'","personGivenName":"'+firstname+'","cards":[{"cardNo": "'+card_arry["card_number"]+'"}],"beginTime": "'+beginTime+'","endTime": "'+endTime+'"}' 
 });
 
 var config = {
@@ -235,55 +250,28 @@ var config = {
 
 axios(config)
 .then(function (response) {
-  
-resolve(true);
- 
-})
-.catch(function (error) {
-  resolve(error);
-});
+  resolve(true);
+  axios({
+    method: 'POST', 
+    httpsAgent: extagent,
+    url: url,
+    data :devicestring,
 
-           
-        }catch(error)
-        {
-            resolve(error);
-        }
-  
-    });
+    })
+.then(function (restp){
+
+if(restp.data.code==0)
+{	
+
+  resolve(true);
+}else{
+
 }
 
-exports. add_update_fr_card = function (personId,card_arry)
-{
- 
-  console.log(new Date(card_arry['valid_from']).toISOString()+"    "+new Date(card_arry['valid_to']).toISOString());
-	return new Promise((resolve) => {
-		try {    
-  var url=process.env.FR_HOST+'/api/FrData/';
-var data = qs.stringify({
- 'ApiKey': process.env.FR_KEY,
-'MethodType': 'POST',
-'ApiSecret': process.env.FR_SECRET_KEY,
-'IP': '127.0.0.1',
-'PortNumber': process.env.FR_PORT,
-'ProtocolType': process.env.FR_PROTOCOL,
-'ApiMethod': '/api/resource/v1/person/single/update',
-'BodyParameters': 
-'{"personId":"'+personId+'","orgIndexCode":"7","cards":[{"cardNo": "'+card_arry["card_number"]+'"}],"beginTime": "'+new Date(card_arry['valid_from']).toISOString()+'","endTime": "'+new Date(card_arry['valid_to']).toISOString()+'"}' 
+}).catch(error =>  {
+  resolve(false);
 });
 
-var config = {
-  method: 'post',
-  url: url,
-  headers: { 
-    'Content-Type': 'application/x-www-form-urlencoded'
-  },
-  data : data
-};
-
-axios(config)
-.then(function (response) {
-  
-resolve(true);
 
 })
 .catch(function (error) {
