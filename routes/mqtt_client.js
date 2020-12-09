@@ -128,6 +128,7 @@ function run_cron_for_gallagher_delete_user(){
 	{
 	var delete_user_events;
 	var del_user=cron_mod.check_gallagher_delete_cardholder_events();
+	
 	del_user.then(groups=>{
 		if(groups.length>0){
 	delete_user_events=JSON.stringify(groups);
@@ -143,16 +144,7 @@ function run_cron_for_gallagher_delete_user(){
 	  }, constants.DEFAULT_DELETE_EVENT_CRON_TIME);
 	
 }
-//========================FACELESS INTEGRATION=============
-// run_cron_for_gallagher_add_user();
-function run_cron_for_gallagher_add_user(){
-	var intervaly = setInterval(function() 
-	{
-	var add_user=cron_mod.check_gallagher_add_cardholder_events();
-	
-	  }, constants.DEFAULT_CRON_CARDHOLDER_EVENTS);
-	
-}
+
 //=============================================================
 // var personal_info={
 // 	firstname:"CHECKING EXPIRY",

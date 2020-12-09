@@ -1,7 +1,6 @@
 const express= require("express");
 const axios = require('axios');
 var dateFormat = require('dateformat');
-
 var constants=require("../constants.js");
 var qs = require('qs');
 const https=require("https");
@@ -533,122 +532,7 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
     });
 }
 //============================FACELESS INTEGRATION================================
-exports. check_gallagher_add_cardholder_events=function()
-{
-   
-    var dbDate = new Date().toLocaleString();
-    var seconds = constants.DEFAULT_CARDHOLDER_EVENTS_SECONDS;
-    var parsedDate = new Date(Date.parse(dbDate))
-    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
-    newDate=newDate.toISOString();
-   
-    var obj = [];
-	return new Promise((resolve) => {
-        axios({
-            method: 'get',
-            httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events?type=15003&after='+newDate,
-            headers: {
-                'Authorization': apiKey,
-                'Content-Type' : 'application/json'
-              }
-          })
-        .then(function (response) {
-            var events=response.data.events;
-           
-    events.forEach(function(element) {
-      var cardholder_id=element.cardholder.id;    
-           axios({
-            method: 'get',
-            httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/cardholders/'+element.cardholder.id,
-            headers: {
-                'Authorization': apiKey,
-                'Content-Type' : 'application/json'
-              }
-          })
-        .then(function (cardholderlist) {
-            if(cardholderlist.status==200)
-            {
 
-             if(cardholderlist.data!=""){
-                if(cardholderlist.data.firstName=="Cardholder 12"){
-                    var personal_info={
-                    personID:element.cardholder.id,    
-                    firstname:cardholderlist.data.firstName,
-                    lastname:cardholderlist.data.lastName,
-                    division:2     
-                                }
-                   
-                    var groups=[];
-                    var array_cards=[];
-                   
-                    for(var k=0;k<cardholderlist.data.accessGroups.length;k++)
-                    {
-                        var grp=cardholderlist.data.accessGroups[k].href;
-                        var group_id=grp.match(/([^\/]*)\/*$/)[1];
-                    
-                    groups.push(group_id);
-                    }
-                   
-                    for(var i=0;i<cardholderlist.data.cards.length;i++)
-                    {
-                        var p=cardholderlist.data.cards[i].href;
-                        card_id=p.match(/([^\/]*)\/*$/)[1];	
-                        var sy=cardholderlist.data.cards[i].type.href;
-                        var card_type=sy.match(/([^\/]*)\/*$/)[1];
-                        var status=cardholderlist.data.cards[i].status.value;
-                        if(cardholderlist.data.cards[i].credentialClass=="mobile")
-                        {
-                         var cx=cardholderlist.data.cards[i].invitation.href;  
-                        var code=cx.match(/([^\/]*)\/*$/)[1];
-                        var cards={
-                           'card_id':card_id,
-                           'card_type':card_type,
-                           'invitation_code':code,
-                           'status':status,
-                           'number':0
-                        }
-                        array_cards.push(cards);
-                        }else{
-                            var cards={
-                                'card_id':card_id,
-                                'card_type':card_type,
-                                'invitation_code':0,
-                                'status':status,
-                                'number':cardholderlist.data.cards[i].number
-                             }
-                             array_cards.push(cards);
-                    
-                    
-                        }
-                        
-                    }
-                   // console.log(personal_info);
-                   // console.log(groups);
-                   // console.log(array_cards);
-                }
-
-                                       }
-
-
-            }
-
-        }).catch(error =>  {
-        	//console.log(error)
-        
-        });
-     
-    
-    });
-    resolve(obj);
-             }).catch(error =>  {
-        	//console.log(error)
-        
-        });
-  
-    });
-}
 
 
 
