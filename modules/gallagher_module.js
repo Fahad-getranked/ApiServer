@@ -1,7 +1,8 @@
 const express= require("express");
 const axios = require('axios');
 var bodyParser = require('body-parser');
-require ('custom-env').env('staging');
+
+var constants=require("../constants.js");
 var gr_mod = require('../modules/gallagher_module');
 const https=require("https");
 var apiKey;
@@ -22,7 +23,7 @@ const isAuthorized = (req, res, next) => {
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
-apiKey =process.env.GALLAGHER_KEY;
+apiKey =constants.GALLAGHER_KEY;
 extkey=apiKey;
 extagent=agent
 function get_user_image(url){
@@ -60,7 +61,7 @@ function get_user_image(url){
 			if(cardtypes[i]['is_mobile_card']!="mobile"){
 				var cards={		
 					"type": {
-					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 					},
 					"status": {
 					  "value": "Active",
@@ -74,7 +75,7 @@ function get_user_image(url){
 			}else{
 				var cards={		
 					"type": {
-					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 					},
 					"status": {
 					  "value": "Active",
@@ -97,7 +98,7 @@ function get_user_image(url){
 		{
 			var vals={			
 				"accessgroup": {
-					"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+					"href" : constants.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
 				},	   
 			  }
 			  accessgroupdetails.push(vals);
@@ -115,7 +116,7 @@ function get_user_image(url){
 			'lastName'  :personal_info['lastname'],
 			'description':'',
 			'division' : {
-				'href' : process.env.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
+				'href' : constants.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
 			},
 			'@photo':profileimage,
 			'@email':personal_info['email'],
@@ -126,7 +127,7 @@ function get_user_image(url){
 		
 			  
 		};
-		var url=process.env.GALLAGHER_HOST+'/api/cardholders';
+		var url=constants.GALLAGHER_HOST+'/api/cardholders';
 		axios({
 			method: 'post', 
 			 httpsAgent: extagent,
@@ -181,7 +182,7 @@ function get_user_image(url){
 		return new Promise((resolve) => {
 			try {  
 		
-				var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
 		axios({
 			method: 'GET', 
 			 httpsAgent: extagent,
@@ -263,7 +264,7 @@ resolve(myarray);
 		return new Promise((resolve) => {
 			try {  
 		
-				var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
 		axios({
 			method: 'DELETE', 
 			 httpsAgent: extagent,
@@ -295,7 +296,7 @@ resolve(myarray);
 	{
 		return new Promise((resolve) => {
 			try {  	
-				var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+card_id;
+				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+card_id;
 		axios({
 			method: 'DELETE', 
 			 httpsAgent: extagent,
@@ -328,7 +329,7 @@ resolve(myarray);
 	{
 		return new Promise((resolve) => {
 			try {  	
-		var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/access_groups/'+group_id;
+		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/access_groups/'+group_id;
 		axios({
 			method: 'DELETE', 
 			 httpsAgent: extagent,
@@ -365,7 +366,7 @@ resolve(myarray);
 			{
 				
 				var cards={		
-					"href": process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+cardtypes[i]['card_external_id'],
+					"href": constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+cardtypes[i]['card_external_id'],
 							 "status": {
 							   "value": cardtypes[i]['status'],
 							 },
@@ -385,7 +386,7 @@ resolve(myarray);
 					}
 							  
 				}; 	
-		var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
 	
 		
 		axios({
@@ -427,7 +428,7 @@ resolve(myarray);
 			if(cardtypes[i]['is_mobile_card']!="mobile"){
 			var cards={		
 				"type": {
-				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+				  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 				},
 				"status": {
 				  "value": "Active",
@@ -444,7 +445,7 @@ resolve(myarray);
 			}else{
 				var cards={		
 					"type": {
-					  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 					},
 					"number":cardtypes[i]['card_number'],
 					"from": cardtypes[i]['valid_from'],
@@ -464,7 +465,7 @@ resolve(myarray);
 		{
 			var vals={			
 				"accessgroup": {
-					"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+					"href" : constants.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
 				},	   
 			  }
 			  accessgroupdetails.push(vals);
@@ -480,7 +481,7 @@ resolve(myarray);
 			}
 					  
 		};
-		var url=process.env.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
 		axios({
 			method: 'PATCH', 
 			 httpsAgent: extagent,
@@ -518,7 +519,7 @@ var accessgroupdetails=[];
 		if(cardtypes[i]['is_mobile_card']!="mobile"){
 			var cards={		
 				"type": {
-				  "href": process.env.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+				  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 				},
 				"status": {
 				  "value": "Active",
@@ -538,7 +539,7 @@ var accessgroupdetails=[];
 	{
 		var vals={			
 			"accessgroup": {
-				"href" : process.env.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+				"href" : constants.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
 			},	   
 		  }
 		  accessgroupdetails.push(vals);
@@ -556,7 +557,7 @@ var accessgroupdetails=[];
 		'lastName'  :personal_info['lastname'],
 		'description':'',
 		'division' : {
-			'href' : process.env.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
+			'href' : constants.GALLAGHER_HOST+'/api/divisions/'+personal_info['division']
 		},
 		'@photo':profileimage,
 		'@email':personal_info['email'],
@@ -567,7 +568,7 @@ var accessgroupdetails=[];
 	
 		  
 	};
-	var url=process.env.GALLAGHER_HOST+'/api/cardholders';
+	var url=constants.GALLAGHER_HOST+'/api/cardholders';
 	axios({
 		method: 'post', 
 		 httpsAgent: extagent,

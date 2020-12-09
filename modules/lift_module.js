@@ -1,7 +1,7 @@
 const express= require("express");
 const axios = require('axios');
+var constants=require("../constants.js");
 
-require ('custom-env').env('staging');
 const https=require("https");
 var apiKey;
 var extagent;
@@ -33,13 +33,13 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
     return new Promise((resolve) => {
         try {
             var obj={
-                'username':process.env.LOGIN_LIFT_USER,
-                'password':process.env.LOGIN_LIFT_PASSWORD
+                'username':constants.LOGIN_LIFT_USER,
+                'password':constants.LOGIN_LIFT_PASSWORD
             }
         axios({
             method: 'POST', 
             httpsAgent: extagent,
-            url: process.env.LIFT_HOST+'/schindler/v1/api/login',
+            url: constants.LIFT_HOST+'/schindler/v1/api/login',
             headers: { 
                 'Content-Type': 'application/json'
               },
@@ -56,7 +56,7 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
             axios({
                 method: 'POST', 
                 httpsAgent: extagent,
-                url: process.env.LIFT_HOST+'/schindler/v1/api/command',
+                url: constants.LIFT_HOST+'/schindler/v1/api/command',
                 headers: { 
                     'Content-Type': 'application/json', 
                     'Authorization': 'Bearer '+response.data[0]['token']
@@ -133,13 +133,13 @@ exports. update_lift_user = function (firstname,lastname,pname,gallagher_id,card
     return new Promise((resolve) => {
         try {
             var obj={
-                'username':process.env.LOGIN_LIFT_USER,
-                'password':process.env.LOGIN_LIFT_PASSWORD
+                'username':constants.LOGIN_LIFT_USER,
+                'password':constants.LOGIN_LIFT_PASSWORD
             }
         axios({
             method: 'POST', 
             httpsAgent: extagent,
-            url: process.env.LIFT_HOST+'/schindler/v1/api/login',
+            url: constants.LIFT_HOST+'/schindler/v1/api/login',
             headers: { 
                 'Content-Type': 'application/json'
               },
@@ -156,7 +156,7 @@ exports. update_lift_user = function (firstname,lastname,pname,gallagher_id,card
             axios({
                 method: 'POST', 
                 httpsAgent: extagent,
-                url: process.env.LIFT_HOST+'/schindler/v1/api/command',
+                url: constants.LIFT_HOST+'/schindler/v1/api/command',
                 headers: { 
                     'Content-Type': 'application/json', 
                     'Authorization': 'Bearer '+response.data[0]['token']
@@ -219,13 +219,13 @@ exports. delete_lift_user = function (lift_id)
     return new Promise((resolve) => {
         try {
             var obj={
-                'username':process.env.LOGIN_LIFT_USER,
-                'password':process.env.LOGIN_LIFT_PASSWORD
+                'username':constants.LOGIN_LIFT_USER,
+                'password':constants.LOGIN_LIFT_PASSWORD
             }
         axios({
             method: 'POST', 
             httpsAgent: extagent,
-            url: process.env.LIFT_HOST+'/schindler/v1/api/login',
+            url: constants.LIFT_HOST+'/schindler/v1/api/login',
             headers: { 
                 'Content-Type': 'application/json'
               },
@@ -242,7 +242,7 @@ exports. delete_lift_user = function (lift_id)
             axios({
                 method: 'POST', 
                 httpsAgent: extagent,
-                url: process.env.LIFT_HOST+'/schindler/v1/api/command',
+                url: constants.LIFT_HOST+'/schindler/v1/api/command',
                 headers: { 
                     'Content-Type': 'application/json', 
                     'Authorization': 'Bearer '+response.data[0]['token']

@@ -4,9 +4,10 @@ let router=express.Router();
 var bodyParser = require('body-parser');
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true }));
-require ('custom-env').env('staging');
+
 const https=require("https");
 var gr_mod = require('../../modules/cron_module');
+var constants=require("../../constants.js");
 
 router.use(function(req,res,next)
 {

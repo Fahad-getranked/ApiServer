@@ -1,7 +1,8 @@
 const express= require("express");
 const axios = require('axios');
 const fs = require("fs");
-require ('custom-env').env('staging');
+
+var constants=require("../constants.js");
 var qs = require('qs');
 const https=require("https");
 var apiKey;
@@ -70,14 +71,14 @@ exports. add_fr_user = function (personal_info,card_number,orgIndexCode)
             var imges=get_user_image( personal_info['photo']);
             imges.then(profileimage=>{
                 var imagesy=profileimage.replace(/\s/g, '');
-			 var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
-  var url=process.env.FR_HOST+'/api/FrData/';
+			 var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
+  var url=constants.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
- 'ApiKey': process.env.FR_KEY,
+ 'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',
-'ApiSecret': process.env.FR_SECRET_KEY,
+'ApiSecret': constants.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'ProtocolType': process.env.FR_PROTOCOL,
+'ProtocolType': constants.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/add',
 'BodyParameters': 
 '{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"'+personal_info['phone']+'","beginTime":"'+beginTimey+'","endTime":"'+endTimey+'","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}]}' 
@@ -154,14 +155,14 @@ exports. delete_fr_user = function (personal_id)
    
 	return new Promise((resolve) => {
 		try {
-      var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	           
-  var url=process.env.FR_HOST+'/api/FrData/';
+      var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	           
+  var url=constants.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
- 'ApiKey': process.env.FR_KEY,
+ 'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',
-'ApiSecret': process.env.FR_SECRET_KEY,
+'ApiSecret': constants.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'ProtocolType': process.env.FR_PROTOCOL,
+'ProtocolType': constants.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/delete',
 'BodyParameters': 
 '{"personId":"'+personal_id+'"}' 
@@ -226,14 +227,14 @@ exports. add_update_fr_card = function (firstname,lastname,personId,card_arry)
   var endTime=formatDate(new Date(card_arry['valid_to']));
 	return new Promise((resolve) => {
 		try {
-        var devicestring="ApiKey="+process.env.FR_KEY+"&MethodType=POST&ApiSecret="+process.env.FR_SECRET_KEY+"&IP="+process.env.FR_LOCAL_IP+"&ProtocolType="+process.env.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	     
-  var url=process.env.FR_HOST+'/api/FrData/';
+        var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	     
+  var url=constants.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
- 'ApiKey': process.env.FR_KEY,
+ 'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',
-'ApiSecret': process.env.FR_SECRET_KEY,
+'ApiSecret': constants.FR_SECRET_KEY,
 'IP': '127.0.0.1',
-'ProtocolType': process.env.FR_PROTOCOL,
+'ProtocolType': constants.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/update',
 'BodyParameters': 
 '{"personId":"'+personId+'","personFamilyName":"'+lastname+'","personGivenName":"'+firstname+'","cards":[{"cardNo": "'+card_arry["card_number"]+'"}],"beginTime": "'+beginTime+'","endTime": "'+endTime+'"}' 
@@ -269,18 +270,21 @@ if(restp.data.code==0)
 }
 
 }).catch(error =>  {
+ 
   resolve(false);
 });
 
 
 })
 .catch(function (error) {
+ 
   resolve(false);
 });
 
            
         }catch(error)
         {
+         
             resolve(false);
         }
   

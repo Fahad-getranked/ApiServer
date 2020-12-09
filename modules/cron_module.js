@@ -1,7 +1,8 @@
 const express= require("express");
 const axios = require('axios');
 var dateFormat = require('dateformat');
-require ('custom-env').env('staging');
+
+var constants=require("../constants.js");
 var qs = require('qs');
 const https=require("https");
 var apiKey;
@@ -26,7 +27,7 @@ const isAuthorized = (req, res, next) => {
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
-apiKey =process.env.GALLAGHER_KEY;
+apiKey =constants.GALLAGHER_KEY;
 extkey=apiKey;
 extagent=agent
 exports. get_gallagher_divisions= function ()
@@ -36,7 +37,7 @@ exports. get_gallagher_divisions= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/items?type=15',
+            url:  constants.GALLAGHER_HOST + '/api/items?type=15',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -66,7 +67,7 @@ exports. get_gallagher_access_groups= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/access_groups',
+            url:  constants.GALLAGHER_HOST + '/api/access_groups',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -115,7 +116,7 @@ exports. get_gallagher_zones= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/access_zones',
+            url:  constants.GALLAGHER_HOST + '/api/access_zones',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -151,7 +152,7 @@ exports. get_gallagher_card_types= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/card_types',
+            url:  constants.GALLAGHER_HOST + '/api/card_types',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -192,7 +193,7 @@ exports. get_gallagher_doors= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/doors',
+            url:  constants.GALLAGHER_HOST + '/api/doors',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -234,7 +235,7 @@ if(objs!="")
 exports. get_gallagher_checkin_events=function()
 {
     var dbDate = new Date().toLocaleString();
-    var seconds = process.env.DEFAUL_EVENT_SECONDS;
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
@@ -244,7 +245,7 @@ exports. get_gallagher_checkin_events=function()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/events?type=20001&after='+newDate,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=20001&after='+newDate,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -288,7 +289,7 @@ exports. get_gallagher_checkin_events=function()
 exports. get_gallagher_checkout_events=function()
 {
     var dbDate = new Date().toLocaleString();
-    var seconds = process.env.DEFAUL_EVENT_SECONDS;
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
@@ -297,7 +298,7 @@ exports. get_gallagher_checkout_events=function()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/events?type=20003&after='+newDate,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=20003&after='+newDate,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -341,7 +342,7 @@ exports. get_gallagher_checkout_events=function()
 exports. check_gallagher_delete_cardholder_events=function()
 {
     var dbDate = new Date().toLocaleString();
-    var seconds = process.env.DEFAULT_DELETE_EVENT_SECONDS;
+    var seconds = constants.DEFAULT_DELETE_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
@@ -351,7 +352,7 @@ exports. check_gallagher_delete_cardholder_events=function()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/events?type=15004&after='+newDate,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=15004&after='+newDate,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -384,7 +385,7 @@ exports. save_gg_access_groups_in_server= function (access_groups)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_access_groups_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_groups_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -406,7 +407,7 @@ exports. save_gg_divisions_in_server= function (divisions)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_divisions_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_divisions_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -428,7 +429,7 @@ exports. save_gg_access_zones_in_server= function (access_zones)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_access_zones_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_zones_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -450,7 +451,7 @@ exports. save_gg_doors_in_server= function (doors)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_access_doors_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_doors_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -472,7 +473,7 @@ exports. save_gg_card_types_in_server= function (card_types)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_card_types_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_card_types_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -494,7 +495,7 @@ exports. check_gg_user_data_deleted_from_server= function (user_data)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/check_gg_user_data_exist_on_live_server?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/check_gg_user_data_exist_on_live_server?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -516,7 +517,7 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  process.env.BASE_SERVER_URL + '/save_data_of_checkin_checkout_events_in_gallagher?code='+process.env.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_checkin_checkout_events_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -536,7 +537,7 @@ exports. check_gallagher_add_cardholder_events=function()
 {
    
     var dbDate = new Date().toLocaleString();
-    var seconds = process.env.DEFAULT_CARDHOLDER_EVENTS_SECONDS;
+    var seconds = constants.DEFAULT_CARDHOLDER_EVENTS_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
@@ -546,7 +547,7 @@ exports. check_gallagher_add_cardholder_events=function()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/events?type=15003&after='+newDate,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=15003&after='+newDate,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -560,7 +561,7 @@ exports. check_gallagher_add_cardholder_events=function()
            axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  process.env.GALLAGHER_HOST + '/api/cardholders/'+element.cardholder.id,
+            url:  constants.GALLAGHER_HOST + '/api/cardholders/'+element.cardholder.id,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -672,7 +673,7 @@ function get_gallagher_door_info(id)
     axios({
         method: 'get',
         httpsAgent: extagent,
-        url:  process.env.GALLAGHER_HOST + '/api/doors/'+id,
+        url:  constants.GALLAGHER_HOST + '/api/doors/'+id,
         headers: {
             'Authorization': apiKey,
             'Content-Type' : 'application/json'

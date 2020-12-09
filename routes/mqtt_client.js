@@ -2,6 +2,7 @@ const express= require("express");
 var axios = require('axios');
 var qs = require('qs');
 var mqtt = require('mqtt');
+var constants=require("../constants.js");
 var sf = require('sf');
 var fr_mod = require('../modules/fr_module');
 var gr_mod = require('../modules/gallagher_module');
@@ -87,7 +88,7 @@ syncdata.then(res=>{
 });
 });
 	
-  }, process.env.DEFAULT_GG_CONFIGURATION_CRON_TIME);
+  }, constants.DEFAULT_GG_CONFIGURATION_CRON_TIME);
 
 }
 function run_cron_for_gallagher_events(){
@@ -119,7 +120,7 @@ function run_cron_for_gallagher_events(){
 		}
 	});
 	
-	  }, process.env.DEFAULT_EVENT_CRON_JOB_TIME);
+	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
 }
 function run_cron_for_gallagher_delete_user(){
@@ -139,7 +140,7 @@ function run_cron_for_gallagher_delete_user(){
 	});	
 	
 	
-	  }, process.env.DEFAULT_DELETE_EVENT_CRON_TIME);
+	  }, constants.DEFAULT_DELETE_EVENT_CRON_TIME);
 	
 }
 //========================FACELESS INTEGRATION=============
@@ -149,7 +150,7 @@ function run_cron_for_gallagher_add_user(){
 	{
 	var add_user=cron_mod.check_gallagher_add_cardholder_events();
 	
-	  }, process.env.DEFAULT_CRON_CARDHOLDER_EVENTS);
+	  }, constants.DEFAULT_CRON_CARDHOLDER_EVENTS);
 	
 }
 //=============================================================
@@ -182,7 +183,7 @@ client=configuration_mqtt();
 function configuration_mqtt()
 {
 	 clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
-	 host = process.env.MQTT_HOST
+	 host = constants.MQTT_HOST
 	options = {
 		keepalive: 30,
 		clientId: clientId,
@@ -198,8 +199,8 @@ function configuration_mqtt()
 			retain: false
 		},
 		rejectUnauthorized: false,
-		username:process.env.MQTT_USERNAME,
-		password:process.env.MQTT_PASSWORD
+		username:constants.MQTT_USERNAME,
+		password:constants.MQTT_PASSWORD
 	}
 	console.log('connecting mqtt client')
 client = mqtt.connect(host, options)
@@ -230,7 +231,7 @@ client.on('message', function (topic, message, packet) {
 	var req_method = msg_arr[2];
 	var req_code = msg_arr[3];
 	
-	if(req_code==process.env.CODE){
+	if(req_code==constants.CODE){
 		
 //=============================PERMANENT USERS============================//
 if(req_method == 'checking_server'){
