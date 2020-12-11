@@ -207,7 +207,7 @@ client.on('error', function (err) {
 
 client.on('connect', function () {
 	console.log('client connected:' + clientId)
-	console.log('client connected:' + host)
+	//console.log('client connected:' + host)
 	client.subscribe('live_request', { qos: 1 })
 
 })
