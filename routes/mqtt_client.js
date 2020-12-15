@@ -71,6 +71,7 @@ syncdata.then(res=>{
 });
 });
 var access_doors=cron_mod.get_gallagher_doors();
+
 access_doors.then(doors=>{
 // console.log(doors);
 mydoors=JSON.stringify(doors);

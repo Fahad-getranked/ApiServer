@@ -215,15 +215,12 @@ exports. get_gallagher_doors= function ()
     
     
     });
-    var interval = setInterval(function() {
+    var intervalxxx = setInterval(function() {
 
     resolve(objs);
-    
+    clearInterval(intervalxxx);
 }, 100);
-if(objs!="")
-    {
-        clearInterval(interval);
-    }
+
              }).catch(error =>  {
         //	console.log(error)
         
