@@ -279,7 +279,7 @@ exports. get_gallagher_checkin_events=function()
 
         resolve(obj);
         clearInterval(intervalxxx);
-    }, 10000);
+    }, 1000);
              }).catch(error =>  {
         //	console.log(error)
         
@@ -336,7 +336,7 @@ exports. get_gallagher_checkout_events=function()
 
         resolve(obj);
         clearInterval(intervalxxx);
-    }, 10000);
+    }, 1000);
   
              }).catch(error =>  {
         //	console.log(error)
@@ -547,7 +547,7 @@ exports. check_gallagher_add_cardholder_events=function()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events?type=15003&after=2020-12-01',
+            url:  constants.GALLAGHER_HOST + '/api/cardholders',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -555,21 +555,21 @@ exports. check_gallagher_add_cardholder_events=function()
           })
         .then(function (response) {
            
-            var events=response.data.events;
-           if(response.data.events!=''){
+            var events=response.data.results;
+           if(response.data.results!=''){
               
     events.forEach(function(element) {  
      
-          if(element.cardholder){
+        
             
-            var records=cron_mod.get_cardholders_details_from_events(element.cardholder.id);
+            var records=cron_mod.get_cardholders_details_from_events(element.id);
             records.then(rest=>{
               //  console.log(rest);
                 obj.push(rest);     
             
              
             });
-        }
+      
       
       
         
@@ -706,14 +706,15 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
                     }   
                  }
                 }
-             
+             if(array_cards!=''){
                 var mydata={
                     "personal":personal_info,
                     "groups":groups,
                     "cards":array_cards
                  }
               
-            resolve(mydata);  
+            resolve(mydata); 
+                } 
                 }else{
                   
                     // resolve(''); //if email and phone exisits

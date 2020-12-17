@@ -39,7 +39,7 @@ router.route('/configuration')
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
 run_cron_for_gallagher_delete_user();
-run_cron_for_gallagher_add_user();
+// run_cron_for_gallagher_add_user();
 function run_cron_for_gallagher_configuration(){
 var intervalss = setInterval(function() {
 var mydivisions;
@@ -105,7 +105,7 @@ function run_cron_for_gallagher_events(){
 	checkin_events=JSON.stringify(groups);
 	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkin_events);
 	syncdata.then(res=>{
-	 console.log(res);
+	//  console.log(res);
 	});
 		}
 	});	
@@ -117,7 +117,7 @@ function run_cron_for_gallagher_events(){
 	checkout_events=JSON.stringify(groups);
 	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkout_events);
 	syncdata.then(res=>{
-	 console.log(res);
+	//  console.log(res);
 	});
 		}
 	});
@@ -154,7 +154,6 @@ function run_cron_for_gallagher_add_user(){
 	add_user.then(groups=>{
 		if(groups.length>0){
 	add_user_events=JSON.stringify(groups);
-
 	var syncdata=cron_mod.save_gg_cardholders_on_server(add_user_events);
 	syncdata.then(res=>{
    console.log(res);
