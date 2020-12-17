@@ -105,7 +105,7 @@ function run_cron_for_gallagher_events(){
 	checkin_events=JSON.stringify(groups);
 	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkin_events);
 	syncdata.then(res=>{
-	 //console.log(res);
+	 console.log(res);
 	});
 		}
 	});	
@@ -117,7 +117,7 @@ function run_cron_for_gallagher_events(){
 	checkout_events=JSON.stringify(groups);
 	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkout_events);
 	syncdata.then(res=>{
-	 //console.log(res);
+	 console.log(res);
 	});
 		}
 	});

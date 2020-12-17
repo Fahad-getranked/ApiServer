@@ -275,7 +275,11 @@ exports. get_gallagher_checkin_events=function()
     
     
     });
-    resolve(obj);
+    var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+        clearInterval(intervalxxx);
+    }, 10000);
              }).catch(error =>  {
         //	console.log(error)
         
@@ -328,7 +332,12 @@ exports. get_gallagher_checkout_events=function()
     
     
     });
-    resolve(obj);
+    var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+        clearInterval(intervalxxx);
+    }, 10000);
+  
              }).catch(error =>  {
         //	console.log(error)
         
@@ -571,7 +580,7 @@ exports. check_gallagher_add_cardholder_events=function()
 
         resolve(obj);
         clearInterval(intervalxxx);
-    }, 2000);
+    }, 10000);
    
 }
              }).catch(error =>  {
