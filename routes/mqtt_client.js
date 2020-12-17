@@ -39,6 +39,7 @@ router.route('/configuration')
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
 run_cron_for_gallagher_delete_user();
+run_cron_for_gallagher_add_user();
 function run_cron_for_gallagher_configuration(){
 var intervalss = setInterval(function() {
 var mydivisions;
@@ -145,32 +146,27 @@ function run_cron_for_gallagher_delete_user(){
 	  }, constants.DEFAULT_DELETE_EVENT_CRON_TIME);
 	
 }
+function run_cron_for_gallagher_add_user(){
+	var intervalz = setInterval(function() 
+	{
+	var add_user_events;
+	var add_user=cron_mod.check_gallagher_add_cardholder_events();
+	add_user.then(groups=>{
+		if(groups.length>0){
+	add_user_events=JSON.stringify(groups);
 
-//=============================================================
-// var personal_info={
-// 	firstname:"CHECKING EXPIRY",
-// 	lastname:"EXPIRY",
-// 	division:2,
-// 	photo:"https://skacomm.skais.com.my/community/get_user_image_mqtt/1",
-// 	email:"fahad@getranked.com.my",
-// 	phone:"3165465464"
-
-// }
-// var access_groups="9926,6546";
-// var cardtypes=[];
-// cardtypes.push(
-// 	{
-// 		card_type:334,
-// 		card_number:"236965369",
-// 		valid_from:new Date("2020-11-03 19:00:00").toISOString(),
-// 		valid_to:new Date("2020-11-15 03:00:00").toISOString(),
-// 		card_external_id:"428a311b020c4d0886755a826c6971d9",
-//         status:"Damaged"
-// 	}
-// );
-// fr_mod.add_fr_user(personal_info,cardtypes[0]).then(res=>{
-// 	console.log(res);
-// })
+	var syncdata=cron_mod.save_gg_cardholders_on_server(add_user_events);
+	syncdata.then(res=>{
+   console.log(res);
+	});
+	 
+		}
+	});	
+	
+	
+	  }, constants.DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME);
+	
+}
 
 client=configuration_mqtt();
 function configuration_mqtt()

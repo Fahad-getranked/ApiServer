@@ -2,6 +2,7 @@ const express= require("express");
 const axios = require('axios');
 var dateFormat = require('dateformat');
 var constants=require("../constants.js");
+var cron_mod = require('../modules/cron_module');
 var qs = require('qs');
 const https=require("https");
 var apiKey;
@@ -528,10 +529,233 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
   
     });
 }
-//============================FACELESS INTEGRATION================================
+//======================READ DATA FROM GALLAGHER================================
+exports. check_gallagher_add_cardholder_events=function()
+{
+   
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=15003&after=2020-12-01',
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+           
+            var events=response.data.events;
+           if(response.data.events!=''){
+              
+    events.forEach(function(element) {  
+     
+          if(element.cardholder){
+            
+            var records=cron_mod.get_cardholders_details_from_events(element.cardholder.id);
+            records.then(rest=>{
+              //  console.log(rest);
+                obj.push(rest);     
+            
+             
+            });
+        }
+      
+      
+        
+    });
+   
+    
+    var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+        clearInterval(intervalxxx);
+    }, 2000);
+   
+}
+             }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports.get_cardholders_details_from_events = function(card_holder_id)
+{
+    
+    return new Promise((resolve) => { 
+        axios({
+         method: 'get',
+         httpsAgent: extagent,
+         url:  constants.GALLAGHER_HOST + '/api/cardholders/'+card_holder_id,
+         headers: {
+             'Authorization': apiKey,
+             'Content-Type' : 'application/json'
+           }
+       })
+     .then(function (cardholderlist) {
+         if(cardholderlist.status==200)//check data available
+         {
+            
+            
+          if(cardholderlist.data!=""){
+              var email="";
+              var phone="";
+              
+              if(cardholderlist.data.personalDataDefinitions){
+           
+                var personal_info=[];
+                for(var t=0;t<cardholderlist.data.personalDataDefinitions.length;t++)
+                 {
+                         if(cardholderlist.data.personalDataDefinitions[t]["@Email"])
+                         {
+                            email= cardholderlist.data.personalDataDefinitions[t]["@Email"]["value"];
+                         }
+                         if(cardholderlist.data.personalDataDefinitions[t]["@Phone"])
+                         {
+                            phone= cardholderlist.data.personalDataDefinitions[t]["@Phone"]["value"];
+                         }
+                 }
+          if(email!="" && phone!=""){
+            var personal_info={
+                 'personID':card_holder_id,    
+                 'firstname':cardholderlist.data.firstName,
+                 'lastname':cardholderlist.data.lastName,
+                 'phone':phone,
+                 'email':email   
+                             }
+               
+                             var groups=[];
+                             var array_cards=[];
+                if(cardholderlist.data.accessGroups){
+                 for(var k=0;k<cardholderlist.data.accessGroups.length;k++)
+                 {
+                     var grp=cardholderlist.data.accessGroups[k].accessGroup.href;
+                     var group_id=grp.match(/([^\/]*)\/*$/)[1];
+                 
+                 groups.push(group_id);
+                 }
+                }
+                
+                if(cardholderlist.data.cards){
+                   
+                 for(var i=0;i<cardholderlist.data.cards.length;i++)
+                 {
+                     try{
+                     var p=cardholderlist.data.cards[i].href;
+                     card_id=p.match(/([^\/]*)\/*$/)[1];	
+                     var sy=cardholderlist.data.cards[i].type.href;
+                     var card_type=sy.match(/([^\/]*)\/*$/)[1];
+                     var status=cardholderlist.data.cards[i].status.value;
+                     if(cardholderlist.data.cards[i].from){
+                     var vfrom = new Date(cardholderlist.data.cards[i].from);
+                     var valid_from=dateFormat(vfrom.toString(), "yyyy-mm-dd HH:MM:ss");  
+                     var vto = new Date(cardholderlist.data.cards[i].until);
+                     var valid_to=dateFormat(vto.toString(), "yyyy-mm-dd HH:MM:ss");
+                     }else{
+                        var valid_from="";
+                        var valid_to="";
+                     }
+                     if(cardholderlist.data.cards[i].credentialClass!="mobile" && status=='Active')
+                     {
+                         
+                         var cards={
+                             'card_id':card_id,
+                             'card_type':card_type,
+                             'invitation_code':0,
+                             'status':status,
+                             'valid_from':valid_from,
+                             'valid_to':valid_to,
+                             'card_number':cardholderlist.data.cards[i].number
+                          }
+                          array_cards.push(cards);
+                     }else if(cardholderlist.data.cards[i].credentialClass=="mobile" && status=='Active'){
+                        try{
+                        var cx=cardholderlist.data.cards[i].invitation.href;
+                         var code=cx.match(/([^\/]*)\/*$/)[1];
+                          
+                         var cards={
+                             'card_id':card_id,
+                             'card_type':card_type,
+                             'invitation_code':code,
+                             'status':status,
+                             'valid_from':valid_from,
+                             'valid_to':valid_to,
+                             'card_number':0
+                          }
+                          array_cards.push(cards);
+                        }catch(error)
+                        {
+                            
+                        }
+                       
+                     }
+                    }catch(error)
+                    {
+
+                    }   
+                 }
+                }
+             
+                var mydata={
+                    "personal":personal_info,
+                    "groups":groups,
+                    "cards":array_cards
+                 }
+              
+            resolve(mydata);  
+                }else{
+                  
+                    // resolve(''); //if email and phone exisits
+                }
+                        }else{
+                          
+                            // resolve(''); //Personal Fields
+                        }
+             }else{
+                
+                // resolve('');//if cardholder info exists
+             }
+            
+
+                                    }else{
+                                        // resolve('');//if api call is valid
+                                    }
 
 
 
+     }).catch(error =>  {
+      // console.log(error);
+     
+     });
+ }).catch(error =>  {
+   // console.log(error);
+ });
+}
+
+exports. save_gg_cardholders_on_server= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_add_cardholder_events?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 
 
 
