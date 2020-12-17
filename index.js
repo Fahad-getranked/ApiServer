@@ -5,6 +5,20 @@ const fs=require("fs");
 var constants=require("./constants.js");
 const app=express();
 app.use(express.json());
+const lineReader = require('line-reader');
+//=========================CONFIG READING============
+//===================================================
+lineReader.eachLine('C:/api_config/config.txt', function(line) {
+    var lineitem=line.split('=');
+    // console.log(lineitem[0]+"--------------"+lineitem[1]);
+    if(lineitem[0]=='Name')
+    {
+        console.log(lineitem[1]);
+    }
+});
+//================================================================
+//=========================CONFIG READING END HERE=================
+//=================================================================
 //======================GALLAGHER API GATEWAY========================
 const gallagher_api_gateway=require("./routes/gallagher/gallagher_api_gateway");
 app.use("/gallagher_api_gateway",gallagher_api_gateway);
@@ -26,8 +40,9 @@ const mqtt_client=require("./routes/mqtt_client");
 app.use("/mqtt_client",mqtt_client);
 //====================================================================
 
-app.get('/',function(req,res){
-res.send("Gatewayyyyyy");
+app.get('/', function (req, res) {
+
+    console.log("API SERVER IS RUNING");
 
 });
 // var sslServer=https.createServer({
@@ -40,5 +55,7 @@ res.send("Gatewayyyyyy");
 
 
 app.listen(3001,function(){
+  
     console.log("server listen on port 3000");
+   
 });
