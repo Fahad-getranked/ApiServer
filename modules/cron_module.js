@@ -30,6 +30,8 @@ const agent = new https.Agent({
 apiKey =constants.GALLAGHER_KEY;
 extkey=apiKey;
 extagent=agent
+
+
 exports. get_gallagher_divisions= function ()
 {
     var obj = [];
@@ -231,6 +233,7 @@ exports. get_gallagher_doors= function ()
 }
 exports. get_gallagher_checkin_events=function()
 {
+    
     var dbDate = new Date().toLocaleString();
     var seconds = constants.DEFAUL_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
