@@ -39,7 +39,11 @@ router.route('/configuration')
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
 run_cron_for_gallagher_delete_user();
-// run_cron_for_gallagher_add_user();
+if(constants.EXPORT_CARDHOLDER_CRON==1){
+	console.log("edwe");
+	run_cron_for_gallagher_add_user();
+}
+ 
 function run_cron_for_gallagher_configuration(){
 var intervalss = setInterval(function() {
 var mydivisions;
