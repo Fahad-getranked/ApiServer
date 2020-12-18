@@ -40,7 +40,7 @@ run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
 run_cron_for_gallagher_delete_user();
 if(constants.EXPORT_CARDHOLDER_CRON==1){
-	console.log("edwe");
+	
 	run_cron_for_gallagher_add_user();
 }
  
@@ -224,7 +224,7 @@ client.on('message', function (topic, message, packet) {
 	var req_method = msg_arr[2];
 	var req_code = msg_arr[3];
 	
-	if(req_code==global.CODE){
+	if(req_code==constants.CODE){
 		
 //=============================PERMANENT USERS============================//
 if(req_method == 'checking_server'){
