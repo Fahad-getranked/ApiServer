@@ -1,22 +1,215 @@
-exports.GALLAGHER_KEY = "GGL-API-KEY 4D0F-EBB3-E607-1009-D2B6-7619-F3DD-8D91";
-exports.GALLAGHER_HOST = "https://127.0.0.1:8904";
-exports.CODE = "RfJ3qQKiFrjTHarCkCluOrYvjXHcjJLaifEk34WSgYQ";
-exports.FR_HOST = "http://192.168.0.135:8081";
-exports.FR_KEY = "26773924";
-exports.FR_SECRET_KEY = "CG0H9vWp3EidZi8aMqaJ";
-exports.FR_LOCAL_IP = "127.0.0.1";
-exports.FR_PORT = "543543";
-exports.FR_PROTOCOL = "https";
-exports.LIFT_HOST = "https://apibuiltin.com:2339";
-exports.LOGIN_LIFT_USER = "ska";
-exports.LOGIN_LIFT_PASSWORD = "sequoia-derive-passband-cowbird-matron-elector-silken";
-exports.BASE_SERVER_URL = "https://skacomm.skais.com.my/api/sync";
-exports.DEFAUL_EVENT_SECONDS = "30";
-exports.DEFAULT_EVENT_CRON_JOB_TIME = "30000";
-exports.DEFAULT_GG_CONFIGURATION_CRON_TIME = "60000";
-exports.DEFAULT_DELETE_EVENT_SECONDS = "20";
-exports.DEFAULT_DELETE_EVENT_CRON_TIME="20000";
-// exports.DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME="15000";
-exports.MQTT_HOST="ws://altitudeprojects.net:8883";
-exports.MQTT_USERNAME="syslab";
-exports.MQTT_PASSWORD="mqtt@syslab";
+//=========================CONFIG READING============
+//===================================================
+const lineReader = require('line-reader');
+lineReader.eachLine('./config.txt', function(line) {
+    var lineitem=line.split('=');
+    // console.log(lineitem[0]+"--------------"+lineitem[1]);
+    var tag=lineitem[0].trim();
+    if(tag=='GALLAGHER_KEY')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.GALLAGHER_KEY = value;
+       
+        
+       
+    }else if(tag=='GALLAGHER_HOST')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.GALLAGHER_HOST =value;
+        
+        
+       
+    }
+    else if(tag=='CODE')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.CODE =value;
+        
+        
+       
+    }
+    else if(tag=='FR_HOST')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_HOST =value;
+        
+        
+       
+    }
+    else if(tag=='FR_SECRET_KEY')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_SECRET_KEY =value;
+        
+        
+       
+    }
+    else if(tag=='FR_LOCAL_IP')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_LOCAL_IP =value;
+        
+        
+       
+    }
+    else if(tag=='FR_LOCAL_IP')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_LOCAL_IP =value;
+        
+        
+       
+    }
+    else if(tag=='FR_PORT')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_PORT =value;
+        
+        
+       
+    }
+    else if(tag=='FR_PROTOCOL')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_PROTOCOL =value;
+        
+        
+       
+    }
+    else if(tag=='LIFT_HOST')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.LIFT_HOST =value;
+        
+        
+       
+    }
+    else if(tag=='LOGIN_LIFT_USER')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.LOGIN_LIFT_USER =value;
+        
+        
+       
+    }
+    else if(tag=='LOGIN_LIFT_PASSWORD')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.LOGIN_LIFT_PASSWORD =value;
+        
+        
+       
+    }
+    else if(tag=='BASE_SERVER_URL')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.BASE_SERVER_URL =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAUL_EVENT_SECONDS')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAUL_EVENT_SECONDS =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_EVENT_CRON_JOB_TIME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_EVENT_CRON_JOB_TIME =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_GG_CONFIGURATION_CRON_TIME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_GG_CONFIGURATION_CRON_TIME =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_DELETE_EVENT_SECONDS')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_DELETE_EVENT_SECONDS =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_DELETE_EVENT_CRON_TIME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_DELETE_EVENT_CRON_TIME =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME =value;
+        
+        
+       
+    }
+    else if(tag=='EXPORT_CARDHOLDER_CRON')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.EXPORT_CARDHOLDER_CRON =value;
+        
+        
+       
+    }
+    else if(tag=='MQTT_HOST')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.MQTT_HOST =value;
+        
+        
+       
+    }
+    else if(tag=='MQTT_USERNAME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.MQTT_USERNAME =value;
+        
+        
+       
+    }
+    else if(tag=='MQTT_PASSWORD')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.MQTT_PASSWORD =value;
+       
+        
+        
+       
+    }
+});

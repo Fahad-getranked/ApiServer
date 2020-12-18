@@ -220,7 +220,7 @@ client.on('message', function (topic, message, packet) {
 	var req_method = msg_arr[2];
 	var req_code = msg_arr[3];
 	
-	if(req_code==constants.CODE){
+	if(req_code==global.CODE){
 		
 //=============================PERMANENT USERS============================//
 if(req_method == 'checking_server'){
