@@ -40,6 +40,15 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    else if(tag=='FR_KEY')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_KEY =value;
+        
+        
+       
+    }
     else if(tag=='FR_SECRET_KEY')
     {
         var value=lineitem[1].trim();

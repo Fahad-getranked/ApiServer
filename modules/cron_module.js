@@ -368,6 +368,7 @@ exports. check_gallagher_delete_cardholder_events=function()
               }
           })
         .then(function (response) {
+            try{
             var events=response.data.events;
            
     events.forEach(function(element) {
@@ -380,6 +381,9 @@ exports. check_gallagher_delete_cardholder_events=function()
     
     });
     resolve(obj);
+}catch(error){
+
+}
              }).catch(error =>  {
         	//console.log(error)
         
@@ -557,7 +561,7 @@ exports. check_gallagher_add_cardholder_events=function()
               }
           })
         .then(function (response) {
-           
+           try{
             var events=response.data.results;
            if(response.data.results!=''){
               
@@ -586,6 +590,10 @@ exports. check_gallagher_add_cardholder_events=function()
     }, 10000);
    
 }
+           }catch(error)
+           {
+
+           }
              }).catch(error =>  {
         	//console.log(error)
         
@@ -595,8 +603,9 @@ exports. check_gallagher_add_cardholder_events=function()
 }
 exports.get_cardholders_details_from_events = function(card_holder_id)
 {
-    
+  
     return new Promise((resolve) => { 
+        try{
         axios({
          method: 'get',
          httpsAgent: extagent,
@@ -742,6 +751,10 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
       // console.log(error);
      
      });
+    }catch(error)
+    {
+
+    }
  }).catch(error =>  {
    // console.log(error);
  });

@@ -95,7 +95,8 @@ var config = {
 
 axios(config)
 .then(function (response) {
-   //console.log(response);
+  try{
+   
    if(response.data.data!='')
    {
     var myarray=[];
@@ -129,6 +130,11 @@ if(restp.data.code==0)
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
+}catch(error)
+{
+  var myarray=[];
+  myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
+}
 })
 .catch(function (error) {
   // console.log(error);
