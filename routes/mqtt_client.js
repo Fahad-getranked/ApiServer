@@ -66,7 +66,7 @@ orginazations.then(groups=>{
 	
 var syncdata=cron_mod.save_fr_org_in_server(myorgs);
 syncdata.then(res=>{
-  console.log(res);
+//   console.log(res);
 });
 });
 var access_groups=cron_mod.get_gallagher_access_groups();
