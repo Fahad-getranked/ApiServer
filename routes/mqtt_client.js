@@ -47,6 +47,7 @@ if(constants.EXPORT_CARDHOLDER_CRON==1){
 function run_cron_for_gallagher_configuration(){
 var intervalss = setInterval(function() {
 var mydivisions;
+var myorgs;
 var mygroups;
 var myzones;
 var mydoors;
@@ -57,6 +58,15 @@ divisions.then(groups=>{
 var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions);
 syncdata.then(res=>{
 //  console.log(res);
+});
+});
+var orginazations=cron_mod.get_fr_organizations();
+orginazations.then(groups=>{
+	myorgs=JSON.stringify(groups);
+	
+var syncdata=cron_mod.save_fr_org_in_server(myorgs);
+syncdata.then(res=>{
+  console.log(res);
 });
 });
 var access_groups=cron_mod.get_gallagher_access_groups();

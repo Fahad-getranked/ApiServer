@@ -62,6 +62,60 @@ exports. get_gallagher_divisions= function ()
   
     });
 }
+exports. get_fr_organizations= function ()
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': '127.0.0.1',
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/resource/v1/org/orgList',
+        'BodyParameters': 
+        '{"pageNo":1,"pageSize":100}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+           
+            try{
+            if(response.data.data.list!='')
+            {
+            var orgs=response.data.data.list;
+            orgs.forEach(function(element) {
+            var divs={
+                'd_id':element.orgIndexCode,
+                'name':element.orgName,
+           };  
+        obj.push(divs); 
+    });
+    resolve(obj);
+}else{
+
+}
+            }catch(error)
+            {
+
+            }
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. get_gallagher_access_groups= function ()
 {
     var obj = [];
@@ -425,6 +479,28 @@ exports. save_gg_divisions_in_server= function (divisions)
                 'Content-Type' : 'application/json'
               },
               data :divisions
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_org_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_organization_in_fr?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
           })
         .then(function (response) {
        resolve(response.data);
