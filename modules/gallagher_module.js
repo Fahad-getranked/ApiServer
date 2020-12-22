@@ -149,7 +149,7 @@ function get_user_image(url){
 					resolve(rest);
 
 				});
-			}, 900);
+			}, 300);
 			  
 			}else{
 				var myarray=[];
