@@ -621,6 +621,29 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
   
     });
 }
+exports. save_fr_transactions= function (user_data)
+{
+ 
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/fr_transactions?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 //======================READ DATA FROM GALLAGHER================================
 exports. check_gallagher_add_cardholder_events=function()
 {

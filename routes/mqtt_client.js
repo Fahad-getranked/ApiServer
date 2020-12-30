@@ -12,28 +12,37 @@ var  client;
 var clientId;
 var host;
 var options;
-
-
 let router=express.Router();
-var gala;
-var face;
-var lifts;
-var picture;
-router.use(function(req,res,next)
-{
-	console.log(req.url,"@", Date.now());
-	next();
-});
-router.route('/configuration')
-.get((req,res)=>{
+router.post('/fr_transactions', function (req, res) {
+	var rest=true;
+	  var maindata=[];
+if(req.body.params.events[0].data!=null)
+{ 
+    mydata["personCode"]=req.body.params.events[0].data.personCode;
+    mydata["cardNo"]=req.body.params.events[0].data.cardNo;
+    mydata["checkInAndOutType"]=req.body.params.events[0].data.checkInAndOutType;
+    mydata["personId"]=req.body.params.events[0].data.personId;
+    mydata["temperatureData"]=req.body.params.events[0].data.temperatureData;
+    mydata["temperatureStatus"]=req.body.params.events[0].data.temperatureStatus;
+    mydata["wearMaskStatus"]=req.body.params.events[0].data.wearMaskStatus;
+    mydata["eventId"]=req.body.params.events[0].eventId;
+    mydata["srcType"]=req.body.params.events[0].srcType;
+    mydata["srcName"]=req.body.params.events[0].srcName;
+    mydata["eventType"]=req.body.params.events[0].eventType;
+    mydata["happenTime"]=req.body.params.events[0].happenTime;
+	maindata.push(eventData);
+	maindata=JSON.stringify(maindata)
+	var syncdata=cron_mod.save_fr_transactions(maindata);
+	syncdata.then(res=>{
 
-	res.send("Hy this is mqtt get config");  
+	});
+}else{
+	rest=false;
+}	
 
-})
-.post((req,res)=>{
-    res.send("Hy this is mqtt post config");  
 
-});
+res.send(rest);
+	});
 
 //=====================SECTION to RUN Cron JOBS===============
 run_cron_for_gallagher_configuration();
