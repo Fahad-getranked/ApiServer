@@ -127,6 +127,7 @@ function get_user_image(url){
 		
 			  
 		};
+		console.log(obj);
 		var url=constants.GALLAGHER_HOST+'/api/cardholders';
 		axios({
 			method: 'post', 
@@ -157,7 +158,7 @@ function get_user_image(url){
 				resolve(myarray);
 			}
 		}).catch(error =>  {
-			
+			console.log(error);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -165,6 +166,7 @@ function get_user_image(url){
 		});
 		}catch(error)
 		{
+			console.log(error);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
