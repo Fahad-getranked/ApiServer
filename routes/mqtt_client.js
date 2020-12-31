@@ -14,29 +14,35 @@ var host;
 var options;
 let router=express.Router();
 router.post('/fr_transactions', function (req, res) {
-	Console.log("Getting Data....");
+	console.log("Getting Data....");
 	var rest=true;
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
 { 
-	Console.log("Transactions....");
-    mydata["personCode"]=req.body.params.events[0].data.personCode;
-    mydata["cardNo"]=req.body.params.events[0].data.cardNo;
-    mydata["checkInAndOutType"]=req.body.params.events[0].data.checkInAndOutType;
-    mydata["personId"]=req.body.params.events[0].data.personId;
-    mydata["temperatureData"]=req.body.params.events[0].data.temperatureData;
-    mydata["temperatureStatus"]=req.body.params.events[0].data.temperatureStatus;
-    mydata["wearMaskStatus"]=req.body.params.events[0].data.wearMaskStatus;
-    mydata["eventId"]=req.body.params.events[0].eventId;
-    mydata["srcType"]=req.body.params.events[0].srcType;
-    mydata["srcName"]=req.body.params.events[0].srcName;
-    mydata["eventType"]=req.body.params.events[0].eventType;
-    mydata["happenTime"]=req.body.params.events[0].happenTime;
+	console.log("Transactions....");
+	var eventData={
+		"personCode":req.body.params.events[0].data.personCode,
+		"cardNo":req.body.params.events[0].data.cardNo,
+		"checkInAndOutType":req.body.params.events[0].data.checkInAndOutType,
+		"personId":req.body.params.events[0].data.personId,
+		"temperatureData":req.body.params.events[0].data.temperatureData,
+		"temperatureStatus":req.body.params.events[0].data.temperatureStatus,
+		"wearMaskStatus":req.body.params.events[0].data.wearMaskStatus,
+		"eventId":req.body.params.events[0].eventId,
+		"srcType":req.body.params.events[0].srcType,
+		"srcName":req.body.params.events[0].srcName,
+		"eventType":req.body.params.events[0].eventType,
+		"happenTime":req.body.params.events[0].happenTime 
+
+	}
+
+
 	maindata.push(eventData);
-	maindata=JSON.stringify(maindata)
+	maindata=JSON.stringify(maindata);
+	console.log(maindata);
 	var syncdata=cron_mod.save_fr_transactions(maindata);
 	syncdata.then(res=>{
-
+console.log(res);
 	});
 }else{
 	rest=false;
