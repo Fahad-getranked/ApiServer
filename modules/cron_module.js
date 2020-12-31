@@ -116,6 +116,118 @@ exports. get_fr_organizations= function ()
   
     });
 }
+exports. get_fr_groups= function ()
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': '127.0.0.1',
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/frs/v1/face/groupList',
+        'BodyParameters': 
+        '{"pageNo":1,"pageSize":100}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+           
+            try{
+            if(response.data.data.list!='')
+            {
+            var orgs=response.data.data.list;
+          
+            orgs.forEach(function(element) {
+            var groups={
+                'g_id':element.indexCode,
+                'name':element.name,
+                'type':0
+           };  
+        obj.push(groups); 
+    });
+    resolve(obj);
+}else{
+
+}
+            }catch(error)
+            {
+
+            }
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. get_fr_doors= function ()
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': '127.0.0.1',
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/resource/v1/acsDoor/acsDoorList',
+        'BodyParameters': 
+        '{"pageNo":1,"pageSize":100}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+           
+            try{
+            if(response.data.data.list!='')
+            {
+            var orgs=response.data.data.list;
+          
+            orgs.forEach(function(element) {
+            var groups={
+                'd_id':element.doorNo,
+                'name':element.doorName,
+                'type':0
+           };  
+        obj.push(groups); 
+    });
+    resolve(obj);
+}else{
+
+}
+            }catch(error)
+            {
+
+            }
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. get_gallagher_access_groups= function ()
 {
     var obj = [];
@@ -497,6 +609,50 @@ exports. save_fr_org_in_server= function (orgs)
             method: 'post',
             httpsAgent: extagent,
             url:  constants.BASE_SERVER_URL + '/save_data_of_organization_in_fr?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_group_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_groups_in_fr?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_doors_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_doors_in_fr?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },

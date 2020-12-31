@@ -69,6 +69,8 @@ var mygroups;
 var myzones;
 var mydoors;
 var mycardtypes;
+var myfrgroups;
+var frdoors;
 var divisions=cron_mod.get_gallagher_divisions();
 divisions.then(groups=>{
 	mydivisions=JSON.stringify(groups);
@@ -84,6 +86,24 @@ orginazations.then(groups=>{
 var syncdata=cron_mod.save_fr_org_in_server(myorgs);
 syncdata.then(res=>{
 //   console.log(res);
+});
+});
+var frgroups=cron_mod.get_fr_groups();
+frgroups.then(groups=>{
+	myfrgroups=JSON.stringify(groups);
+	
+var syncdata=cron_mod.save_fr_group_in_server(myfrgroups);
+syncdata.then(res=>{
+ 
+});
+});
+var dor=cron_mod.get_fr_doors();
+dor.then(groups=>{
+	frdoors=JSON.stringify(groups);
+	
+var syncdata=cron_mod.save_fr_doors_in_server(frdoors);
+syncdata.then(res=>{
+ 
 });
 });
 var access_groups=cron_mod.get_gallagher_access_groups();
