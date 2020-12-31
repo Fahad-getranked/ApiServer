@@ -178,7 +178,7 @@ function get_user_image(url){
 	}	
 	exports.get_cardholder_details = function(card_holder_id)
 	{
-		if(card_holder_id!=null && card_holder_id!='' && card_holder_id!=undefined){
+
 		return new Promise((resolve) => {
 			try {  
 		
@@ -257,13 +257,10 @@ resolve(myarray);
 			console.log(error);
 		}
 		});
-	}else{
-	
-	}
 	}
 	exports.delete_cardholder_details = function(card_holder_id)
 	{
-		if(card_holder_id!=null && card_holder_id!='' && card_holder_id!=undefined){
+
 		return new Promise((resolve) => {
 			try {  
 		
@@ -294,9 +291,6 @@ resolve(myarray);
 			resolve(false);
 		}
 		});
-	}else{
-		
-	}
 	}
 	exports.delete_card_details = function(card_holder_id,card_id)
 	{

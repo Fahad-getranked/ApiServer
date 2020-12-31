@@ -623,7 +623,6 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
 }
 exports. save_fr_transactions= function (user_data)
 {
- 
     var obj = [];
 	return new Promise((resolve) => {
         axios({
@@ -702,7 +701,7 @@ exports. check_gallagher_add_cardholder_events=function()
 }
 exports.get_cardholders_details_from_events = function(card_holder_id)
 {
-  if(ard_holder_id){
+  
     return new Promise((resolve) => { 
         try{
         axios({
@@ -857,9 +856,6 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
  }).catch(error =>  {
    // console.log(error);
  });
-}else{
-    
-}
 }
 
 exports. save_gg_cardholders_on_server= function (user_data)
