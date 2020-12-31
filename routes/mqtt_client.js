@@ -14,10 +14,12 @@ var host;
 var options;
 let router=express.Router();
 router.post('/fr_transactions', function (req, res) {
+	Console.log("Getting Data....");
 	var rest=true;
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
 { 
+	Console.log("Transactions....");
     mydata["personCode"]=req.body.params.events[0].data.personCode;
     mydata["cardNo"]=req.body.params.events[0].data.cardNo;
     mydata["checkInAndOutType"]=req.body.params.events[0].data.checkInAndOutType;
