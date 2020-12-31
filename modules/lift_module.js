@@ -29,7 +29,7 @@ extagent=agent
 exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
 {
    
-  if(gallagher_id!=null && gallagher_id!='' && gallagher_id!=undefined){
+  
     return new Promise((resolve) => {
         try {
             var obj={
@@ -124,9 +124,6 @@ exports. add_lift_user = function (personal_info,gallagher_id,lift_groups,cards)
     }
   
     });
-}else{
-
-}
           
     
 }
@@ -218,7 +215,7 @@ exports. update_lift_user = function (firstname,lastname,pname,gallagher_id,card
 }
 exports. delete_lift_user = function (lift_id)
 {
-    if(gallagher_id!=null && gallagher_id!='' && gallagher_id!=undefined){
+  
     return new Promise((resolve) => {
         try {
             var obj={
@@ -283,9 +280,7 @@ exports. delete_lift_user = function (lift_id)
     }
   
     });
-}else{
-    resolve(false); 
-} 
+          
     
 }
 
