@@ -77,7 +77,7 @@ var data = qs.stringify({
  'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',
 'ApiSecret': constants.FR_SECRET_KEY,
-'IP': '127.0.0.1',
+'IP': constants.FR_LOCAL_IP,
 'ProtocolType': constants.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/add',
 'BodyParameters': 
@@ -96,19 +96,6 @@ var config = {
 axios(config)
 .then(function (response) {
   try{
-  console.log(response);
-   if(response.data.data!='')
-   {
-    var myarray=[];
-    myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
-   resolve(myarray);
-   }else{
-    var myarray=[];
-    myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
-   resolve(myarray);
-   }
-
- 
  axios({
     method: 'POST', 
     httpsAgent: extagent,
@@ -119,26 +106,34 @@ axios(config)
 .then(function (restp){
 if(restp.data.code==0)
 {			
-
+console.log('Added In Device');
 }else{
-
+  console.log('Added In Devices');
 }
-
+if(response.data.data!='')
+   {
+    var myarray=[];
+    myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
+   resolve(myarray);
+   }else{
+    var myarray=[];
+    myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+   resolve(myarray);
+   }
 }).catch(error =>  {
-   console.log(error);
+  // console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
 }catch(error)
 {
-  console.log(error);
   var myarray=[];
   myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
 }
 })
 .catch(function (error) {
-   console.log(error);
+  // console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
@@ -147,7 +142,7 @@ if(restp.data.code==0)
             });
         }catch(error)
         {
-            console.log(error);
+          //  console.log(error);
           var myarray=[];
           myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
          resolve(myarray);
