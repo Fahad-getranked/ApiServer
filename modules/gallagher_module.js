@@ -139,17 +139,20 @@ function get_user_image(url){
 				}
 			})
 		.then(function (response){
+			
 			if (response.status == 201) {
 				var valssss=response.headers.location;
 				var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
 				var interval = setInterval(function() {
 				var cardholder_detail=gr_mod.get_cardholder_details(cardholder_id);
 				cardholder_detail.then(rest=>{
-
+                    if(rest){ 
 					resolve(rest);
+clearInterval(interval);
+					}
 
 				});
-			}, 300);
+			}, 600);
 			  
 			}else{
 				var myarray=[];
@@ -157,7 +160,7 @@ function get_user_image(url){
 				resolve(myarray);
 			}
 		}).catch(error =>  {
-			
+		
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -165,6 +168,7 @@ function get_user_image(url){
 		});
 		}catch(error)
 		{
+			
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -241,6 +245,7 @@ for(var i=0;i<response.data.cards.length;i++)
 	  }
 myarray.push({"GG":{"person_id":response.data.id,"message":"success","cards":{array_cards}}});
 resolve(myarray);
+
 					}
 			else{
 				resolve(2);
