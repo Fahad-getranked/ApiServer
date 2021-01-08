@@ -516,6 +516,7 @@ exports. get_gallagher_checkout_events=function()
 }
 exports. check_gallagher_delete_cardholder_events=function()
 {
+    try{
     var dbDate = new Date().toLocaleString();
     var seconds = constants.DEFAULT_DELETE_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
@@ -556,6 +557,10 @@ exports. check_gallagher_delete_cardholder_events=function()
         });
   
     });
+}catch(error)
+{
+
+}
 }
 exports. save_gg_access_groups_in_server= function (access_groups)
 {

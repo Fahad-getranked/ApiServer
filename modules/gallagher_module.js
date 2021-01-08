@@ -182,7 +182,7 @@ clearInterval(interval);
 	}	
 	exports.get_cardholder_details = function(card_holder_id)
 	{
-
+try{
 		return new Promise((resolve) => {
 			try {  
 		
@@ -254,14 +254,18 @@ resolve(myarray);
 					
 			
 		}).catch(error =>  {
-				console.log(error)
+				//console.log(error)
 			});
 	
 		}catch(error)
 		{
-			console.log(error);
+			//console.log(error);
 		}
 		});
+	}catch(error)
+	{
+		resolve(2);
+	}
 	}
 	exports.delete_cardholder_details = function(card_holder_id)
 	{
