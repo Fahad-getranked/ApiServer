@@ -152,7 +152,7 @@ clearInterval(interval);
 					}
 
 				});
-			}, 600);
+			}, 900);
 			  
 			}else{
 				var myarray=[];
