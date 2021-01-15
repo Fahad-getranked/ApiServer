@@ -1018,7 +1018,6 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
    // console.log(error);
  });
 }
-
 exports. save_gg_cardholders_on_server= function (user_data)
 {
     var obj = [];
@@ -1041,10 +1040,122 @@ exports. save_gg_cardholders_on_server= function (user_data)
   
     });
 }
+//==================READ DATA FROM FR================
+exports. check_fr_add_users_events=function()
+{
+   
+    var obj = [];
+   return new Promise((resolve) => {
+       try {
+     
+ var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/person/personList',
+'BodyParameters': '{"pageNo": 1,"pageSize": 500 }' 
+});
+
+var config = {
+ method: 'post',
+ url: url,
+ headers: { 
+   'Content-Type': 'application/x-www-form-urlencoded'
+ },
+ data : data
+};
+
+axios(config)
+.then(function (response) {
+    if(response.status==200 && response.data.data!='')
+    {
+
+var variab=response.data.data.list;
+if(variab.length>0){
+variab.forEach(function(element) {           
+ 
+    var begintime = new Date(element.beginTime);
+    var valid_from=dateFormat(begintime.toString(), "yyyy-mm-dd HH:MM:ss"); 
+    var endtime = new Date(element.endTime);
+    var valid_to=dateFormat(endtime.toString(), "yyyy-mm-dd HH:MM:ss"); 
+        if(element.cards)
+        {
+            var cardno=element.cards[0].cardNo;    
+        }else{
+            var cardno=0;
+        }
+        if(cardno!=0){
+        var rest={
+            'personid':element.personId,
+            'full_name':element.personName,
+            'email':element.email,
+            'phone':element.phoneNo,
+            'org':element.orgIndexCode,
+            'valid_from':valid_from,
+            'valid_to':valid_to,
+            'card_number':cardno
+        }
+        obj.push(rest);
+    }else{
+
+    }     
+   
+});
+resolve(obj);
+}else{
+    resolve(false);
+}
 
 
+    }else{
+        resolve(false);
+    }
+
+        
 
 
+})
+.catch(function (error) {
+
+ resolve(false);
+});
+
+          
+       }catch(error)
+       {
+        
+           resolve(false);
+       }
+ 
+   });
+}
+exports. save_fr_users_on_server= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_add_users_events?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+
+//===========================================
 
 
 

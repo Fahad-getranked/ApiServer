@@ -60,7 +60,10 @@ if(constants.EXPORT_CARDHOLDER_CRON==1){
 	
 	run_cron_for_gallagher_add_user();
 }
- 
+if(constants.EXPORT_FR_USER_CRON==1){
+	
+	run_cron_for_fr_add_user();
+}
 function run_cron_for_gallagher_configuration(){
 var intervalss = setInterval(function() {
 var mydivisions;
@@ -217,7 +220,27 @@ function run_cron_for_gallagher_add_user(){
 	  }, constants.DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME);
 	
 }
+function run_cron_for_fr_add_user(){
+	var intervalz = setInterval(function() 
+	{
+	var add_user_events;
+	var add_user=cron_mod.check_fr_add_users_events();
+	add_user.then(groups=>{
+		if(groups.length>0){
+	add_user_events=JSON.stringify(groups);
 
+	var syncdata=cron_mod.save_fr_users_on_server(add_user_events);
+	syncdata.then(res=>{
+   console.log(res);
+	});
+	 
+		}
+	});	
+	
+	
+	  }, constants.DEFAULT_ADD_FR_USER_EVENT_CRON_TIME);
+	
+}
 client=configuration_mqtt();
 function configuration_mqtt()
 {

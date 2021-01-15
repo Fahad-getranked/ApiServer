@@ -193,6 +193,25 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    
+    else if(tag=='EXPORT_FR_USER_CRON')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.EXPORT_FR_USER_CRON =value;
+        
+        
+       
+    }
+    else if(tag=='DEFAULT_ADD_FR_USER_EVENT_CRON_TIME')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.DEFAULT_ADD_FR_USER_EVENT_CRON_TIME =value;
+        
+        
+       
+    }
     else if(tag=='MQTT_HOST')
     {
         var value=lineitem[1].trim();
