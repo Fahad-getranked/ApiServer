@@ -139,7 +139,7 @@ function get_user_image(url){
 				}
 			})
 		.then(function (response){
-			
+		
 			if (response.status == 201) {
 				var valssss=response.headers.location;
 				var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
@@ -155,12 +155,13 @@ clearInterval(interval);
 			}, 900);
 			  
 			}else{
+				
 				var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
 			}
 		}).catch(error =>  {
-		
+		console.log(error);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -168,7 +169,7 @@ clearInterval(interval);
 		});
 		}catch(error)
 		{
-			
+			console.log(error);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);

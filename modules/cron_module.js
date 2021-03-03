@@ -897,7 +897,7 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
                             phone= cardholderlist.data.personalDataDefinitions[t]["@Phone"]["value"];
                          }
                  }
-          if(email!="" && phone!=""){
+          if(email!=""){
             var personal_info={
                  'personID':card_holder_id,    
                  'firstname':cardholderlist.data.firstName,

@@ -121,19 +121,20 @@ if(response.data.data!='')
    resolve(myarray);
    }
 }).catch(error =>  {
-  // console.log(error);
+  console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
 }catch(error)
 {
+  console.log(error);
   var myarray=[];
   myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
 }
 })
 .catch(function (error) {
-  // console.log(error);
+  console.log(error);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
@@ -142,7 +143,7 @@ if(response.data.data!='')
             });
         }catch(error)
         {
-          //  console.log(error);
+          console.log(error);
           var myarray=[];
           myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
          resolve(myarray);
