@@ -19,6 +19,7 @@ router.post('/fr_transactions', function (req, res) {
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
 { 
+	console.log(req.body.params.events[0].data);
 	console.log("Transactions....");
 	var eventData={
 		"personCode":req.body.params.events[0].data.personCode,

@@ -38,7 +38,8 @@ function get_user_image(url){
 
 		try{
 			axios({
-				method: 'get', 
+        method: 'get', 
+        httpsAgent: extagent,
 				url: url,
 				headers: {}
 			})
