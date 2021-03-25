@@ -111,6 +111,7 @@ console.log('Added In Device');
 }else{
   console.log('Added In Devices');
 }
+console.log(response.data.data);
 if(response.data.data!='')
    {
     var myarray=[];

@@ -15,11 +15,27 @@ var options;
 let router=express.Router();
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
+	console.log(req.body.params.events[0]);
 	var rest=true;
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
 { 
-	console.log(req.body.params.events[0].data);
+	// var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=  /api/frs/v1/application/picture&BodyParameters={'url':  }";	
+	// axios({
+	// 	method: 'POST', 
+	// 	httpsAgent: extagent,
+	// 	url: url,
+	// 	data :devicestring,
+	
+	// 	})
+	// .then(function (restp){
+	
+	// }).catch(error =>  {
+	//   console.log(error);
+	//   var myarray=[];
+	// 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+	//  resolve(myarray);
+	// });
 	console.log("Transactions....");
 	var eventData={
 		"personCode":req.body.params.events[0].data.personCode,
@@ -29,6 +45,7 @@ if(req.body.params.events[0].data!=null)
 		"temperatureData":req.body.params.events[0].data.temperatureData,
 		"temperatureStatus":req.body.params.events[0].data.temperatureStatus,
 		"wearMaskStatus":req.body.params.events[0].data.wearMaskStatus,
+		"picUri":req.body.params.events[0].data.picUri,
 		"eventId":req.body.params.events[0].eventId,
 		"srcType":req.body.params.events[0].srcType,
 		"srcName":req.body.params.events[0].srcName,
@@ -153,6 +170,7 @@ function run_cron_for_gallagher_events(){
 	{
 	var checkin_events;
 	var checkout_events;
+	var noentry_events;
 	
 	var checkin=cron_mod.get_gallagher_checkin_events();
 	checkin.then(groups=>{
@@ -177,6 +195,20 @@ function run_cron_for_gallagher_events(){
 		}
 	});
 	
+
+	var noentry=cron_mod.get_gallagher_no_entry_events();
+	
+	noentry.then(groups=>{
+		if(groups.length>0){
+			noentry_events=JSON.stringify(groups);
+	var syncdata=cron_mod.save_gg_noentry_events_in_server(noentry_events);
+	syncdata.then(res=>{
+	  //console.log(res);
+	});
+		}
+	});
+
+
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
 }

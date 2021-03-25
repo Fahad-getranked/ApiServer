@@ -514,6 +514,65 @@ exports. get_gallagher_checkout_events=function()
   
     });
 }
+exports. get_gallagher_no_entry_events=function()
+{
+    
+    var dbDate = new Date().toLocaleString();
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
+    var parsedDate = new Date(Date.parse(dbDate))
+    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+    newDate=newDate.toISOString();
+
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events?type=20039&after='+newDate,
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+            var events=response.data.events;
+    events.forEach(function(element) {
+				if(element.card)
+				{
+					var cardnumber=element.card.number;
+				}else{
+                    var cardnumber=0;
+                }
+            var date = new Date(element.time);
+            var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
+            var noentry_events={
+                'external_id':element.id,
+                'cardholder_id':element.cardholder.id,
+                'zone_id':element.entryAccessZone.id,
+                'door_id':element.source.id,
+                'type':1,
+                'datetime':day,
+                'cardnumber':cardnumber,
+                'message':element.message
+
+   
+           };
+        obj.push(noentry_events);
+    
+    
+    });
+    var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+        clearInterval(intervalxxx);
+    }, 1000);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. check_gallagher_delete_cardholder_events=function()
 {
     try{
@@ -768,6 +827,28 @@ exports. save_gg_checkin_checkout_events_in_server= function (user_data)
             method: 'post',
             httpsAgent: extagent,
             url:  constants.BASE_SERVER_URL + '/save_data_of_checkin_checkout_events_in_gallagher?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_gg_noentry_events_in_server= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_noentry_events_in_gallagher?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },

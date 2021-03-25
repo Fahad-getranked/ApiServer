@@ -533,9 +533,9 @@ var accessgroupdetails=[];
 				  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
 				},
 				"status": {
-				  "value": "Active",
-				  "type":"active"
-				},
+					"value": "Active",
+					"type":"active"
+				  },
 				"number":cardtypes[i]['card_number'],
 				"from": new Date(cardtypes[i]['valid_from']).toISOString(),
 				"until": new Date(cardtypes[i]['valid_to']).toISOString()
