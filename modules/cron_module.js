@@ -207,7 +207,7 @@ exports. get_fr_doors= function ()
           
             orgs.forEach(function(element) {
             var groups={
-                'd_id':element.doorNo,
+                'd_id':element.doorIndexCode,
                 'name':element.doorName,
                 'type':0
            };  
@@ -499,6 +499,88 @@ exports. get_gallagher_checkout_events=function()
            };
         obj.push(checkin_events);
     
+    
+    });
+    var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+        clearInterval(intervalxxx);
+    }, 1000);
+  
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. get_gallagher_door_alarms=function(ype)
+{
+    var dbDate = new Date().toLocaleString();
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
+    var parsedDate = new Date(Date.parse(dbDate))
+    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+    newDate=newDate.toISOString();
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events??after='+newDate,
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+            var events=response.data.events;
+    events.forEach(function(element) {
+
+        if(element.type.id==23035 || element.type.id==3300 || element.type.id==23032  || element.type.id==20013)
+        {
+                        if(element.source.id)
+                        {
+                        var door_id=element.source.id;
+                        }else{
+                        var door_id=0;
+                        }
+                        if(element.division.id)
+                        {
+                        var division_id=element.division.id;
+                        }else{
+                        var division_id=0;
+                        }
+
+                        if(element.card)
+                        {
+                        var card_number=element.card.number;
+                        }else{
+                        var card_number=0;
+                        }
+                        if(element.cardholder.id)
+                        {
+                        var cardholder_id=element.cardholder.id;
+                        }else{
+                        var cardholder_id=0;
+                        }
+                var date = new Date(element.time);
+                var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");
+            var checkin_events={
+                'event_id':element.id,
+                'priority':element.priority,
+                'door_id':door_id,
+                'type':element.type.id,
+                'datetime':day,
+                'division_id':division_id,
+                'message':element.message,
+                'card_number':card_number,
+                'cardholder_id':cardholder_id,
+
+   
+           };
+        obj.push(checkin_events);
+    
+        }
     
     });
     var intervalxxx = setInterval(function() {
@@ -863,6 +945,28 @@ exports. save_gg_noentry_events_in_server= function (user_data)
   
     });
 }
+exports. save_gg_ndoor_alarms_events_in_server= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_alarm_events_in_gallagher?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. save_fr_transactions= function (user_data)
 {
     var obj = [];
@@ -871,6 +975,28 @@ exports. save_fr_transactions= function (user_data)
             method: 'post',
             httpsAgent: extagent,
             url:  constants.BASE_SERVER_URL + '/fr_transactions?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_images= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_fr_images',
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1235,7 +1361,47 @@ exports. save_fr_users_on_server= function (user_data)
   
     });
 }
+exports. download_fr_image= function (image)
+{
 
+   // console.log(image);
+    return new Promise((resolve) => {
+    try{
+        console.log("edewdwed");
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': constants.FR_LOCAL_IP,
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/frs/v1/application/picture',
+        'BodyParameters': 
+        '{"url":"'+image+'"}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+      resolve(response.data);
+        }).catch(error =>  {
+            resolve(error);
+    
+        });
+    }catch(error)
+    {
+        resolve(error);
+    }
+});
+}
 //===========================================
 
 

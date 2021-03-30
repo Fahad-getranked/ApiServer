@@ -15,27 +15,12 @@ var options;
 let router=express.Router();
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
-	console.log(req.body.params.events[0]);
+	//console.log(req.body.params.events[0]);
 	var rest=true;
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
 { 
-	// var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=  /api/frs/v1/application/picture&BodyParameters={'url':  }";	
-	// axios({
-	// 	method: 'POST', 
-	// 	httpsAgent: extagent,
-	// 	url: url,
-	// 	data :devicestring,
 	
-	// 	})
-	// .then(function (restp){
-	
-	// }).catch(error =>  {
-	//   console.log(error);
-	//   var myarray=[];
-	// 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
-	//  resolve(myarray);
-	// });
 	console.log("Transactions....");
 	var eventData={
 		"personCode":req.body.params.events[0].data.personCode,
@@ -48,6 +33,7 @@ if(req.body.params.events[0].data!=null)
 		"picUri":req.body.params.events[0].data.picUri,
 		"eventId":req.body.params.events[0].eventId,
 		"srcType":req.body.params.events[0].srcType,
+		"srcIndex":req.body.params.events[0].srcIndex,
 		"srcName":req.body.params.events[0].srcName,
 		"eventType":req.body.params.events[0].eventType,
 		"happenTime":req.body.params.events[0].happenTime 
@@ -69,7 +55,35 @@ console.log(res);
 
 res.send(rest);
 	});
-
+	router.post('/fr_faces_transactions', function (req, res) {
+		console.log("Getting Face Data....");
+		
+		var rest=true;
+		  var maindata=[];
+	if(req.body.params.events[0].data!=null)
+	{ 
+		var mydata=cron_mod.download_fr_image(req.body.params.events[0].data.picUri);
+		mydata.then(respp=>{
+	 var eventData={
+		  'pic':respp,
+		  "temperature":req.body.params.events[0].data.temperatureData,
+		  "door_id":req.body.params.events[0].srcIndex,
+		}
+		maindata.push(eventData);
+		maindata=JSON.stringify(maindata);
+	var syncdata=cron_mod.save_fr_images(maindata);
+			syncdata.then(res=>{
+	console.log(res);
+		});
+		});
+	
+	}else{
+		rest=false;
+	}	
+	
+	
+	res.send(rest);
+		});
 //=====================SECTION to RUN Cron JOBS===============
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
@@ -171,6 +185,7 @@ function run_cron_for_gallagher_events(){
 	var checkin_events;
 	var checkout_events;
 	var noentry_events;
+	var doors_events;
 	
 	var checkin=cron_mod.get_gallagher_checkin_events();
 	checkin.then(groups=>{
@@ -207,7 +222,18 @@ function run_cron_for_gallagher_events(){
 	});
 		}
 	});
+	// var dooeevent=cron_mod.get_gallagher_door_alarms();
+	// dooeevent.then(groups=>{
+	// 	if(groups.length>0){
+	// 		doors_events=JSON.stringify(groups);
+	// var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(noentry_events);
+	// syncdata.then(res=>{
+	//   console.log(res);
+	// });
+	// 	}
+	// });
 
+	
 
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
