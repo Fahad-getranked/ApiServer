@@ -235,7 +235,7 @@ exports. get_gallagher_access_groups= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/access_groups',
+            url:  constants.GALLAGHER_HOST + '/api/access_groups?top=1000',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -284,7 +284,7 @@ exports. get_gallagher_zones= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/access_zones',
+            url:  constants.GALLAGHER_HOST + '/api/access_zones?top=1000',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -320,7 +320,7 @@ exports. get_gallagher_card_types= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/card_types',
+            url:  constants.GALLAGHER_HOST + '/api/card_types?top=1000',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
@@ -361,7 +361,7 @@ exports. get_gallagher_doors= function ()
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/doors',
+            url:  constants.GALLAGHER_HOST + '/api/doors?top=1000',
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'

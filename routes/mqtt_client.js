@@ -222,16 +222,16 @@ function run_cron_for_gallagher_events(){
 	});
 		}
 	});
-	// var dooeevent=cron_mod.get_gallagher_door_alarms();
-	// dooeevent.then(groups=>{
-	// 	if(groups.length>0){
-	// 		doors_events=JSON.stringify(groups);
-	// var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(noentry_events);
-	// syncdata.then(res=>{
-	//   console.log(res);
-	// });
-	// 	}
-	// });
+	var dooeevent=cron_mod.get_gallagher_door_alarms();
+	dooeevent.then(groups=>{
+		if(groups.length>0){
+			doors_events=JSON.stringify(groups);
+	var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(noentry_events);
+	syncdata.then(res=>{
+	  console.log(res);
+	});
+		}
+	});
 
 	
 
