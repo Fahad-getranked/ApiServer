@@ -30,7 +30,6 @@ if(req.body.params.events[0].data!=null)
 		"temperatureData":req.body.params.events[0].data.temperatureData,
 		"temperatureStatus":req.body.params.events[0].data.temperatureStatus,
 		"wearMaskStatus":req.body.params.events[0].data.wearMaskStatus,
-		"picUri":req.body.params.events[0].data.picUri,
 		"eventId":req.body.params.events[0].eventId,
 		"srcType":req.body.params.events[0].srcType,
 		"srcIndex":req.body.params.events[0].srcIndex,
@@ -88,6 +87,7 @@ res.send(rest);
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
 run_cron_for_gallagher_delete_user();
+run_cron_for_fr_event_subscription();
 if(constants.EXPORT_CARDHOLDER_CRON==1){
 	
 	run_cron_for_gallagher_add_user();
@@ -298,6 +298,47 @@ function run_cron_for_fr_add_user(){
 	
 	
 	  }, constants.DEFAULT_ADD_FR_USER_EVENT_CRON_TIME);
+	
+}
+function run_cron_for_fr_event_subscription(){
+	var face_thermal_events = setInterval(function() 
+	{
+
+	var sbscription=cron_mod.check_fr_get_event_subscription();
+	sbscription.then(groups=>{
+		console.log(groups);
+		if(groups==-1){
+		var data={eventDest: constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions',
+				eventTypes: [constants.FR_FACE_EVENT_CODE]
+			}
+// var data={eventDest: constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions',
+		// 		eventTypes: [131659,1482753,49697,197160,193,197151,194]
+		// 	}
+		var data='{"eventDest":"'+constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions","eventTypes":['+constants.FR_FACE_EVENT_CODE+']}';
+		var thermal_event=cron_mod.save_fr_get_event_subscription(data);
+		thermal_event.then(face_resp=>{
+			if(face_resp){
+		var data='{"eventDest":"'+constants.FR_SUBSCRIPTION+'/mqtt_client/fr_faces_transactions","eventTypes":['+constants.FR_THERMAL_CAMERA_EVENT_CODE+']}';
+		var face_event=cron_mod.save_fr_get_event_subscription(data);
+		thermal_event.then(thermal_resp=>{
+			if(thermal_resp){
+				console.log("Events Successfully Subscribed");
+		clearInterval(face_thermal_events); 
+			}
+		});
+			}
+		});
+		
+		}else{
+			console.log("Events Successfully Subscribed");
+			clearInterval(face_thermal_events); 
+		}
+	});
+	
+	
+	
+	
+	  }, 5000);
 	
 }
 client=configuration_mqtt();

@@ -1250,7 +1250,6 @@ exports. save_gg_cardholders_on_server= function (user_data)
 //==================READ DATA FROM FR================
 exports. check_fr_add_users_events=function()
 {
-   
     var obj = [];
    return new Promise((resolve) => {
        try {
@@ -1360,6 +1359,128 @@ exports. save_fr_users_on_server= function (user_data)
         });
   
     });
+}
+exports. check_fr_get_event_subscription=function()
+{
+    
+    var obj = [];
+   return new Promise((resolve) => {
+       try {
+        
+ var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/eventService/v1/eventSubscriptionView',
+'BodyParameters': '{}' 
+});
+
+var config = {
+ method: 'post',
+ url: url,
+ headers: { 
+   'Content-Type': 'application/x-www-form-urlencoded'
+ },
+ data : data
+};
+
+axios(config)
+.then(function (response) {
+  
+    if(response.status==200)
+    {
+      
+       if(response.data.code==0 && response.data.data!=''){
+        if(response.data.data.detail.length==2)
+        {    
+            resolve(true);
+        }else{
+            resolve(-1);
+        }
+    }else{
+        resolve(-1);
+    }
+
+    }else{
+        resolve(false);
+    }
+
+        
+
+
+})
+.catch(function (error) {
+
+ resolve(false);
+});
+
+          
+       }catch(error)
+       {
+        
+           resolve(false);
+       }
+ 
+   });
+}
+exports. save_fr_get_event_subscription=function(subscript)
+{
+    
+    var obj = [];
+   return new Promise((resolve) => {
+       try {
+        
+ var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/eventService/v1/eventSubscriptionByEventTypes',
+'BodyParameters': subscript
+});
+
+var config = {
+ method: 'post',
+ url: url,
+ headers: { 
+   'Content-Type': 'application/x-www-form-urlencoded'
+ },
+ data : data
+};
+
+axios(config)
+
+.then(function (response) {
+   if(response.data){
+    if(response.data.code==0 )
+    {     
+        
+       resolve(true);
+    }else{
+        resolve(false);
+    }
+   }else{
+       resolve(false);
+   }
+})
+.catch(function (error) {
+
+ resolve(false);
+});
+
+          
+       }catch(error)
+       {
+        
+           resolve(false);
+       }
+ 
+   });
 }
 exports. download_fr_image= function (image)
 {

@@ -40,6 +40,32 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    else if(tag=='FR_SUBSCRIPTION')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_SUBSCRIPTION =value;
+        
+        
+       
+    }
+    else if(tag=='FR_THERMAL_CAMERA_EVENT_CODE')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_THERMAL_CAMERA_EVENT_CODE =value;
+        
+        
+       
+    }
+    else if(tag=='FR_FACE_EVENT_CODE')
+    {
+        var value=lineitem[1].trim();
+        exports.FR_FACE_EVENT_CODE =value;
+        
+        
+       
+    }
     else if(tag=='FR_KEY')
     {
         var value=lineitem[1].trim();
