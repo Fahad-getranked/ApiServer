@@ -514,30 +514,35 @@ exports. get_gallagher_checkout_events=function()
   
     });
 }
-exports. get_gallagher_door_alarms=function(ype)
+exports. get_gallagher_door_alarms=function()
 {
+   
     var dbDate = new Date().toLocaleString();
     var seconds = constants.DEFAUL_EVENT_SECONDS;
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
+  
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'get',
             httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events??after='+newDate,
+            url:  constants.GALLAGHER_HOST + '/api/events?after='+newDate,
             headers: {
                 'Authorization': apiKey,
                 'Content-Type' : 'application/json'
               }
           })
         .then(function (response) {
+           
             var events=response.data.events;
+            
     events.forEach(function(element) {
-
+        
         if(element.type.id==23035 || element.type.id==3300 || element.type.id==23032  || element.type.id==20013)
         {
+           
                         if(element.source.id)
                         {
                         var door_id=element.source.id;
@@ -590,7 +595,7 @@ exports. get_gallagher_door_alarms=function(ype)
     }, 1000);
   
              }).catch(error =>  {
-        //	console.log(error)
+        	console.log(error)
         
         });
   
