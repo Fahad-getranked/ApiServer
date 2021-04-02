@@ -562,7 +562,7 @@ exports. get_gallagher_door_alarms=function()
                         }else{
                         var card_number=0;
                         }
-                        if(element.cardholder.id)
+                        if(element.cardholder)
                         {
                         var cardholder_id=element.cardholder.id;
                         }else{
