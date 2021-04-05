@@ -3,6 +3,8 @@ const axios = require('axios');
 var dateFormat = require('dateformat');
 var constants=require("../constants.js");
 var cron_mod = require('../modules/cron_module');
+const lineReader = require('line-reader');
+const fs=require("fs");
 var qs = require('qs');
 const https=require("https");
 var apiKey;
@@ -397,123 +399,6 @@ exports. get_gallagher_doors= function ()
   
     });
 }
-exports. get_gallagher_checkin_events=function()
-{
-    
-    var dbDate = new Date().toLocaleString();
-    var seconds = constants.DEFAUL_EVENT_SECONDS;
-    var parsedDate = new Date(Date.parse(dbDate))
-    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
-    newDate=newDate.toISOString();
-
-    var obj = [];
-	return new Promise((resolve) => {
-        axios({
-            method: 'get',
-            httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events?type=20001&after='+newDate,
-            headers: {
-                'Authorization': apiKey,
-                'Content-Type' : 'application/json'
-              }
-          })
-        .then(function (response) {
-            var events=response.data.events;
-    events.forEach(function(element) {
-				if(element.card)
-				{
-					var cardnumber=element.card.number;
-				}else{
-                    var cardnumber=0;
-                }
-            var date = new Date(element.time);
-            var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
-            var checkin_events={
-                'external_id':element.id,
-                'cardholder_id':element.cardholder.id,
-                'zone_id':element.entryAccessZone.id,
-                'door_id':element.source.id,
-                'type':1,
-                'datetime':day,
-                'cardnumber':cardnumber,
-                'message':element.message
-
-   
-           };
-        obj.push(checkin_events);
-    
-    
-    });
-    var intervalxxx = setInterval(function() {
-
-        resolve(obj);
-        clearInterval(intervalxxx);
-    }, 1000);
-             }).catch(error =>  {
-        //	console.log(error)
-        
-        });
-  
-    });
-}
-exports. get_gallagher_checkout_events=function()
-{
-    var dbDate = new Date().toLocaleString();
-    var seconds = constants.DEFAUL_EVENT_SECONDS;
-    var parsedDate = new Date(Date.parse(dbDate))
-    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
-    newDate=newDate.toISOString();
-    var obj = [];
-	return new Promise((resolve) => {
-        axios({
-            method: 'get',
-            httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events?type=20003&after='+newDate,
-            headers: {
-                'Authorization': apiKey,
-                'Content-Type' : 'application/json'
-              }
-          })
-        .then(function (response) {
-            var events=response.data.events;
-    events.forEach(function(element) {
-				if(element.card)
-				{
-					var cardnumber=element.card.number;
-				}else{
-                    var cardnumber=0;
-                }
-                var date = new Date(element.time);
-                var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");
-            var checkin_events={
-                'external_id':element.id,
-                'cardholder_id':element.cardholder.id,
-                'zone_id':element.exitAccessZone.id,
-                'door_id':element.source.id,
-                'type':0,
-                'datetime':day,
-                'cardnumber':cardnumber,
-                'message':element.message
-
-   
-           };
-        obj.push(checkin_events);
-    
-    
-    });
-    var intervalxxx = setInterval(function() {
-
-        resolve(obj);
-        clearInterval(intervalxxx);
-    }, 1000);
-  
-             }).catch(error =>  {
-        //	console.log(error)
-        
-        });
-  
-    });
-}
 exports. get_gallagher_door_alarms=function()
 {
    
@@ -562,7 +447,7 @@ exports. get_gallagher_door_alarms=function()
                         }else{
                         var card_number=0;
                         }
-                        if(element.cardholder)
+                        if(element.cardholder.id)
                         {
                         var cardholder_id=element.cardholder.id;
                         }else{
@@ -592,69 +477,10 @@ exports. get_gallagher_door_alarms=function()
 
         resolve(obj);
         clearInterval(intervalxxx);
-    }, 1000);
+    }, 50);
   
              }).catch(error =>  {
         	console.log(error)
-        
-        });
-  
-    });
-}
-exports. get_gallagher_no_entry_events=function()
-{
-    
-    var dbDate = new Date().toLocaleString();
-    var seconds = constants.DEFAUL_EVENT_SECONDS;
-    var parsedDate = new Date(Date.parse(dbDate))
-    var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
-    newDate=newDate.toISOString();
-
-    var obj = [];
-	return new Promise((resolve) => {
-        axios({
-            method: 'get',
-            httpsAgent: extagent,
-            url:  constants.GALLAGHER_HOST + '/api/events?type=20039&after='+newDate,
-            headers: {
-                'Authorization': apiKey,
-                'Content-Type' : 'application/json'
-              }
-          })
-        .then(function (response) {
-            var events=response.data.events;
-    events.forEach(function(element) {
-				if(element.card)
-				{
-					var cardnumber=element.card.number;
-				}else{
-                    var cardnumber=0;
-                }
-            var date = new Date(element.time);
-            var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
-            var noentry_events={
-                'external_id':element.id,
-                'cardholder_id':element.cardholder.id,
-                'zone_id':element.entryAccessZone.id,
-                'door_id':element.source.id,
-                'type':1,
-                'datetime':day,
-                'cardnumber':cardnumber,
-                'message':element.message
-
-   
-           };
-        obj.push(noentry_events);
-    
-    
-    });
-    var intervalxxx = setInterval(function() {
-
-        resolve(obj);
-        clearInterval(intervalxxx);
-    }, 1000);
-             }).catch(error =>  {
-        //	console.log(error)
         
         });
   
@@ -708,6 +534,353 @@ exports. check_gallagher_delete_cardholder_events=function()
 
 }
 }
+exports. get_gallagher_all_events=function()
+{
+    
+  var transactions_time="";
+ 
+
+   
+    
+   
+
+    var obj = [];
+	return new Promise((resolve) => {
+        lineReader.eachLine(__dirname+'/events.txt', function(line) {
+         
+            transactions_time=line;
+       
+            if (line.includes('STOP')) {
+            
+                var newdate=new Date(new Date().toUTCString());
+                transactions_time=newdate;
+               //console.log(transactions_time);
+            }
+               // console.log(transactions_time);
+           
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=20001&after='+transactions_time,
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+            var events=response.data.events;
+    events.forEach(function(element) {
+				if(element.card)
+				{
+					var cardnumber=element.card.number;
+				}else{
+                    var cardnumber=0;
+                }
+                transactions_time=element.time;
+            var date = new Date(element.time);
+            var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
+            var checkin_events={
+                'external_id':element.id,
+                'cardholder_id':element.cardholder.id,
+                'zone_id':element.entryAccessZone.id,
+                'door_id':element.source.id,
+                'type':1,
+                'datetime':day,
+                'cardnumber':cardnumber,
+                'message':element.message
+
+   
+           };
+        obj.push(checkin_events);
+    
+    
+    });
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=20003&after='+transactions_time,
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {
+        var events=response.data.events;
+events.forEach(function(element) {
+            if(element.card)
+            {
+                var cardnumber=element.card.number;
+            }else{
+                var cardnumber=0;
+            }
+            transactions_time=element.time;
+            var date = new Date(element.time);
+            var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");
+        var checkin_events={
+            'external_id':element.id,
+            'cardholder_id':element.cardholder.id,
+            'zone_id':element.exitAccessZone.id,
+            'door_id':element.source.id,
+            'type':0,
+            'datetime':day,
+            'cardnumber':cardnumber,
+            'message':element.message
+
+
+       };
+    obj.push(checkin_events);
+
+
+});
+}).catch(error =>  {
+    //	console.log(error)
+    
+    });
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=20039&after='+transactions_time,
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {
+        var events=response.data.events;
+events.forEach(function(element) {
+            if(element.card)
+            {
+                var cardnumber=element.card.number;
+            }else{
+                var cardnumber=0;
+            }
+            transactions_time=element.time;
+        var date = new Date(element.time);
+        var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
+        var noentry_events={
+            'external_id':element.id,
+            'cardholder_id':element.cardholder.id,
+            'zone_id':element.entryAccessZone.id,
+            'door_id':element.source.id,
+            'type':1,
+            'datetime':day,
+            'cardnumber':cardnumber,
+            'message':element.message
+
+
+       };
+    obj.push(noentry_events);
+
+
+});
+}).catch(error =>  {
+    //	console.log(error)
+    
+    });
+    fs.writeFile(__dirname+'/events.txt', transactions_time, function (err) {
+        if (err) 
+         console.log(err);
+      
+      });
+      console.log("TIME="+transactions_time);
+     var intervalxxx = setInterval(function() {
+
+        resolve(obj);
+         clearInterval(intervalxxx);
+     }, 100);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+
+})
+}
+// exports. get_gallagher_checkin_events=function()
+// {
+    
+//     var dbDate = new Date().toLocaleString();
+//     var seconds = constants.DEFAUL_EVENT_SECONDS;
+//     var parsedDate = new Date(Date.parse(dbDate))
+//     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+//     newDate=newDate.toISOString();
+
+//     var obj = [];
+// 	return new Promise((resolve) => {
+//         axios({
+//             method: 'get',
+//             httpsAgent: extagent,
+//             url:  constants.GALLAGHER_HOST + '/api/events?type=20001&after='+newDate,
+//             headers: {
+//                 'Authorization': apiKey,
+//                 'Content-Type' : 'application/json'
+//               }
+//           })
+//         .then(function (response) {
+//             var events=response.data.events;
+//     events.forEach(function(element) {
+// 				if(element.card)
+// 				{
+// 					var cardnumber=element.card.number;
+// 				}else{
+//                     var cardnumber=0;
+//                 }
+//             var date = new Date(element.time);
+//             var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
+//             var checkin_events={
+//                 'external_id':element.id,
+//                 'cardholder_id':element.cardholder.id,
+//                 'zone_id':element.entryAccessZone.id,
+//                 'door_id':element.source.id,
+//                 'type':1,
+//                 'datetime':day,
+//                 'cardnumber':cardnumber,
+//                 'message':element.message
+
+   
+//            };
+//         obj.push(checkin_events);
+    
+    
+//     });
+//     var intervalxxx = setInterval(function() {
+
+//         resolve(obj);
+//         clearInterval(intervalxxx);
+//     }, 1000);
+//              }).catch(error =>  {
+//         //	console.log(error)
+        
+//         });
+  
+//     });
+// }
+// exports. get_gallagher_checkout_events=function()
+// {
+//     var dbDate = new Date().toLocaleString();
+//     var seconds = constants.DEFAUL_EVENT_SECONDS;
+//     var parsedDate = new Date(Date.parse(dbDate))
+//     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+//     newDate=newDate.toISOString();
+//     var obj = [];
+// 	return new Promise((resolve) => {
+//         axios({
+//             method: 'get',
+//             httpsAgent: extagent,
+//             url:  constants.GALLAGHER_HOST + '/api/events?type=20003&after='+newDate,
+//             headers: {
+//                 'Authorization': apiKey,
+//                 'Content-Type' : 'application/json'
+//               }
+//           })
+//         .then(function (response) {
+//             var events=response.data.events;
+//     events.forEach(function(element) {
+// 				if(element.card)
+// 				{
+// 					var cardnumber=element.card.number;
+// 				}else{
+//                     var cardnumber=0;
+//                 }
+//                 var date = new Date(element.time);
+//                 var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");
+//             var checkin_events={
+//                 'external_id':element.id,
+//                 'cardholder_id':element.cardholder.id,
+//                 'zone_id':element.exitAccessZone.id,
+//                 'door_id':element.source.id,
+//                 'type':0,
+//                 'datetime':day,
+//                 'cardnumber':cardnumber,
+//                 'message':element.message
+
+   
+//            };
+//         obj.push(checkin_events);
+    
+    
+//     });
+//     var intervalxxx = setInterval(function() {
+
+//         resolve(obj);
+//         clearInterval(intervalxxx);
+//     }, 1000);
+  
+//              }).catch(error =>  {
+//         //	console.log(error)
+        
+//         });
+  
+//     });
+// }
+
+// exports. get_gallagher_no_entry_events=function()
+// {
+    
+//     var dbDate = new Date().toLocaleString();
+//     var seconds = constants.DEFAUL_EVENT_SECONDS;
+//     var parsedDate = new Date(Date.parse(dbDate))
+//     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+//     newDate=newDate.toISOString();
+
+//     var obj = [];
+// 	return new Promise((resolve) => {
+//         axios({
+//             method: 'get',
+//             httpsAgent: extagent,
+//             url:  constants.GALLAGHER_HOST + '/api/events?type=20039&after='+newDate,
+//             headers: {
+//                 'Authorization': apiKey,
+//                 'Content-Type' : 'application/json'
+//               }
+//           })
+//         .then(function (response) {
+//             var events=response.data.events;
+//     events.forEach(function(element) {
+// 				if(element.card)
+// 				{
+// 					var cardnumber=element.card.number;
+// 				}else{
+//                     var cardnumber=0;
+//                 }
+//             var date = new Date(element.time);
+//             var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
+//             var noentry_events={
+//                 'external_id':element.id,
+//                 'cardholder_id':element.cardholder.id,
+//                 'zone_id':element.entryAccessZone.id,
+//                 'door_id':element.source.id,
+//                 'type':1,
+//                 'datetime':day,
+//                 'cardnumber':cardnumber,
+//                 'message':element.message
+
+   
+//            };
+//         obj.push(noentry_events);
+    
+    
+//     });
+//     var intervalxxx = setInterval(function() {
+
+//         resolve(obj);
+//         clearInterval(intervalxxx);
+//     }, 1000);
+//              }).catch(error =>  {
+//         //	console.log(error)
+        
+//         });
+  
+//     });
+// }
+
+//==============NEW LOGIC OF ALL EVENTS===============
+
+
+
+
+//===================================================
 exports. save_gg_access_groups_in_server= function (access_groups)
 {
     var obj = [];
