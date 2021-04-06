@@ -537,7 +537,7 @@ exports. check_gallagher_delete_cardholder_events=function()
 exports. get_gallagher_all_events=function()
 {
     
-  var transactions_time="";
+  
  
 
    
@@ -548,15 +548,22 @@ exports. get_gallagher_all_events=function()
 	return new Promise((resolve) => {
         lineReader.eachLine(__dirname+'/events.txt', function(line) {
          
-            transactions_time=line;
+            var transactions_time;
        
             if (line.includes('STOP')) {
             
-                var newdate=new Date(new Date().toUTCString());
-                transactions_time=newdate;
+                var dbDate = new Date().toLocaleString();
+                var seconds = constants.DEFAUL_EVENT_SECONDS;
+                var parsedDate = new Date(Date.parse(dbDate))
+                var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+                newDate=newDate.toISOString();
+                transactions_time=newDate;
                //console.log(transactions_time);
+            }else{
+                transactions_time=line;
+                console.log(transactions_time);
             }
-               // console.log(transactions_time);
+               
            
         axios({
             method: 'get',
@@ -605,6 +612,7 @@ exports. get_gallagher_all_events=function()
           }
       })
     .then(function (response) {
+     
         var events=response.data.events;
 events.forEach(function(element) {
             if(element.card)
@@ -629,9 +637,10 @@ events.forEach(function(element) {
 
        };
     obj.push(checkin_events);
-
+   
 
 });
+
 }).catch(error =>  {
     //	console.log(error)
     
@@ -646,6 +655,7 @@ events.forEach(function(element) {
           }
       })
     .then(function (response) {
+  
         var events=response.data.events;
 events.forEach(function(element) {
             if(element.card)
@@ -664,6 +674,7 @@ events.forEach(function(element) {
             'door_id':element.source.id,
             'type':1,
             'datetime':day,
+            'eventType':2,
             'cardnumber':cardnumber,
             'message':element.message
 
@@ -673,6 +684,7 @@ events.forEach(function(element) {
 
 
 });
+        
 }).catch(error =>  {
     //	console.log(error)
     

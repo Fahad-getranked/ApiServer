@@ -192,10 +192,10 @@ function run_cron_for_gallagher_events(){
 		if(groups.length>0){
 			//console.log("Total Length="+groups.length);
 	 checkin_events=JSON.stringify(groups);
-	console.log(checkin_events);
+	//console.log(checkin_events);
 	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkin_events);
 	syncdata.then(res=>{
-	  console.log(res);
+	 //console.log(res);
 	});
 		}
 	});	

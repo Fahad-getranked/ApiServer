@@ -111,7 +111,7 @@ console.log('Added In Device');
 }else{
   console.log('Added In Devices');
 }
-console.log(response.data.data);
+console.log(response);
 if(response.data.data!='')
    {
     var myarray=[];
@@ -194,7 +194,7 @@ axios(config)
 
 if(restp.data.code==0)
 {	
-
+console.log("Sync With device");
   resolve(true);
 }else{
 
