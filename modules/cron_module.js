@@ -536,18 +536,13 @@ exports. check_gallagher_delete_cardholder_events=function()
 }
 exports. get_gallagher_all_events=function()
 {
-    
-  
- 
 
    
-    
-   
-
-    var obj = [];
 	return new Promise((resolve) => {
-        lineReader.eachLine(__dirname+'/events.txt', function(line) {
-         
+       
+        lineReader.eachLine('././events.txt', function(line) {
+           
+            var obj = [];
             var transactions_time;
        
             if (line.includes('STOP')) {
@@ -689,7 +684,7 @@ events.forEach(function(element) {
     //	console.log(error)
     
     });
-    fs.writeFile(__dirname+'/events.txt', transactions_time, function (err) {
+    fs.writeFile('././events.txt', transactions_time, function (err) {
         if (err) 
          console.log(err);
       
