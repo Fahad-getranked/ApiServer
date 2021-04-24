@@ -245,6 +245,7 @@ for(var i=0;i<response.data.cards.length;i++)
 	  {
 		 // console.log("Exception");
 	  }
+	  
 myarray.push({"GG":{"person_id":response.data.id,"message":"success","cards":{array_cards}}});
 resolve(myarray);
 
@@ -278,7 +279,7 @@ resolve(myarray);
 				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
 		axios({
 			method: 'DELETE', 
-			 httpsAgent: extagent,
+			httpsAgent: extagent,
 			url: url,
 			//data : obj,
 			headers: {
@@ -287,7 +288,7 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-		
+		console.log(response)
 			resolve(true);
 			
 				
@@ -305,12 +306,13 @@ resolve(myarray);
 	}
 	exports.delete_card_details = function(card_holder_id,card_id)
 	{
+		
 		return new Promise((resolve) => {
 			try {  	
 				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/cards/'+card_id;
 		axios({
 			method: 'DELETE', 
-			 httpsAgent: extagent,
+			httpsAgent: extagent,
 			url: url,
 			//data : obj,
 			headers: {
@@ -319,27 +321,34 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-		
-			resolve(true);
+		console.log("success");
+			var myarray=[];
+			myarray.push({"GG":{"person_id":0,"message":"success"}});
+			resolve(myarray)
 			
 				
 					
 			
 		}).catch(error =>  {
-			resolve(false);
+			console.log(error);
+			var myarray=[];
+			myarray.push({"GG":{"person_id":1,"message":"failed"}});
+			resolve(myarray)
 			});
 	
 		}catch(error)
 		{
-			resolve(false);
+			console.log(error);
+			var myarray=[];
+			myarray.push({"GG":{"person_id":1,"message":"failed"}});
+			resolve(myarray)
 		}
 		});
 	}
 
 	exports.delete_access_group_details = function(card_holder_id,group_id)
 	{
-		return new Promise((resolve) => {
-			try {  	
+	  	
 		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id+'/access_groups/'+group_id;
 		axios({
 			method: 'DELETE', 
@@ -353,20 +362,16 @@ resolve(myarray);
 			})
 		.then(function (response){
 		
-			resolve(true);
+			//resolve(true);
 			
 				
 					
 			
 		}).catch(error =>  {
-			resolve(false);
+			//resolve(true);
 			});
 	
-		}catch(error)
-		{
-			resolve(false);
-		}
-		});
+		
 	}
 //=========================FOR USER AND VISITORS===================
 	exports.update_card_status = function(firstname,lastname,card_holder_id,cardtypes)
@@ -517,6 +522,235 @@ resolve(myarray);
 			resolve(3);
 		}
 		});
+	}
+	exports.add_new_card_in_gallagher = function(card_holder_id,cardtypes)
+	{
+		console.log(card_holder_id);
+	var carddetails=[];
+	
+		for(var i=0;i<cardtypes.length;i++)
+		{
+			if(cardtypes[i]['is_mobile_card']!="mobile"){
+				var cards={		
+					"type": {
+					  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					},
+					"status": {
+					  "value": "Active",
+					  "type":"active"
+					},
+					"number":cardtypes[i]['card_number'],
+					"from": new Date(cardtypes[i]['valid_from']).toISOString(),
+					"until": new Date(cardtypes[i]['valid_to']).toISOString()
+				  }
+				  carddetails.push(cards);
+			}else{
+				var cards={		
+					"type": {
+					  "href": constants.GALLAGHER_HOST+'/api/card_types/'+cardtypes[i]['card_type']
+					},
+					"status": {
+					  "value": "Active",
+					  "type":"active"
+					},
+					 "invitation":{
+					 "email":cardtypes[i]['email'],
+					//"singleFactorOnly"=> true
+					 },
+					 "from": new Date(cardtypes[i]['valid_from']).toISOString(),
+					 "until": new Date(cardtypes[i]['valid_to']).toISOString()
+				  }
+				  carddetails.push(cards);
+				}
+		}
+		
+		
+		return new Promise((resolve) => {
+			try {  
+		let obj = {
+			"authorised": true,
+			"cards": {
+			  "add":carddetails
+			}
+					  
+		};
+		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		axios({
+			method: 'PATCH', 
+			 httpsAgent: extagent,
+			url: url,
+			data : obj,
+			headers: {
+				  'Authorization': apiKey,
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+			if(response)
+			{
+				
+				var interval = setInterval(function() {
+				var cardholder_detail=gr_mod.get_cardholder_details(card_holder_id);
+				cardholder_detail.then(rest=>{
+                    if(rest){ 
+					resolve(rest);
+clearInterval(interval);
+					}
+
+				});
+			}, 900);
+			}else{
+				var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
+			}
+				
+				
+			
+		}).catch(error =>  {
+			//console.log(error);
+			var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
+			});
+	
+		}catch(error)
+		{
+		//	console.log(error);
+			var myarray=[];
+				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+				resolve(myarray);
+		}
+		});
+	}
+	exports.add_new_groups_in_gallagher = function(card_holder_id,access_groups)
+	{
+		
+	
+	var accessgroupdetails=[];
+		
+		
+		access_groups=access_groups.split(',');
+		for(var i=0;i<access_groups.length;i++)
+		{
+			var vals={			
+				"accessgroup": {
+					"href" : constants.GALLAGHER_HOST+'/api/access_groups/'+access_groups[i]
+				},	   
+			  }
+			  accessgroupdetails.push(vals);
+		}
+		console.log(access_groups);
+		return new Promise((resolve) => {
+			try {  
+				let obj = {
+					"authorised": true,
+					"accessGroups": {
+					  "add":accessgroupdetails
+					}
+				};
+	
+		var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		axios({
+			method: 'PATCH', 
+			 httpsAgent: extagent,
+			url: url,
+			data : obj,
+			headers: {
+				  'Authorization': apiKey,
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+			
+				resolve(true);	
+			
+		}).catch(error =>  {
+			console.log(error);
+			var myarray=[];
+			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
+			resolve(false);	
+			});
+	
+		}catch(error)
+		{
+			resolve(false);	
+		}
+		});
+	}
+exports.get_cardholder_group_details = function(card_holder_id)
+	{
+try{
+		return new Promise((resolve) => {
+			try {  
+				
+				var url=constants.GALLAGHER_HOST+'/api/cardholders/'+card_holder_id;
+		axios({
+			method: 'GET', 
+			 httpsAgent: extagent,
+			url: url,
+			//data : obj,
+			headers: {
+				  'Authorization': apiKey,
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+		
+			if(response.status==200)
+					{
+		  if(response.data.accessGroups){
+			var count=0; 
+for(var i=0;i<response.data.accessGroups.length;i++)
+{
+	count++;
+	var p=response.data.accessGroups[i].href;
+	var group_id=p.match(/([^\/]*)\/*$/)[1];	
+	
+	gr_mod.delete_access_group_details(card_holder_id,group_id);
+	console.log("This group deleted.."+group_id);
+	
+}
+    var intervalxxx = setInterval(function() {
+console.log(response.data.accessGroups.length+"   "+count);
+		if(response.data.accessGroups.length==count)
+		{
+			resolve(true);
+			clearInterval(intervalxxx);
+		}else{
+			resolve(false);
+		}
+      
+    }, 500);
+
+
+		  }else{
+			resolve(true);
+		  }
+		 
+	 
+	 
+
+					
+		}else{
+				resolve(true);
+			}
+				
+					
+			
+		}).catch(error =>  {
+			resolve(false);
+			});
+	
+		}catch(error)
+		{
+			//console.log(error);
+		}
+		});
+	}catch(error)
+	{
+		resolve(false);
+	}
 	}
 //======================================VISITORS SECTION============================
 //==================================================================================

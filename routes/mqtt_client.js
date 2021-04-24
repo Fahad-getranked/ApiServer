@@ -404,6 +404,33 @@ if(req_method == 'checking_server'){
 	//console.log("SERVER IS WORKING");
 	 client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
  }
+ //======================CHECK USER EXISTIS===================
+ if(req_method == 'fr_user_exist'){
+	var msgcontent = 'Data Recieved';
+	 var data_obj = JSON.parse( msg_arr[1] ); 
+	 var personal_info = data_obj['person_name'];
+
+	 var fr_user = fr_mod.get_existing_users_by_name(personal_info)
+	 fr_user.then(frr_resp=>{	
+	 client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
+
+	 });
+
+ }
+ //======================Update Face===================
+ if(req_method == 'fr_update_user_face'){
+	var msgcontent = 'Data Recieved';
+	 var data_obj = JSON.parse( msg_arr[1] ); 
+	 var image_url = data_obj['image_url'];
+	 var user_id = data_obj['person_id'];
+
+	 var fr_user = fr_mod.updat_user_face(image_url,user_id);
+	 fr_user.then(frr_resp=>{	
+	 client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
+
+	 });
+
+ }
 	////////////////////add cards to devices///////////////////////////
 	if(req_method == 'add_gg_users'){
 		var msgcontent = 'Data Recieved';
@@ -542,6 +569,124 @@ if(req_method == 'checking_server'){
 					 });				
 	 }
 	///////////////////////////////////////////////////////////////////
+	////////////////////update Card Info//////////////////////////
+		if(req_method == 'update_user_card_details'){
+			var msgcontent = 'Data Recieved';
+			console.log(msgcontent);
+			 var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+				var cardholder_id = gr_mod.delete_card_details(data_obj['GG']['user_id'],data_obj['GG']['card_id'])
+				cardholder_id.then(gala_resp=>{		
+				var gg = gala_resp[0]['GG']['person_id'];
+				if(gg==0)
+				{
+				   
+					client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+				}else
+				{
+					client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+				}
+								
+
+				});
+				}
+				else if(data_obj['FR']){
+					var fr_id = fr_mod.delete_fr_user(data_obj['FR']['user_id'])	
+					fr_id.then(fr_resp=>{
+								
+					if(fr_resp)
+					{
+					
+						client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+					}else
+					{
+						client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+					}
+									
+	
+					});
+					}
+					else if(data_obj['SL']){
+						var lft_id = lift_mod.delete_lift_user(data_obj['SL']['user_id'])	
+						lft_id.then(lf_resp=>{	
+							if(lf_resp){		
+							client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+							}else{
+							client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+							}
+						});
+						}
+	
+		 }
+	 //////////////////////////////////////////////////////////////
+	 	////////////////////update Group Info//////////////////////////
+		 if(req_method == 'delete_user_groups_details'){
+			var msgcontent = 'Deleting data';
+			console.log(msgcontent);
+			 var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+				var cardholder_id = gr_mod.get_cardholder_group_details(data_obj['GG']['user_id'])
+				cardholder_id.then(gala_resp=>{	
+					if(gala_resp){	
+					client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })			
+				
+					}else{
+						client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })			
+					}
+				});
+				}
+				
+	
+		 }
+		
+		 if(req_method == 'update_user_groups_details'){
+			var msgcontent = 'Adding Group Receved';
+			console.log(msgcontent);
+			 var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+					var cardholder_id = gr_mod.get_cardholder_group_details(data_obj['GG']['user_id'])
+					cardholder_id.then(gala_resp=>{	
+						if(gala_resp){	
+							var groups = data_obj['GG']['groups'].join(",");
+			
+							var newreq=gr_mod.add_new_groups_in_gallagher(data_obj['GG']['user_id'],groups);
+							newreq.then(newreps=>{	
+								if(newreps){
+							client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+								}else{
+									client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+								}
+						
+						});
+					
+						}else{
+							client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })			
+						}
+					});	
+					
+				}
+				
+		 }
+     //////////////////////////////////////////////////////////////
+	////////////////////ADD NEW Card Info//////////////////////////
+		 if(req_method == 'add_user_card_details'){
+			var msgcontent = 'Data Recieved';
+			 var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+				var cardholder_id = gr_mod.add_new_card_in_gallagher(data_obj['GG']['user_id'],data_obj['GG']['cards'])
+				cardholder_id.then(gala_resp=>{		
+					var gg = gala_resp[0]['GG']['person_id'];
+					console.log("USER_GG="+gg);
+				client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })
+								
+
+				});
+				}
+				
+	
+		 }	 
+		 
+		///////////////////////////////////////////////////////////////////
 	//=============================END================================
 	//=============================VISITORS===========================
 

@@ -1,7 +1,7 @@
 const express= require("express");
 const axios = require('axios');
 const fs = require("fs");
-
+var cron_mod = require('../modules/cron_module');
 var constants=require("../constants.js");
 var qs = require('qs');
 const https=require("https");
@@ -105,19 +105,21 @@ axios(config)
 
     })
 .then(function (restp){
+  console.log(response);
 if(restp.data.code==0)
 {			
 console.log('Added In Device');
 }else{
   console.log('Added In Devices');
 }
-console.log(response);
+
 if(response.data.data!='')
    {
     var myarray=[];
     myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
    resolve(myarray);
    }else{
+    // console.log(response);
     var myarray=[];
     myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
    resolve(myarray);
@@ -156,7 +158,7 @@ if(response.data.data!='')
 
 exports. delete_fr_user = function (personal_id)
 {
-   
+  console.log(personal_id);
 	return new Promise((resolve) => {
 		try {
       var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	           
@@ -203,7 +205,7 @@ console.log("Sync With device");
 }).catch(error =>  {
   resolve(false);
 });
-  if(response.data.code==2)
+  if(response.data.code==0)
 {
   resolve(true);
 }else{
@@ -294,5 +296,150 @@ if(restp.data.code==0)
   
     });
 }
+exports. get_existing_users_by_name = function (person_name)
+{
+ 
+ 
+	return new Promise((resolve) => {
+		try {
+       
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/person/advance/personList',
+'BodyParameters': 
+'{ "personName": "'+person_name+'",    "pageNo": 1,     "pageSize":100 }' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response)
+ {
+ 
+  var array_cards=[];
+   if(response.data.code==0)
+   {
+    
+     if(response.data.data.total>0)
+     {
+       var person_list=response.data.data.list;
+      
+       person_list.forEach(function(element) {
+       
+      var cardno=0;
+        var persons={
+          'personId':element.personId,
+          'personCode':element.personCode,
+          'personName':element.personName,
+          'phoneNo':element.phoneNo,
+          'gender':element.gender,
+          'email':element.email,
+          'cardno':element.cards[0].cardNo,
+          'photo':element.personPhoto.picUri,
+          
+        }
+        var mydata=cron_mod.get_user_fr_picture(element.personPhoto.picUri,element.personId);
+		mydata.then(respp=>{
+      persons['image']=respp;
+    })
+       
+      array_cards.push(persons);
+    });
+      var interval = setInterval(function() {
+      
+        resolve({"status":0,"message":"success","persons":array_cards}) 
+clearInterval(interval);
+					
+
+			}, 900);
+  
+     }else{
+      resolve({"status":1,"message":"failed","persons":{}})
+     }
+   
+
+   }else{
+     resolve({"status":1,"message":"failed","persons":{}})
+   }
+ 
+
+})
+.catch(function (error) {
+ console.log(error);
+  resolve({"status":1,"message":"failed","persons":{}})
+});
+
+           
+        }catch(error)
+        {
+         
+          resolve({"status":1,"message":"failed","persons":{}})
+        }
+  
+    });
+}
 
 
+exports. updat_user_face = function (image_url,personId)
+{
+   
+  
+	return new Promise((resolve) => {
+		try {
+    
+            var imges=get_user_image(image_url);
+            imges.then(profileimage=>{
+                var imagesy=profileimage.replace(/\s/g, '');
+		
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': constants.FR_LOCAL_IP,
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/face/single/update',
+'BodyParameters': 
+'{"personId":"'+personId+'","faceData":"'+imagesy+'"}' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response) {
+  console.log(response);
+  resolve(true);
+})
+.catch(function (error) {
+ 
+  resolve(true);
+});
+
+            });
+        }catch(error)
+        {
+
+         resolve(true);
+        }
+  
+    });
+}

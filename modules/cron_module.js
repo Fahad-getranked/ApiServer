@@ -556,7 +556,7 @@ exports. get_gallagher_all_events=function()
                //console.log(transactions_time);
             }else{
                 transactions_time=line;
-                console.log(transactions_time);
+               // console.log(transactions_time);
             }
                
            
@@ -689,7 +689,7 @@ events.forEach(function(element) {
          console.log(err);
       
       });
-      console.log("TIME="+transactions_time);
+     // console.log("TIME="+transactions_time);
      var intervalxxx = setInterval(function() {
 
         resolve(obj);
@@ -1705,6 +1705,53 @@ exports. download_fr_image= function (image)
     }catch(error)
     {
         resolve(error);
+    }
+});
+}
+exports. get_user_fr_picture= function (image,personId)
+{
+
+   // console.log(image);
+    return new Promise((resolve) => {
+    try{
+       
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': constants.FR_LOCAL_IP,
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/resource/v1/person/picture_data',
+        'BodyParameters': 
+        '{"picUri":"'+image+'","personId":"'+personId+'"}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+            if(response.data.code)
+            {
+                resolve('');
+            }else{
+                resolve(response.data);
+            }
+      
+        }).catch(error =>  {
+            resolve('');
+    
+        });
+    }catch(error)
+    {
+        resolve('');
     }
 });
 }
