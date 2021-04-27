@@ -77,7 +77,7 @@ exports. get_fr_organizations= function ()
         'ProtocolType': constants.FR_PROTOCOL,
         'ApiMethod': '/api/resource/v1/org/orgList',
         'BodyParameters': 
-        '{"pageNo":1,"pageSize":100}' 
+        '{"pageNo":1,"pageSize":500}' 
         });
         
         var config = {
@@ -131,7 +131,7 @@ exports. get_fr_groups= function ()
         'ProtocolType': constants.FR_PROTOCOL,
         'ApiMethod': '/api/frs/v1/face/groupList',
         'BodyParameters': 
-        '{"pageNo":1,"pageSize":100}' 
+        '{"pageNo":1,"pageSize":500}' 
         });
         
         var config = {
@@ -187,7 +187,7 @@ exports. get_fr_doors= function ()
         'ProtocolType': constants.FR_PROTOCOL,
         'ApiMethod': '/api/resource/v1/acsDoor/acsDoorList',
         'BodyParameters': 
-        '{"pageNo":1,"pageSize":100}' 
+        '{"pageNo":1,"pageSize":500}' 
         });
         
         var config = {
