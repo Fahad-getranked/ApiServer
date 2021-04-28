@@ -187,28 +187,28 @@ function run_cron_for_gallagher_events(){
 	var noentry_events;
 	var doors_events;
 	
-	// var checkin=cron_mod.get_gallagher_all_events();
-	// checkin.then(groups=>{
-	// 	if(groups.length>0){
-	// 		//console.log("Total Length="+groups.length);
-	//  checkin_events=JSON.stringify(groups);
-	// //console.log(checkin_events);
-	// var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkin_events);
-	// syncdata.then(res=>{
-	//  //console.log(res);
-	// });
-	// 	}
-	// });	
-// 	var dooeevent=cron_mod.get_gallagher_door_alarms();
-// 	dooeevent.then(groups=>{
-// 		if(groups.length>0){
-// 			doors_events=JSON.stringify(groups);
-// 	var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(doors_events);
-// 	syncdata.then(res=>{
-// //console.log(res);
-// 	});
-// 		}
-// 	});
+	var checkin=cron_mod.get_gallagher_all_events();
+	checkin.then(groups=>{
+		if(groups.length>0){
+			//console.log("Total Length="+groups.length);
+	 checkin_events=JSON.stringify(groups);
+	//console.log(checkin_events);
+	var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkin_events);
+	syncdata.then(res=>{
+	 //console.log(res);
+	});
+		}
+	});	
+	var dooeevent=cron_mod.get_gallagher_door_alarms();
+	dooeevent.then(groups=>{
+		if(groups.length>0){
+			doors_events=JSON.stringify(groups);
+	var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(doors_events);
+	syncdata.then(res=>{
+//console.log(res);
+	});
+		}
+	});
 	// var checkout=cron_mod.get_gallagher_checkout_events();
 	
 	// checkout.then(groups=>{
