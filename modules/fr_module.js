@@ -2,6 +2,7 @@ const express= require("express");
 const axios = require('axios');
 const fs = require("fs");
 var cron_mod = require('../modules/cron_module');
+var fr_mod = require('../modules/fr_module');
 var constants=require("../constants.js");
 var qs = require('qs');
 const https=require("https");
@@ -338,15 +339,20 @@ axios(config)
       
        person_list.forEach(function(element) {
        
-      var cardno=0;
+      var cardno='N/A';
+      if(element.cards)
+      {
+        cardno=element.cards[0].cardNo;
+      }
         var persons={
           'personId':element.personId,
           'personCode':element.personCode,
+          'org_id':element.orgIndexCode,
           'personName':element.personName,
           'phoneNo':element.phoneNo,
           'gender':element.gender,
           'email':element.email,
-          'cardno':element.cards[0].cardNo,
+          'cardno':cardno,
           'photo':element.personPhoto.picUri,
           
         }
@@ -392,7 +398,7 @@ clearInterval(interval);
 }
 
 
-exports. updat_user_face = function (image_url,personId)
+exports. updat_user_face = function (image_url,personId,org_id,card_number)
 {
    
   
@@ -426,8 +432,8 @@ var config = {
 
 axios(config)
 .then(function (response) {
-  console.log(response);
-  resolve(true);
+  var respp=fr_mod.update_fr_user_details(personId,org_id,card_number);
+  resolve(respp);
 })
 .catch(function (error) {
  
@@ -439,6 +445,74 @@ axios(config)
         {
 
          resolve(true);
+        }
+  
+    });
+}
+exports. update_fr_user_details = function (personId,org_id,card_number)
+{
+   
+ console.log("Update User Info");
+	return new Promise((resolve) => {
+		try {
+    
+        
+			// var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	
+  var url=constants.FR_HOST+'/api/FrData/';
+  if(card_number!=0){
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': constants.FR_LOCAL_IP,
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/person/single/update',
+'BodyParameters': 
+'{"personId":"'+personId+'","orgIndexCode":"'+org_id+'","cards":[{"cardNo": "'+card_number+'"}]}' 
+});
+  }else{
+    console.log(org_id+personId);
+    var data = qs.stringify({
+      'ApiKey': constants.FR_KEY,
+     'MethodType': 'POST',
+     'ApiSecret': constants.FR_SECRET_KEY,
+     'IP': constants.FR_LOCAL_IP,
+     'ProtocolType': constants.FR_PROTOCOL,
+     'ApiMethod': '/api/resource/v1/person/single/update',
+     'BodyParameters': 
+     '{"personId":"'+personId+'","orgIndexCode":"'+org_id+'"}' 
+     });
+  }
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response) {
+ 
+if(response.data.code==0)
+   {
+    resolve(true);
+   }else{
+    // console.log(response);
+    resolve(false);
+   }
+
+
+})
+.catch(function (error) {
+  resolve(false);
+});
+
+            
+        }catch(error)
+        {
+          resolve(false);
         }
   
     });
