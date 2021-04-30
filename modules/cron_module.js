@@ -1552,7 +1552,7 @@ exports. check_fr_get_event_subscription=function()
    return new Promise((resolve) => {
        try {
         
- var url=constants.FR_HOST+'/api/FrData/';
+ var url=constants.FR_EVENT_URL+'/api/FrData/';
 var data = qs.stringify({
 'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',
@@ -1579,6 +1579,7 @@ axios(config)
     {
       
        if(response.data.code==0 && response.data.data!=''){
+           console.log(response.data.data.detail.length);
         if(response.data.data.detail.length==2)
         {    
             resolve(true);
@@ -1618,7 +1619,7 @@ exports. save_fr_get_event_subscription=function(subscript)
    return new Promise((resolve) => {
        try {
         
- var url=constants.FR_HOST+'/api/FrData/';
+ var url=constants.FR_EVENT_URL+'/api/FrData/';
 var data = qs.stringify({
 'ApiKey': constants.FR_KEY,
 'MethodType': 'POST',

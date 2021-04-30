@@ -40,6 +40,16 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    else if(tag=='FR_EVENT_URL')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.FR_EVENT_URL =value;
+        
+        
+       
+    }
+    
     else if(tag=='FR_SUBSCRIPTION')
     {
         var value=lineitem[1].trim();
