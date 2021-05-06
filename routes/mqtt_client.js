@@ -697,7 +697,7 @@ if(req_method == 'checking_server'){
 			var cardholder_id = gr_mod.open_the_door(data_obj['GG']['door_id'])
 			cardholder_id.then(gala_resp=>{		
 				
-			client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })
+			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
 							
 
 			});

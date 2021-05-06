@@ -758,7 +758,7 @@ console.log(response.data.accessGroups.length+"   "+count);
 		return new Promise((resolve) => {
 			try {  
 		let obj = {
-			"eventType": 0,
+			"eventType": 1,
 			"eventID": 0,
 			"hasRestoral": 0,
 			"itemID": door_id,
