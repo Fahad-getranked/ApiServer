@@ -752,6 +752,51 @@ console.log(response.data.accessGroups.length+"   "+count);
 		resolve(false);
 	}
 	}
+	//===========open the door===================
+	exports.open_the_door = function(door_id)
+	{
+		return new Promise((resolve) => {
+			try {  
+		let obj = {
+			"eventType": 0,
+			"eventID": 0,
+			"hasRestoral": 0,
+			"itemID": door_id,
+			"message": "Security Guard has opened door manually",
+			"details": "door open"
+		  };
+		  console.log(obj);
+		var url=constants.EXTERNAL_SYSTEM_URL+'/api/Event/logEvent';
+		axios({
+			method: 'POST', 
+			httpsAgent: extagent,
+			url: url,
+			data : obj,
+			headers: {
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+			if(response.status==200)
+			{
+			resolve(true);
+			}else{
+				resolve(false);
+			}
+				
+				
+			
+		}).catch(error =>  {
+		
+				resolve(false);
+			});
+	
+		}catch(error)
+		{
+			resolve(false);
+		}
+		});
+	}
 //======================================VISITORS SECTION============================
 //==================================================================================
 exports.save_visitor_in_gallagher = function(personal_info,cardtypes,access_groups)

@@ -620,6 +620,7 @@ if(req_method == 'checking_server'){
 						}
 	
 		 }
+		 
 	 //////////////////////////////////////////////////////////////
 	 	////////////////////update Group Info//////////////////////////
 		 if(req_method == 'delete_user_groups_details'){
@@ -687,7 +688,23 @@ if(req_method == 'checking_server'){
 				
 	
 		 }	 
-		 
+	////////////////////OPEN THE DDOR//////////////////////////
+	if(req_method == 'open_the_door'){
+		var msgcontent = 'Data Recieved';
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+			if(data_obj['GG']){
+				
+			var cardholder_id = gr_mod.open_the_door(data_obj['GG']['door_id'])
+			cardholder_id.then(gala_resp=>{		
+				
+			client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })
+							
+
+			});
+			}
+			
+
+	 }		 
 		///////////////////////////////////////////////////////////////////
 	//=============================END================================
 	//=============================VISITORS===========================

@@ -1547,7 +1547,7 @@ exports. save_fr_users_on_server= function (user_data)
 }
 exports. check_fr_get_event_subscription=function()
 {
-    
+   
     var obj = [];
    return new Promise((resolve) => {
        try {

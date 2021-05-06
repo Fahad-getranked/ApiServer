@@ -33,6 +33,7 @@ lineReader.eachLine('./config.txt', function(line) {
     }
     else if(tag=='FR_HOST')
     {
+        
         var value=lineitem[1].trim();
       
         exports.FR_HOST =value;
@@ -49,7 +50,15 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
-    
+    else if(tag=='EXTERNAL_SYSTEM_URL')
+    {
+        var value=lineitem[1].trim();
+      
+        exports.EXTERNAL_SYSTEM_URL =value;
+        
+        
+       
+    }
     else if(tag=='FR_SUBSCRIPTION')
     {
         var value=lineitem[1].trim();
