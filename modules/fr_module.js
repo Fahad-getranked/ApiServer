@@ -83,7 +83,7 @@ var data = qs.stringify({
 'ProtocolType': constants.FR_PROTOCOL,
 'ApiMethod': '/api/resource/v1/person/single/add',
 'BodyParameters': 
-'{"personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"'+personal_info['phone']+'","beginTime":"'+beginTimey+'","endTime":"'+endTimey+'","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}]}' 
+'{"personCode":"'+personal_info['person_code']+'","personFamilyName":"'+personal_info['lastname']+'","personGivenName":"'+personal_info['firstname']+'","gender":1,"orgIndexCode":"'+orgIndexCode+'","phoneNo":"'+personal_info['phone']+'","beginTime":"'+beginTimey+'","endTime":"'+endTimey+'","faces": [{"faceData": "'+imagesy+'"}],"cards":[{"cardNo": "'+card_number['card_number']+'"}]}' 
 });
 
 var config = {
@@ -106,7 +106,7 @@ axios(config)
 
     })
 .then(function (restp){
-  console.log(response);
+ // console.log(response);
 if(restp.data.code==0)
 {			
 console.log('Added In Device');
