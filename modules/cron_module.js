@@ -7,6 +7,7 @@ const lineReader = require('line-reader');
 const fs=require("fs");
 var qs = require('qs');
 const https=require("https");
+const shellExec = require('shell-exec');
 var apiKey;
 var extagent;
 var extagent;
@@ -1196,6 +1197,7 @@ exports. save_fr_images= function (user_data)
   
     });
 }
+
 //======================READ DATA FROM GALLAGHER================================
 exports. check_gallagher_add_cardholder_events=function()
 {
@@ -1757,9 +1759,134 @@ exports. get_user_fr_picture= function (image,personId)
 });
 }
 //===========================================
+exports. get_cameras_listing_from_hikcentral = function ()
+{
 
+   // console.log(image);
+    return new Promise((resolve) => {
+    try{
+       
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+            'ApiKey': constants.FR_KEY,
+            'MethodType': 'POST',
+            'ApiSecret': constants.FR_SECRET_KEY,
+            'IP': constants.FR_LOCAL_IP,
+            'ProtocolType': 'https',
+            'ApiMethod': '/api/resource/v1/camera/advance/cameraList',
+            'BodyParameters': '{   "pageNo": 1,   "pageSize": 200,   "siteIndexCode": "0" }' 
+          });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+            if(response.data.code !== 'undefined')
+            {    if(response.data.msg === 'Success')
+                {   
+                    resolve(response.data.data.list);
+                } else {
+                    resolve(''); 
+                }
+            }else{
+                resolve('');
+            }
+      
+        }).catch(error =>  {
+            resolve('');
+    
+        });
+    }catch(error)
+    {
+        
+        resolve('');
+    }
+});
+}
 
+exports. save_cameras_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_cameras?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
 
+            console.log
+            resolve(response.data);
+        }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports. get_cameras_thumbnail= function (cameraIndexCode)
+{
+    var obj = []; 
+	return new Promise((resolve) => {
+        
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+            'ApiKey': constants.FR_KEY,
+            'MethodType': 'POST',
+            'ApiSecret': constants.FR_SECRET_KEY,
+            'IP': constants.FR_LOCAL_IP,
+            'ProtocolType': 'https',
+            'ApiMethod': '/api/video/v1/cameras/previewURLs',
+            'BodyParameters': '{\n   "cameraIndexCode": "'+cameraIndexCode+'",\n    "streamType": "0",\n    "protocol": "rtsp_s",\n    "transmode": "1"\n}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        axios(config)
+        .then(function (response) {
+            
+            var streamurl = response.data.data.url;
+            var command  = 'ffmpeg -y -i '+streamurl+' -vframes 1 '+cameraIndexCode+'.jpg';
+            
+            shellExec(command).then(function(){
+
+                var file = cameraIndexCode+'.jpg';
+                var bitmap = fs.readFileSync(file);
+                // convert binary data to base64 encoded string
+                var base64_image =  new Buffer.from(bitmap).toString('base64');
+                
+                resolve(base64_image);
+            }).catch(function(){
+                resolve('');
+            });
+            
+            
+        }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+
+//===========================================
 
 
 

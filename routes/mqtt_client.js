@@ -13,6 +13,12 @@ var clientId;
 var host;
 var options;
 let router=express.Router();
+
+router.post('/fr_camera_events', function (req, res) {
+	console.log("Getting Data From Camera Event....");
+	console.log(req.body.params.events);
+	
+	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
 	//console.log(req.body.params.events[0]);
@@ -175,10 +181,69 @@ syncdata.then(res=>{
 // console.log(res);
 });
 });
+
+
+//*****************************Camera Listings**********************************
+//******************************************************************************
+
+function get_camera_thumbnail(cameraIndexCode) {
+	return new Promise(resolve => {
+		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
+		thumbnail.then(b64_image=>{
+			
+			resolve(b64_image);
+		});
+	});
+}
+
+function get_camera_listings(){
+
+	return new Promise(resolve => {
+		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
+
+		cameras.then(cameras=>{
+			resolve(cameras);
+		});
+	});
+}
+  
+async function asyncCall_for_camera_listing() {
 	
+	const cameras = await get_camera_listings();
+
+	for (var i = cameras.length - 1; i >= 0; i--) {
+
+		var cameraIndexCode = cameras[i].cameraIndexCode;
+		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+		
+	}
+	
+	//console.log(cameras);
+	cam_data=JSON.stringify(cameras);
+	
+	
+	var syncdata=cron_mod.save_cameras_in_server(cam_data);
+	syncdata.then(res=>{
+		//console.log(res);
+	});
+	
+}
+
+asyncCall_for_camera_listing();
+
+//******************************************************************************
+//******************************************************************************
+
+
+
+
+
+
+
   }, constants.DEFAULT_GG_CONFIGURATION_CRON_TIME);
 
 }
+
 function run_cron_for_gallagher_events(){
 	var intervaly = setInterval(function() 
 	{
