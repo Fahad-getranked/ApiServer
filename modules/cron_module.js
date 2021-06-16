@@ -1863,7 +1863,7 @@ exports. get_cameras_thumbnail= function (cameraIndexCode)
         .then(function (response) {
             
             var streamurl = response.data.data.url;
-            var command  = 'ffmpeg -y -i '+streamurl+' -vframes 1 '+cameraIndexCode+'.jpg';
+            var command  = 'ffmpeg -y -i '+streamurl+' -vframes 1 ././'+cameraIndexCode+'.jpg';
             
             shellExec(command).then(function(){
 
