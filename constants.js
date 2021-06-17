@@ -285,4 +285,14 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    else if(tag=='STREAM_START_PORT')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.STREAM_START_PORT =value;
+       
+        
+        
+       
+    }
 });

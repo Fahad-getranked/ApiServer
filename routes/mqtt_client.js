@@ -8,11 +8,28 @@ var fr_mod = require('../modules/fr_module');
 var gr_mod = require('../modules/gallagher_module');
 var lift_mod = require('../modules/lift_module');
 var cron_mod = require('../modules/cron_module');
+var LiveStreamServer = require('../modules/LiveStreamServer');
+var CameraList = require('../modules/CameraList');
 var  client;
 var clientId;
 var host;
 var options;
 let router=express.Router();
+
+
+//get camera listing from camera_list module
+var camera_arr = CameraList.get_camera_listing();
+camera_arr.then(cam=>{
+	for (var i = cam.length - 1; i >= 0; i--) {
+		
+		var cameraIndexCode = cam[i].cameraIndexCode;
+		var port = 9999-i;
+		var cameraName = cam[i].cameraName;
+
+		//starting live stream for each camera using different port
+		var ipcam_stream = new LiveStreamServer(cameraIndexCode,port,cameraName);
+	}
+});
 
 router.post('/fr_camera_events', function (req, res) {
 	console.log("Getting Data From Camera Event....");
@@ -215,6 +232,7 @@ async function asyncCall_for_camera_listing() {
 
 		var cameraIndexCode = cameras[i].cameraIndexCode;
 		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+		cameras[i].port = 9999-1;
 		
 	}
 	
