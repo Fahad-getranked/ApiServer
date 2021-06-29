@@ -119,6 +119,151 @@ exports. get_fr_organizations= function ()
   
     });
 }
+exports.get_bs_scan_devices=function(token)
+{
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+              
+            axios({
+                method: 'GET', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/devices?limit=0&offset=1000',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+               
+            
+                })
+            .then(response=>{
+                if(response.status==200)
+                {
+                    var divisions=response.data.records;
+                    divisions.forEach(function(element) {
+                        var device_ip=0;
+                        if(element.lan)
+                        {
+                            if(element.lan.dhcp)
+                            {
+                                device_ip=element.lan.dhcp.device_ip;
+                            }
+                        }
+                    var divs={
+                        'id':element.id,
+                        'name':element.name,
+                        'status':element.status,
+                        'device_ip':device_ip
+                   };  
+            //  console.log(divs);    
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+              resolve(false);
+            });
+        }catch(error)
+        {
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
+exports.get_bs_user_groups=function(token)
+{
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+              
+            axios({
+                method: 'GET', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/user_groups?limit=1000&offset=0',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+               
+            
+                })
+            .then(response=>{
+                if(response.status==200)
+                {
+                    var divisions=response.data.records;
+                    divisions.forEach(function(element) {
+                      
+                      
+                    var divs={
+                        'id':element.id,
+                        'name':element.name
+                   };  
+            //  console.log(divs);    
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+              resolve(false);
+            });
+        }catch(error)
+        {
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
+exports.Login_into_device=function()
+{
+    return new Promise((resolve) => {
+        try {
+            var obj={
+                'name':constants.BIO_STAR_NAME,
+                'password':constants.BIO_STAR_PASSWORD,
+                'user_id':constants.BIO_STAR_USERNAME
+            }
+        axios({
+            method: 'POST', 
+            httpsAgent: extagent,
+            url: constants.BIO_STAR_URL+'/login',
+            headers: { 
+                'Content-Type': 'application/json'
+              },
+            data :obj,
+        
+            })
+        .then(response=>{
+         if (response.status == 200) 
+            {
+            
+                resolve(response.headers['set-token']);
+                
+            }else{
+                resolve(false);
+            }
+
+        }).catch(error=>{
+            resolve(false);
+        });
+    }catch(error)
+    {
+        resolve(false); 
+    }
+  
+    });
+}
 exports. get_fr_groups= function ()
 {
     var obj = [];
@@ -955,6 +1100,60 @@ exports. save_fr_org_in_server= function (orgs)
   
     });
 }
+exports. save_bs_scan_devices_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_scan_devices_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        if(error.response.status==401)
+        {
+            resolve(2);
+        }else{
+            resolve(3);
+        }
+        
+        });
+  
+    });
+}
+exports. save_bs_user_groups_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_user_groups_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        if(error.response.status==401)
+        {
+            resolve(2);
+        }else{
+            resolve(3);
+        }
+        
+        });
+  
+    });
+}
 exports. save_fr_group_in_server= function (orgs)
 {
     var obj = [];
@@ -1161,6 +1360,28 @@ exports. save_fr_transactions= function (user_data)
             method: 'post',
             httpsAgent: extagent,
             url:  constants.BASE_SERVER_URL + '/fr_transactions?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_motion_detection_events= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/fr_motion_detection_events?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1582,7 +1803,7 @@ axios(config)
       
        if(response.data.code==0 && response.data.data!=''){
            console.log(response.data.data.detail.length);
-        if(response.data.data.detail.length==2)
+        if(response.data.data.detail.length==3)
         {    
             resolve(true);
         }else{
@@ -1864,7 +2085,6 @@ exports. get_cameras_thumbnail= function (cameraIndexCode)
             
             var streamurl = response.data.data.url;
             var command  = 'ffmpeg -y -i '+streamurl+' -vframes 1 ././'+cameraIndexCode+'.jpg';
-            
             shellExec(command).then(function(){
 
                 var file = cameraIndexCode+'.jpg';
@@ -1925,6 +2145,104 @@ resolve(doorsarray);
 
 
 }
+//=====================CHECKING DEVICES STATUSES===============
+exports. check_gallagher_device_status= function ()
+{
+     
+    return new Promise((resolve) => {
+     try{ 
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/',
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {
+        if(response.status==200){
+        resolve(1);
+        }else{
+            resolve(0);
+        }
+    }).catch(error=>{
+        resolve(0);
+    });
+}catch(error)
+{
+    resolve(0);
+}
+});
+}
+exports. check_fr_device_status= function ()
+{
+     
+    return new Promise((resolve) => {
+     try{ 
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/',
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {
+        if(response.status==200){
+        resolve(1);
+        }else{
+            resolve(0);
+        }
+    }).catch(error=>{
+        resolve(0);
+    });
+}catch(error)
+{
+    resolve(0);
+}
+});
+}
+exports. check_biostar_device_status= function ()
+{
+    return new Promise((resolve) => {
+        try {
+            var obj={
+                'name':constants.BIO_STAR_NAME,
+                'password':constants.BIO_STAR_PASSWORD,
+                'user_id':constants.BIO_STAR_USERNAME
+            }
+        axios({
+            method: 'POST', 
+            httpsAgent: extagent,
+            url: constants.BIO_STAR_URL+'/login',
+            headers: { 
+                'Content-Type': 'application/json'
+              },
+            data :obj,
+        
+            })
+        .then(response=>{
+         if (response.status == 200) 
+            {
+            
+                resolve(1);
+                
+            }else{
+                resolve(0);
+            }
+
+        }).catch(error=>{
+            resolve(0);
+        });
+    }catch(error)
+    {
+        resolve(0); 
+    } 
+});
+}
+//==============================================================
 function formatDate(date){
     return ('{0}-{1}-{3}T{4}:{5}:{6}Z').replace('{0}', date.getFullYear()).replace('{1}', date.getMonth() + 1).replace('{3}', date.getDate()).replace('{4}', (date.getHours() < 10 ? '0' : '')+date.getHours()).replace('{5}', (date.getMinutes() < 10 ? '0' : '')+date.getMinutes()).replace('{6}', (date.getSeconds() < 10 ? '0' : '')+date.getSeconds())
 }

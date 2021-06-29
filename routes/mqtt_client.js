@@ -8,33 +8,58 @@ var fr_mod = require('../modules/fr_module');
 var gr_mod = require('../modules/gallagher_module');
 var lift_mod = require('../modules/lift_module');
 var cron_mod = require('../modules/cron_module');
-var LiveStreamServer = require('../modules/LiveStreamServer');
-var CameraList = require('../modules/CameraList');
+var BIOSTART = require('../modules/biostart_module');
 var  client;
 var clientId;
 var host;
 var options;
 let router=express.Router();
 
-
-//get camera listing from camera_list module
-var camera_arr = CameraList.get_camera_listing();
-camera_arr.then(cam=>{
-	for (var i = cam.length - 1; i >= 0; i--) {
-		
-		var cameraIndexCode = cam[i].cameraIndexCode;
-		var port = 9999-i;
-		var cameraName = cam[i].cameraName;
-
-		//starting live stream for each camera using different port
-		var ipcam_stream = new LiveStreamServer(cameraIndexCode,port,cameraName);
+var mylogin=false;
+var bs_scan=cron_mod.Login_into_device();
+bs_scan.then(login=>{
+	if(login)
+	{
+		mylogin=login;
+	}else{
+		mylogin=false;
 	}
 });
-
 router.post('/fr_camera_events', function (req, res) {
 	console.log("Getting Data From Camera Event....");
 	console.log(req.body.params.events);
-	
+	var rest=true;
+	var maindata=[];
+if(req.body.params.events[0]!=null)
+{ 
+  
+  console.log("Transactions....");
+  var eventData={
+	 
+	  "eventId":req.body.params.events[0].eventId,
+	  "eventType":req.body.params.events[0].eventType,
+	  "srcType":req.body.params.events[0].srcType,
+	  "srcIndex":req.body.params.events[0].srcIndex,
+	  "srcName":req.body.params.events[0].srcName,
+	  "status":req.body.params.events[0].status,
+	  "happenTime":req.body.params.events[0].happenTime 
+
+  }
+
+
+  maindata.push(eventData);
+  maindata=JSON.stringify(maindata);
+  console.log(maindata);
+  var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
+  syncdata.then(res=>{
+console.log(res);
+  });
+}else{
+  rest=false;
+}	
+
+
+res.send(rest);
 	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
@@ -254,10 +279,90 @@ asyncCall_for_camera_listing();
 
 
 
+//============BIO START CONFIGS===============
+//=============================================
+		//ADD SCAN DEVICES===========
+		if(mylogin){
+		var devices_res=cron_mod.get_bs_scan_devices(mylogin);
+		devices_res.then(getdevices=>{
+			if(getdevices==2){
+			var bs_scan=cron_mod.Login_into_device();
+			bs_scan.then(login=>{
+				if(login)
+				{
+					mylogin=login;
+				}else{
+					mylogin=false;
+				}
+			});
+		}
+		else if(getdevices==3){
+			
+		}else{
+			var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
+			syncdata.then(res=>{
+			// console.log(res);
+			});
+		}
+		});
+				}else{
+					
+					var bs_scan=cron_mod.Login_into_device();
+					bs_scan.then(login=>{
+						if(login)
+						{
+							mylogin=login;
+						}else{
+							mylogin=false;
+						}
+					});
+				}
+	//==================ADD USER GROUPS===================
+			//ADD SCAN DEVICES===========
+			if(mylogin){
+				var devices_res=cron_mod.get_bs_user_groups(mylogin);
+				devices_res.then(getdevices=>{
+					if(getdevices==2){
+					var bs_scan=cron_mod.Login_into_device();
+					bs_scan.then(login=>{
+						if(login)
+						{
+							mylogin=login;
+						}else{
+							mylogin=false;
+						}
+					});
+				}
+				else if(getdevices==3){
+					
+				}else{
+					var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
+					syncdata.then(res=>{
+				//	 console.log(res);
+					});
+				}
+				});
+						}else{
+							
+							var bs_scan=cron_mod.Login_into_device();
+							bs_scan.then(login=>{
+								if(login)
+								{
+									mylogin=login;
+								}else{
+									mylogin=false;
+								}
+							});
+						}
+
+
+//===================NEW CHANGES================
+
+	
 
 
 
-
+//================================================
   }, constants.DEFAULT_GG_CONFIGURATION_CRON_TIME);
 
 }
@@ -394,12 +499,10 @@ function run_cron_for_fr_event_subscription(){
 	sbscription.then(groups=>{
 		console.log(groups);
 		if(groups==-1){
-		var data={eventDest: constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions',
-				eventTypes: [constants.FR_FACE_EVENT_CODE]
-			}
-// var data={eventDest: constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions',
-		// 		eventTypes: [131659,1482753,49697,197160,193,197151,194]
+		// var data={eventDest: constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions',
+		// 		eventTypes: [constants.FR_FACE_EVENT_CODE]
 		// 	}
+
 		var data='{"eventDest":"'+constants.FR_SUBSCRIPTION+'/mqtt_client/fr_transactions","eventTypes":['+constants.FR_FACE_EVENT_CODE+']}';
 		var thermal_event=cron_mod.save_fr_get_event_subscription(data);
 		thermal_event.then(face_resp=>{
@@ -408,8 +511,14 @@ function run_cron_for_fr_event_subscription(){
 		var face_event=cron_mod.save_fr_get_event_subscription(data);
 		thermal_event.then(thermal_resp=>{
 			if(thermal_resp){
+	var data='{"eventDest":"'+constants.FR_SUBSCRIPTION+'/mqtt_client/fr_camera_events","eventTypes":['+constants.FR_MOTION_DETECTION_CAMERA_CODE+']}';
+		var face_event=cron_mod.save_fr_get_event_subscription(data);
+		thermal_event.then(cameraevents=>{
+			if(cameraevents){
 				console.log("Events Successfully Subscribed");
 		clearInterval(face_thermal_events); 
+			}
+		});
 			}
 		});
 			}
@@ -427,6 +536,9 @@ function run_cron_for_fr_event_subscription(){
 	  }, 5000);
 	
 }
+
+
+
 client=configuration_mqtt();
 function configuration_mqtt()
 {
@@ -486,6 +598,29 @@ client.on('message', function (topic, message, packet) {
 if(req_method == 'checking_server'){
 	//console.log("SERVER IS WORKING");
 	 client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
+ }
+ if(req_method == 'checking_gallagher_device'){
+	 var gg_checking=cron_mod.check_gallagher_device_status();
+	 gg_checking.then(res=>{
+		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
+	})
+	 					
+ }
+ if(req_method == 'checking_fr_device'){
+	
+	 var ff_checkings=cron_mod.check_fr_device_status();
+	 ff_checkings.then(res=>{
+		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
+	})
+	 					
+ }
+ if(req_method == 'checking_bio_device'){
+	 var bschecking=cron_mod.check_biostar_device_status();
+	
+	 bschecking.then(res=>{
+		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
+	})
+	 					
  }
  //======================CHECK USER EXISTIS===================
  if(req_method == 'fr_user_exist'){
@@ -566,7 +701,33 @@ if(req_method == 'checking_server'){
 			 
 		 });				
 	 }
-	 
+	 if(req_method == 'add_bs_users'){
+		if(mylogin){
+		var msgcontent = 'BIOSTAR Data Recieved';
+		
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+		 var personal_info = data_obj['personal'];
+		
+		 if(data_obj['personal']['tag']=="Add")
+		 {
+			var finger_prints = data_obj['BS']['finger_prints'];
+			var lift_id = BIOSTART.add_user_in_biostart(mylogin ,personal_info,finger_prints)
+		 }else{
+		console.log("UPDATED");
+			var lift_id = BIOSTART.update_user_in_biostart(mylogin ,personal_info)
+		 }
+		
+		 lift_id.then( liftrep => {
+			 
+			var gg = liftrep[0]['BS']['person_id'];
+			console.log("USER_BS="+gg);
+		client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
+			 
+		 });
+		}else{
+              console.log("NOT LOGIN IN BS");      
+		}				
+	 }
 	///////////////////////////////////////////////////////////////////
 	
 	////////////////////delete profile to devices////////////////////////
@@ -600,7 +761,16 @@ if(req_method == 'checking_server'){
 		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
 		 });				
 	 }
-
+	 if(req_method == 'delete_bs_users'){
+		var msgcontent = 'Data Recieved';
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+		 var person_id_bs = data_obj['BS']['person_id'];
+		 var lift_id = BIOSTART.delete_user_from_biostar(mylogin,person_id_bs)
+		 lift_id.then( liftrep => {	 	
+			console.log("DELETED_USER_BS="+person_id_bs);
+		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
+		 });				
+	 }
 	////////////////////update cards to devices////////////////////////
 	if(req_method == 'update_gg_users'){
 		var msgcontent = 'Data Recieved';
@@ -701,6 +871,16 @@ if(req_method == 'checking_server'){
 							}
 						});
 						}
+						else if(data_obj['BS']){
+							var lft_id = BIOSTART.delete_user_from_biostar(mylogin,data_obj['BS']['user_id'])	
+							lft_id.then(lf_resp=>{	
+								if(lf_resp){		
+								client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+								}else{
+								client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+								}
+							});
+							}
 	
 		 }
 		 
@@ -840,7 +1020,54 @@ if(req_method == 'checking_server'){
 		}
 
 		///////////////////////////////////////////////////////////////////
-  
+  //==========================BIO STAR======================
+  if(req_method=="scan_finger")
+  {
+	var msgcontent = 'Data Recieved';
+	var data_obj = JSON.parse( msg_arr[1] ); 
+	var device_id = data_obj['device_id'];
+	if(mylogin)
+	{
+		//console.log("SUCCESSFULLY LOGIN");
+		var devices_res=BIOSTART.get_bs_scan_finger(mylogin,device_id);
+		devices_res.then(getdevices=>{
+			
+		if(getdevices==2)
+		{
+			var bs_scan=cron_mod.Login_into_device();
+			bs_scan.then(login=>{
+				if(login)
+				{
+					mylogin=login;
+					var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+					devices_res.then(resp=>{
+						client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+					})
+				}else{
+					mylogin=false;
+				}
+			});
+		}else{
+			client.publish(msgtopic, JSON.stringify(getdevices), { qos: 1, response: false })
+		}
+		});
+	}else{
+		var bs_scan=cron_mod.Login_into_device();
+		bs_scan.then(login=>{
+			if(login)
+			{
+				mylogin=login;
+				var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+				devices_res.then(resp=>{
+					client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+				})
+			}else{
+				mylogin=false;
+			}
+		});
+	}
+
+  }
 	//===============================================================
 	}	
 })

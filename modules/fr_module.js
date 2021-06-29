@@ -106,7 +106,7 @@ axios(config)
 
     })
 .then(function (restp){
- // console.log(response);
+ 
 if(restp.data.code==0)
 {			
 console.log('Added In Device');

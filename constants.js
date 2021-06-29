@@ -295,4 +295,56 @@ lineReader.eachLine('./config.txt', function(line) {
         
        
     }
+    else if(tag=='BIO_STAR_URL')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.BIO_STAR_URL =value;
+       
+        
+        
+       
+    }
+    else if(tag=='BIO_STAR_NAME')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.BIO_STAR_NAME =value;
+       
+        
+        
+       
+    }
+    else if(tag=='BIO_STAR_USERNAME')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.BIO_STAR_USERNAME =value;
+       
+        
+        
+       
+    }
+    else if(tag=='BIO_STAR_PASSWORD')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.BIO_STAR_PASSWORD =value;  
+       
+    }
+    else if(tag=='FingerScanQuality')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.FingerScanQuality =value;  
+       
+    }
+    else if(tag=='FR_MOTION_DETECTION_CAMERA_CODE')
+    {
+        var value=lineitem[1].trim();
+     
+        exports.FR_MOTION_DETECTION_CAMERA_CODE =value;  
+       
+    }
+    
 });
