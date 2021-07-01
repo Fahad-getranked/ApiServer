@@ -154,125 +154,125 @@ var mydoors;
 var mycardtypes;
 var myfrgroups;
 var frdoors;
-var divisions=cron_mod.get_gallagher_divisions();
-divisions.then(groups=>{
-	mydivisions=JSON.stringify(groups);
-var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var orginazations=cron_mod.get_fr_organizations();
-orginazations.then(groups=>{
-	myorgs=JSON.stringify(groups);
+// var divisions=cron_mod.get_gallagher_divisions();
+// divisions.then(groups=>{
+// 	mydivisions=JSON.stringify(groups);
+// var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions);
+// syncdata.then(res=>{
+// //  console.log(res);
+// });
+// });
+// var orginazations=cron_mod.get_fr_organizations();
+// orginazations.then(groups=>{
+// 	myorgs=JSON.stringify(groups);
 	
-var syncdata=cron_mod.save_fr_org_in_server(myorgs);
-syncdata.then(res=>{
-//   console.log(res);
-});
-});
-var frgroups=cron_mod.get_fr_groups();
-frgroups.then(groups=>{
-	myfrgroups=JSON.stringify(groups);
+// var syncdata=cron_mod.save_fr_org_in_server(myorgs);
+// syncdata.then(res=>{
+// //   console.log(res);
+// });
+// });
+// var frgroups=cron_mod.get_fr_groups();
+// frgroups.then(groups=>{
+// 	myfrgroups=JSON.stringify(groups);
 	
-var syncdata=cron_mod.save_fr_group_in_server(myfrgroups);
-syncdata.then(res=>{
+// var syncdata=cron_mod.save_fr_group_in_server(myfrgroups);
+// syncdata.then(res=>{
  
-});
-});
-var dor=cron_mod.get_fr_doors();
-dor.then(groups=>{
-	frdoors=JSON.stringify(groups);
+// });
+// });
+// var dor=cron_mod.get_fr_doors();
+// dor.then(groups=>{
+// 	frdoors=JSON.stringify(groups);
 	
-var syncdata=cron_mod.save_fr_doors_in_server(frdoors);
-syncdata.then(res=>{
+// var syncdata=cron_mod.save_fr_doors_in_server(frdoors);
+// syncdata.then(res=>{
  
-});
-});
-var access_groups=cron_mod.get_gallagher_access_groups();
-access_groups.then(groups=>{
-mygroups=JSON.stringify(groups);
-var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var access_zones=cron_mod.get_gallagher_zones();
-access_zones.then(zones=>{
-	myzones=JSON.stringify(zones);
-	var syncdata=cron_mod.save_gg_access_zones_in_server(myzones);
-syncdata.then(res=>{
-// console.log(res);
-});
-});
-var access_doors=cron_mod.get_gallagher_doors();
+// });
+// });
+// var access_groups=cron_mod.get_gallagher_access_groups();
+// access_groups.then(groups=>{
+// mygroups=JSON.stringify(groups);
+// var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups);
+// syncdata.then(res=>{
+// //  console.log(res);
+// });
+// });
+// var access_zones=cron_mod.get_gallagher_zones();
+// access_zones.then(zones=>{
+// 	myzones=JSON.stringify(zones);
+// 	var syncdata=cron_mod.save_gg_access_zones_in_server(myzones);
+// syncdata.then(res=>{
+// // console.log(res);
+// });
+// });
+// var access_doors=cron_mod.get_gallagher_doors();
 
-access_doors.then(doors=>{
-// console.log(doors);
-mydoors=JSON.stringify(doors);
-var syncdata=cron_mod.save_gg_doors_in_server(mydoors);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var access_types=cron_mod.get_gallagher_card_types();
-access_types.then(types=>{
-	mycardtypes=JSON.stringify(types);
-	var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes);
-syncdata.then(res=>{
-// console.log(res);
-});
-});
+// access_doors.then(doors=>{
+// // console.log(doors);
+// mydoors=JSON.stringify(doors);
+// var syncdata=cron_mod.save_gg_doors_in_server(mydoors);
+// syncdata.then(res=>{
+// //  console.log(res);
+// });
+// });
+// var access_types=cron_mod.get_gallagher_card_types();
+// access_types.then(types=>{
+// 	mycardtypes=JSON.stringify(types);
+// 	var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes);
+// syncdata.then(res=>{
+// // console.log(res);
+// });
+// });
 
 
-//*****************************Camera Listings**********************************
-//******************************************************************************
+// //*****************************Camera Listings**********************************
+// //******************************************************************************
 
-function get_camera_thumbnail(cameraIndexCode) {
-	return new Promise(resolve => {
-		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
-		thumbnail.then(b64_image=>{
+// function get_camera_thumbnail(cameraIndexCode) {
+// 	return new Promise(resolve => {
+// 		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
+// 		thumbnail.then(b64_image=>{
 			
-			resolve(b64_image);
-		});
-	});
-}
+// 			resolve(b64_image);
+// 		});
+// 	});
+// }
 
-function get_camera_listings(){
+// function get_camera_listings(){
 
-	return new Promise(resolve => {
-		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
+// 	return new Promise(resolve => {
+// 		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
 
-		cameras.then(cameras=>{
-			resolve(cameras);
-		});
-	});
-}
+// 		cameras.then(cameras=>{
+// 			resolve(cameras);
+// 		});
+// 	});
+// }
   
-async function asyncCall_for_camera_listing() {
+// async function asyncCall_for_camera_listing() {
 	
-	const cameras = await get_camera_listings();
+// 	const cameras = await get_camera_listings();
 
-	for (var i = cameras.length - 1; i >= 0; i--) {
+// 	for (var i = cameras.length - 1; i >= 0; i--) {
 
-		var cameraIndexCode = cameras[i].cameraIndexCode;
-		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
-		cameras[i].port = 9999-1;
+// 		var cameraIndexCode = cameras[i].cameraIndexCode;
+// 		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+// 		cameras[i].port = 9999-1;
 		
-	}
+// 	}
 	
-	//console.log(cameras);
-	cam_data=JSON.stringify(cameras);
+// 	//console.log(cameras);
+// 	cam_data=JSON.stringify(cameras);
 	
 	
-	var syncdata=cron_mod.save_cameras_in_server(cam_data);
-	syncdata.then(res=>{
-		//console.log(res);
-	});
+// 	var syncdata=cron_mod.save_cameras_in_server(cam_data);
+// 	syncdata.then(res=>{
+// 		//console.log(res);
+// 	});
 	
-}
+// }
 
-asyncCall_for_camera_listing();
+// asyncCall_for_camera_listing();
 
 //******************************************************************************
 //******************************************************************************
@@ -282,78 +282,78 @@ asyncCall_for_camera_listing();
 //============BIO START CONFIGS===============
 //=============================================
 		//ADD SCAN DEVICES===========
-		if(mylogin){
-		var devices_res=cron_mod.get_bs_scan_devices(mylogin);
-		devices_res.then(getdevices=>{
-			if(getdevices==2){
-			var bs_scan=cron_mod.Login_into_device();
-			bs_scan.then(login=>{
-				if(login)
-				{
-					mylogin=login;
-				}else{
-					mylogin=false;
-				}
-			});
-		}
-		else if(getdevices==3){
+	// 	if(mylogin){
+	// 	var devices_res=cron_mod.get_bs_scan_devices(mylogin);
+	// 	devices_res.then(getdevices=>{
+	// 		if(getdevices==2){
+	// 		var bs_scan=cron_mod.Login_into_device();
+	// 		bs_scan.then(login=>{
+	// 			if(login)
+	// 			{
+	// 				mylogin=login;
+	// 			}else{
+	// 				mylogin=false;
+	// 			}
+	// 		});
+	// 	}
+	// 	else if(getdevices==3){
 			
-		}else{
-			var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
-			syncdata.then(res=>{
-			// console.log(res);
-			});
-		}
-		});
-				}else{
+	// 	}else{
+	// 		var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
+	// 		syncdata.then(res=>{
+	// 		// console.log(res);
+	// 		});
+	// 	}
+	// 	});
+	// 			}else{
 					
-					var bs_scan=cron_mod.Login_into_device();
-					bs_scan.then(login=>{
-						if(login)
-						{
-							mylogin=login;
-						}else{
-							mylogin=false;
-						}
-					});
-				}
-	//==================ADD USER GROUPS===================
-			//ADD SCAN DEVICES===========
-			if(mylogin){
-				var devices_res=cron_mod.get_bs_user_groups(mylogin);
-				devices_res.then(getdevices=>{
-					if(getdevices==2){
-					var bs_scan=cron_mod.Login_into_device();
-					bs_scan.then(login=>{
-						if(login)
-						{
-							mylogin=login;
-						}else{
-							mylogin=false;
-						}
-					});
-				}
-				else if(getdevices==3){
+	// 				var bs_scan=cron_mod.Login_into_device();
+	// 				bs_scan.then(login=>{
+	// 					if(login)
+	// 					{
+	// 						mylogin=login;
+	// 					}else{
+	// 						mylogin=false;
+	// 					}
+	// 				});
+	// 			}
+	// //==================ADD USER GROUPS===================
+	// 		//ADD SCAN DEVICES===========
+	// 		if(mylogin){
+	// 			var devices_res=cron_mod.get_bs_user_groups(mylogin);
+	// 			devices_res.then(getdevices=>{
+	// 				if(getdevices==2){
+	// 				var bs_scan=cron_mod.Login_into_device();
+	// 				bs_scan.then(login=>{
+	// 					if(login)
+	// 					{
+	// 						mylogin=login;
+	// 					}else{
+	// 						mylogin=false;
+	// 					}
+	// 				});
+	// 			}
+	// 			else if(getdevices==3){
 					
-				}else{
-					var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
-					syncdata.then(res=>{
-				//	 console.log(res);
-					});
-				}
-				});
-						}else{
+	// 			}else{
+	// 				var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
+	// 				syncdata.then(res=>{
+	// 			//	 console.log(res);
+	// 				});
+	// 			}
+	// 			});
+	// 					}else{
 							
-							var bs_scan=cron_mod.Login_into_device();
-							bs_scan.then(login=>{
-								if(login)
-								{
-									mylogin=login;
-								}else{
-									mylogin=false;
-								}
-							});
-						}
+	// 						var bs_scan=cron_mod.Login_into_device();
+	// 						bs_scan.then(login=>{
+	// 							if(login)
+	// 							{
+	// 								mylogin=login;
+	// 							}else{
+	// 								mylogin=false;
+	// 							}
+	// 						});
+	// 					}
 
 
 //===================NEW CHANGES================
