@@ -374,8 +374,10 @@ resolve(myarray);
 		
 	}
 //=========================FOR USER AND VISITORS===================
-	exports.update_card_status = function(firstname,lastname,card_holder_id,cardtypes)
+	exports.update_card_status = function(firstname,lastname,photo,card_holder_id,cardtypes)
 	{
+	var imges=get_user_image(photo);
+     imges.then(profileimage=>{
 		var carddetails=[];
 	
 			for(var i=0;i<cardtypes.length;i++)
@@ -397,6 +399,7 @@ resolve(myarray);
 					"authorised": true,
 					'firstName' : firstname,
 					'lastName'  :lastname,
+					'photo':profileimage,
 					"cards": {
 					  "update":carddetails
 					}
@@ -416,7 +419,7 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-		
+	
 			resolve(true);
 			
 				
@@ -431,6 +434,7 @@ resolve(myarray);
 			resolve(false);
 		}
 		});
+	});
 	}
 //=======================================================================
 

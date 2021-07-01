@@ -626,7 +626,7 @@ exports. get_gallagher_door_alarms=function()
     }, 50);
   
              }).catch(error =>  {
-        	console.log(error)
+        	//console.log(error)
         
         });
   
@@ -2177,32 +2177,55 @@ exports. check_gallagher_device_status= function ()
 }
 exports. check_fr_device_status= function ()
 {
-     
-    return new Promise((resolve) => {
-     try{ 
-    axios({
-        method: 'get',
-        httpsAgent: extagent,
-        url:  constants.GALLAGHER_HOST + '/api/',
-        headers: {
-            'Authorization': apiKey,
-            'Content-Type' : 'application/json'
-          }
-      })
-    .then(function (response) {
-        if(response.status==200){
-        resolve(1);
-        }else{
-            resolve(0);
-        }
-    }).catch(error=>{
-        resolve(0);
-    });
-}catch(error)
-{
-    resolve(0);
-}
+   
+	return new Promise((resolve) => {
+		try {
+       
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/',
+'BodyParameters': 
+'{}' 
 });
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response)
+ {
+ if(response.status==200)
+ {
+    resolve(1);
+ }else{
+     resolve(0);
+ }
+  
+
+})
+.catch(function (error) {
+    resolve(0)
+});
+
+           
+        }catch(error)
+        {
+         
+          resolve(0)
+        }
+  
+    });
 }
 exports. check_biostar_device_status= function ()
 {

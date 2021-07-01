@@ -777,7 +777,8 @@ if(req_method == 'checking_server'){
 		var data_obj = JSON.parse( msg_arr[1] ); 
 		var gg_person_id = data_obj['GG']['person_id'];
 		var gg_cards = data_obj['GG']['cards'];
-			var cardholder_id = gr_mod.update_card_status(data_obj['GG']['firstname'],data_obj['GG']['lastname'],gg_person_id,gg_cards)
+			var cardholder_id = gr_mod.update_card_status(data_obj['GG']['firstname'],data_obj['GG']['lastname'],data_obj['GG']['photo'],gg_person_id,gg_cards)
+		try{
 			cardholder_id.then(gala_resp=>{				
 				if(gala_resp){
 					console.log("GG EXPIRY UPDATED");	
@@ -787,13 +788,19 @@ if(req_method == 'checking_server'){
 			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
 				}	
 			});	
+		}catch(error)
+		{
+			console.log("GG EXPIRY FAILED TO UPDATE");	
+			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })
+		}
 	 }
 	 if(req_method == 'update_fr_users'){
 		var data_obj = JSON.parse( msg_arr[1] );
 		var fr_person_id = data_obj['FR']['person_id'];
 		var fr_cards = data_obj['FR']['cards'];
-		var face_id = fr_mod.add_update_fr_card(data_obj['FR']['firstname'],data_obj['FR']['lastname'],fr_person_id,fr_cards[0])
-			face_id.then(face_resp=>{		
+		var face_id = fr_mod.add_update_fr_card(data_obj['FR']['firstname'],data_obj['FR']['lastname'],data_obj['FR']['photo'],fr_person_id,fr_cards[0])
+		try{
+		face_id.then(face_resp=>{		
 
 			if(face_resp){
 				console.log("FR EXPIRY UPDATED");
@@ -804,6 +811,11 @@ if(req_method == 'checking_server'){
 			}
 
 			});
+		}catch(error)
+		{
+			console.log("FR EXPIRY FAILED TO UPDATE");
+			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	
+		}
 	 }
 	 if(req_method == 'update_sl_users'){
 		var msgcontent = 'Data Recieved';

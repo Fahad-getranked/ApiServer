@@ -227,13 +227,14 @@ console.log("Sync With device");
 }
 
 
-exports. add_update_fr_card = function (firstname,lastname,personId,card_arry)
+exports. add_update_fr_card = function (firstname,lastname,photo,personId,card_arry)
 {
  
  var beginTime=formatDate(new Date(card_arry['valid_from']));
   var endTime=formatDate(new Date(card_arry['valid_to']));
 	return new Promise((resolve) => {
 		try {
+  
         var devicestring="ApiKey="+constants.FR_KEY+"&MethodType=POST&ApiSecret="+constants.FR_SECRET_KEY+"&IP="+constants.FR_LOCAL_IP+"&ProtocolType="+constants.FR_PROTOCOL+"&ApiMethod=/api/visitor/v1/auth/reapplication&BodyParameters={}";	     
   var url=constants.FR_HOST+'/api/FrData/';
 var data = qs.stringify({
@@ -270,7 +271,7 @@ axios(config)
 
 if(restp.data.code==0)
 {	
-
+  fr_mod.update_fr_faceimage_for_single_user(photo,personId);
   resolve(true);
 }else{
 
@@ -288,7 +289,7 @@ if(restp.data.code==0)
   resolve(false);
 });
 
-           
+     
         }catch(error)
         {
          
@@ -513,6 +514,60 @@ if(response.data.code==0)
         }catch(error)
         {
           resolve(false);
+        }
+  
+    });
+}
+
+
+
+exports. update_fr_faceimage_for_single_user = function (image_url,personId)
+{
+   
+  
+	return new Promise((resolve) => {
+		try {
+    
+            var imges=get_user_image(image_url);
+            imges.then(profileimage=>{
+                var imagesy=profileimage.replace(/\s/g, '');
+		
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': constants.FR_LOCAL_IP,
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/face/single/update',
+'BodyParameters': 
+'{"personId":"'+personId+'","faceData":"'+imagesy+'"}' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response) {
+ 
+  resolve(1);
+})
+.catch(function (error) {
+ 
+  resolve(0);
+});
+
+            });
+        }catch(error)
+        {
+
+         resolve(0);
         }
   
     });
