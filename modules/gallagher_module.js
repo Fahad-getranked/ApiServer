@@ -399,7 +399,7 @@ resolve(myarray);
 					"authorised": true,
 					'firstName' : firstname,
 					'lastName'  :lastname,
-					'photo':profileimage,
+					'@photo':profileimage,
 					"cards": {
 					  "update":carddetails
 					}

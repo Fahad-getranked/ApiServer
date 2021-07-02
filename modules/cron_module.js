@@ -729,6 +729,9 @@ exports. get_gallagher_all_events=function()
             var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");      
             var checkin_events={
                 'external_id':element.id,
+                'event_name':element.type.name,
+                'eventID':element.type.id,
+                'event_priority':element.priority,
                 'cardholder_id':element.cardholder.id,
                 'zone_id':element.entryAccessZone.id,
                 'door_id':element.source.id,
@@ -768,6 +771,9 @@ events.forEach(function(element) {
         var checkin_events={
             'external_id':element.id,
             'cardholder_id':element.cardholder.id,
+            'event_name':element.type.name,
+            'eventID':element.type.id,
+            'event_priority':element.priority,
             'zone_id':element.exitAccessZone.id,
             'door_id':element.source.id,
             'type':0,
@@ -811,6 +817,9 @@ events.forEach(function(element) {
         var noentry_events={
             'external_id':element.id,
             'cardholder_id':element.cardholder.id,
+            'event_name':element.type.name,
+            'eventID':element.type.id,
+            'event_priority':element.priority,
             'zone_id':element.entryAccessZone.id,
             'door_id':element.source.id,
             'type':1,
