@@ -249,30 +249,30 @@ function get_camera_listings(){
 	});
 }
   
-async function asyncCall_for_camera_listing() {
+// async function asyncCall_for_camera_listing() {
 	
-	const cameras = await get_camera_listings();
+// 	const cameras = await get_camera_listings();
 
-	for (var i = cameras.length - 1; i >= 0; i--) {
+// 	for (var i = cameras.length - 1; i >= 0; i--) {
 
-		var cameraIndexCode = cameras[i].cameraIndexCode;
-		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
-		cameras[i].port = 9999-1;
+// 		var cameraIndexCode = cameras[i].cameraIndexCode;
+// 		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+// 		cameras[i].port = 9999-1;
 		
-	}
+// 	}
 	
-	//console.log(cameras);
-	cam_data=JSON.stringify(cameras);
+// 	//console.log(cameras);
+// 	cam_data=JSON.stringify(cameras);
 	
 	
-	var syncdata=cron_mod.save_cameras_in_server(cam_data);
-	syncdata.then(res=>{
-		//console.log(res);
-	});
+// 	var syncdata=cron_mod.save_cameras_in_server(cam_data);
+// 	syncdata.then(res=>{
+// 		//console.log(res);
+// 	});
 	
-}
+// }
 
-asyncCall_for_camera_listing();
+// asyncCall_for_camera_listing();
 
 //******************************************************************************
 //******************************************************************************
