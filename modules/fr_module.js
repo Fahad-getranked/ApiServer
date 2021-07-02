@@ -120,7 +120,7 @@ if(response.data.data!='')
     myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
    resolve(myarray);
    }else{
-    // console.log(response);
+     console.log(response);
     var myarray=[];
     myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
    resolve(myarray);
