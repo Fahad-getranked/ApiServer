@@ -228,26 +228,26 @@ syncdata.then(res=>{
 //*****************************Camera Listings**********************************
 //******************************************************************************
 
-function get_camera_thumbnail(cameraIndexCode) {
-	return new Promise(resolve => {
-		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
-		thumbnail.then(b64_image=>{
+// function get_camera_thumbnail(cameraIndexCode) {
+// 	return new Promise(resolve => {
+// 		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
+// 		thumbnail.then(b64_image=>{
 			
-			resolve(b64_image);
-		});
-	});
-}
+// 			resolve(b64_image);
+// 		});
+// 	});
+// }
 
-function get_camera_listings(){
+// function get_camera_listings(){
 
-	return new Promise(resolve => {
-		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
+// 	return new Promise(resolve => {
+// 		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
 
-		cameras.then(cameras=>{
-			resolve(cameras);
-		});
-	});
-}
+// 		cameras.then(cameras=>{
+// 			resolve(cameras);
+// 		});
+// 	});
+// }
   
 // async function asyncCall_for_camera_listing() {
 	
@@ -282,78 +282,78 @@ function get_camera_listings(){
 //============BIO START CONFIGS===============
 //=============================================
 		//ADD SCAN DEVICES===========
-		if(mylogin){
-		var devices_res=cron_mod.get_bs_scan_devices(mylogin);
-		devices_res.then(getdevices=>{
-			if(getdevices==2){
-			var bs_scan=cron_mod.Login_into_device();
-			bs_scan.then(login=>{
-				if(login)
-				{
-					mylogin=login;
-				}else{
-					mylogin=false;
-				}
-			});
-		}
-		else if(getdevices==3){
+		// if(mylogin){
+		// var devices_res=cron_mod.get_bs_scan_devices(mylogin);
+		// devices_res.then(getdevices=>{
+		// 	if(getdevices==2){
+		// 	var bs_scan=cron_mod.Login_into_device();
+		// 	bs_scan.then(login=>{
+		// 		if(login)
+		// 		{
+		// 			mylogin=login;
+		// 		}else{
+		// 			mylogin=false;
+		// 		}
+		// 	});
+		// }
+		// else if(getdevices==3){
 			
-		}else{
-			var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
-			syncdata.then(res=>{
-			// console.log(res);
-			});
-		}
-		});
-				}else{
+		// }else{
+		// 	var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
+		// 	syncdata.then(res=>{
+		// 	// console.log(res);
+		// 	});
+		// }
+		// });
+		// 		}else{
 					
-					var bs_scan=cron_mod.Login_into_device();
-					bs_scan.then(login=>{
-						if(login)
-						{
-							mylogin=login;
-						}else{
-							mylogin=false;
-						}
-					});
-				}
+		// 			var bs_scan=cron_mod.Login_into_device();
+		// 			bs_scan.then(login=>{
+		// 				if(login)
+		// 				{
+		// 					mylogin=login;
+		// 				}else{
+		// 					mylogin=false;
+		// 				}
+		// 			});
+		// 		}
 	//==================ADD USER GROUPS===================
 			//ADD SCAN DEVICES===========
-			if(mylogin){
-				var devices_res=cron_mod.get_bs_user_groups(mylogin);
-				devices_res.then(getdevices=>{
-					if(getdevices==2){
-					var bs_scan=cron_mod.Login_into_device();
-					bs_scan.then(login=>{
-						if(login)
-						{
-							mylogin=login;
-						}else{
-							mylogin=false;
-						}
-					});
-				}
-				else if(getdevices==3){
+			// if(mylogin){
+			// 	var devices_res=cron_mod.get_bs_user_groups(mylogin);
+			// 	devices_res.then(getdevices=>{
+			// 		if(getdevices==2){
+			// 		var bs_scan=cron_mod.Login_into_device();
+			// 		bs_scan.then(login=>{
+			// 			if(login)
+			// 			{
+			// 				mylogin=login;
+			// 			}else{
+			// 				mylogin=false;
+			// 			}
+			// 		});
+			// 	}
+			// 	else if(getdevices==3){
 					
-				}else{
-					var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
-					syncdata.then(res=>{
-				//	 console.log(res);
-					});
-				}
-				});
-						}else{
+			// 	}else{
+			// 		var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
+			// 		syncdata.then(res=>{
+			// 	//	 console.log(res);
+			// 		});
+			// 	}
+			// 	});
+			// 			}else{
 							
-							var bs_scan=cron_mod.Login_into_device();
-							bs_scan.then(login=>{
-								if(login)
-								{
-									mylogin=login;
-								}else{
-									mylogin=false;
-								}
-							});
-						}
+			// 				var bs_scan=cron_mod.Login_into_device();
+			// 				bs_scan.then(login=>{
+			// 					if(login)
+			// 					{
+			// 						mylogin=login;
+			// 					}else{
+			// 						mylogin=false;
+			// 					}
+			// 				});
+			// 			}
 
 
 //===================NEW CHANGES================
