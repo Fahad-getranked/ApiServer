@@ -93,7 +93,9 @@ exports.add_user_in_biostart=function(token,personal_info,finger_prints)
             var endTimey=formatDate(new Date(personal_info['valid_to']));
             try {
               var obj={
-				"access_groups": [],
+				"access_groups": [{
+					"id": personal_info['group']
+				}],
 				"email": personal_info['email'],
 			   "start_datetime":beginTimey,
 			   "expiry_datetime":endTimey,
@@ -101,7 +103,7 @@ exports.add_user_in_biostart=function(token,personal_info,finger_prints)
 				"phone_number": personal_info['phone'],
 				"security_level": "1",
 				"user_group": {
-				  "id": personal_info['group']
+				  "id": 1
 				},
 			    "status": "AC",
 				"user_id": personal_info['person_code']

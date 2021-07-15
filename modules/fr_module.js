@@ -48,12 +48,14 @@ function get_user_image(url){
 				
 				resolve(response.data);	
 			}).catch(error =>  {
-					console.log(error)
+        resolve('');	
+				//	console.log(error)
 			
 			});
 		}catch(error)
 		{
-				console.log(error);
+      resolve('');	
+			//	console.log(error);
 		}
 	});
 		
@@ -97,6 +99,7 @@ var config = {
 
 axios(config)
 .then(function (response) {
+  console.log(response);
   try{
  axios({
     method: 'POST', 
@@ -117,25 +120,28 @@ console.log('Added In Device');
 if(response.data.data!='')
    {
     var myarray=[];
-    myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
-   resolve(myarray);
+  
+      myarray.push({"FR":{"person_id":response.data.data,"vehicle_id":0,"message":"success"}});
+      resolve(myarray);
+  
+   
    }else{
      console.log(response);
     var myarray=[];
-    myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+    myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"Invalid Request"}});
    resolve(myarray);
    }
 }).catch(error =>  {
   console.log(error);
   var myarray=[];
-	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
+	myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
 }catch(error)
 {
   console.log(error);
   var myarray=[];
-  myarray.push({"FR":{"person_id":response.data.data,"message":"success"}});
+  myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"success"}});
 }
 })
 .catch(function (error) {
@@ -572,3 +578,167 @@ axios(config)
   
     });
 }
+
+
+///===================ADD FR VEHICLE INFO=============
+exports. add_person_vehicle = function (person_id,plate_no,group)
+{
+ 
+ 
+	return new Promise((resolve) => {
+		try {
+       
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/vehicle/single/add',
+'BodyParameters': 
+'{ "plateNo": "'+plate_no+'",   "personId": "'+person_id+'", "vehicleGroupIndexCode": "'+group+'" }' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response)
+ {
+  
+   if(response.data.code==0)
+   {
+     resolve({'vehicle_id':response.data.data.vehicleId,'plate_no':response.data.data.plateNo});
+   }else{
+     resolve(3);
+   }
+
+})
+.catch(function (error) {
+ console.log(error);
+  resolve(3)
+});
+
+           
+        }catch(error)
+        {
+         
+          resolve(3)
+        }
+  
+    });
+}
+exports. delete_person_vehicle = function (vehicle_id)
+{
+ 
+ 
+	return new Promise((resolve) => {
+		try {
+       
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/vehicle/single/delete',
+'BodyParameters': 
+'{ "vehicleId": "'+vehicle_id+'" }' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response)
+ {
+   if(response.data.code==0)
+   {
+     resolve(1);
+   }else{
+     resolve(0);
+   }
+
+})
+.catch(function (error) {
+ //console.log(error);
+  resolve(0)
+});
+
+           
+        }catch(error)
+        {
+         
+          resolve(0)
+        }
+  
+    });
+}
+exports. update_person_vehicle = function (vehicle_id,person_id,plate_no,group)
+{
+ 
+ 
+	return new Promise((resolve) => {
+		try {
+       
+  var url=constants.FR_HOST+'/api/FrData/';
+var data = qs.stringify({
+ 'ApiKey': constants.FR_KEY,
+'MethodType': 'POST',
+'ApiSecret': constants.FR_SECRET_KEY,
+'IP': '127.0.0.1',
+'ProtocolType': constants.FR_PROTOCOL,
+'ApiMethod': '/api/resource/v1/vehicle/single/update',
+'BodyParameters': 
+'{"vehicleId": "'+vehicle_id+'", "plateNo": "'+plate_no+'",   "personId": "'+person_id+'", "vehicleGroupIndexCode": "'+group+'" }' 
+});
+
+var config = {
+  method: 'post',
+  url: url,
+  headers: { 
+    'Content-Type': 'application/x-www-form-urlencoded'
+  },
+  data : data
+};
+
+axios(config)
+.then(function (response)
+ {
+   if(response.data.code==0)
+   {
+     resolve(1);
+   }else{
+     resolve(0);
+   }
+
+})
+.catch(function (error) {
+ console.log(error);
+  resolve(0)
+});
+
+           
+        }catch(error)
+        {
+         
+          resolve(0)
+        }
+  
+    });
+}
+//======================================================

@@ -14,7 +14,6 @@ var clientId;
 var host;
 var options;
 let router=express.Router();
-
 var mylogin=false;
 var bs_scan=cron_mod.Login_into_device();
 bs_scan.then(login=>{
@@ -25,42 +24,42 @@ bs_scan.then(login=>{
 		mylogin=false;
 	}
 });
-router.post('/fr_camera_events', function (req, res) {
-	console.log("Getting Data From Camera Event....");
-	console.log(req.body.params.events);
-	var rest=true;
-	var maindata=[];
-if(req.body.params.events[0]!=null)
-{ 
+// router.post('/fr_camera_events', function (req, res) {
+// 	console.log("Getting Data From Camera Event....");
+// 	console.log(req.body.params.events);
+// 	var rest=true;
+// 	var maindata=[];
+// if(req.body.params.events[0]!=null)
+// { 
   
-  console.log("Transactions....");
-  var eventData={
+//   console.log("Transactions....");
+//   var eventData={
 	 
-	  "eventId":req.body.params.events[0].eventId,
-	  "eventType":req.body.params.events[0].eventType,
-	  "srcType":req.body.params.events[0].srcType,
-	  "srcIndex":req.body.params.events[0].srcIndex,
-	  "srcName":req.body.params.events[0].srcName,
-	  "status":req.body.params.events[0].status,
-	  "happenTime":req.body.params.events[0].happenTime 
+// 	  "eventId":req.body.params.events[0].eventId,
+// 	  "eventType":req.body.params.events[0].eventType,
+// 	  "srcType":req.body.params.events[0].srcType,
+// 	  "srcIndex":req.body.params.events[0].srcIndex,
+// 	  "srcName":req.body.params.events[0].srcName,
+// 	  "status":req.body.params.events[0].status,
+// 	  "happenTime":req.body.params.events[0].happenTime 
 
-  }
-
-
-  maindata.push(eventData);
-  maindata=JSON.stringify(maindata);
-  console.log(maindata);
-  var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
-  syncdata.then(res=>{
-console.log(res);
-  });
-}else{
-  rest=false;
-}	
+//   }
 
 
-res.send(rest);
-	});
+//   maindata.push(eventData);
+//   maindata=JSON.stringify(maindata);
+//   console.log(maindata);
+//   var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
+//   syncdata.then(res=>{
+// console.log(res);
+//   });
+// }else{
+//   rest=false;
+// }	
+
+
+// res.send(rest);
+// 	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
 	//console.log(req.body.params.events[0]);
@@ -102,35 +101,35 @@ console.log(res);
 
 res.send(rest);
 	});
-	router.post('/fr_faces_transactions', function (req, res) {
-		console.log("Getting Face Data....");
-		
-		var rest=true;
-		  var maindata=[];
-	if(req.body.params.events[0].data!=null)
-	{ 
-		var mydata=cron_mod.download_fr_image(req.body.params.events[0].data.picUri);
-		mydata.then(respp=>{
-	 var eventData={
-		  'pic':respp,
-		  "temperature":req.body.params.events[0].data.temperatureData,
-		  "door_id":req.body.params.events[0].srcIndex,
-		}
-		maindata.push(eventData);
-		maindata=JSON.stringify(maindata);
-	var syncdata=cron_mod.save_fr_images(maindata);
-			syncdata.then(res=>{
-	console.log(res);
-		});
-		});
+router.post('/fr_faces_transactions', function (req, res) {
+	console.log("Getting Face Data....");
 	
-	}else{
-		rest=false;
-	}	
-	
-	
-	res.send(rest);
-		});
+	var rest=true;
+		var maindata=[];
+if(req.body.params.events[0].data!=null)
+{ 
+	var mydata=cron_mod.download_fr_image(req.body.params.events[0].data.picUri);
+	mydata.then(respp=>{
+	var eventData={
+		'pic':respp,
+		"temperature":req.body.params.events[0].data.temperatureData,
+		"door_id":req.body.params.events[0].srcIndex,
+	}
+	maindata.push(eventData);
+	maindata=JSON.stringify(maindata);
+var syncdata=cron_mod.save_fr_images(maindata);
+		syncdata.then(res=>{
+console.log(res);
+	});
+	});
+
+}else{
+	rest=false;
+}	
+
+
+res.send(rest);
+	});
 //=====================SECTION to RUN Cron JOBS===============
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
@@ -141,240 +140,373 @@ if(constants.EXPORT_CARDHOLDER_CRON==1){
 	run_cron_for_gallagher_add_user();
 }
 if(constants.EXPORT_FR_USER_CRON==1){
-	
 	run_cron_for_fr_add_user();
 }
 function run_cron_for_gallagher_configuration(){
-var intervalss = setInterval(function() {
-var mydivisions;
-var myorgs;
-var mygroups;
-var myzones;
-var mydoors;
-var mycardtypes;
-var myfrgroups;
-var frdoors;
-var divisions=cron_mod.get_gallagher_divisions();
-divisions.then(groups=>{
-	mydivisions=JSON.stringify(groups);
-var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var orginazations=cron_mod.get_fr_organizations();
-orginazations.then(groups=>{
-	myorgs=JSON.stringify(groups);
-	
-var syncdata=cron_mod.save_fr_org_in_server(myorgs);
-syncdata.then(res=>{
-//   console.log(res);
-});
-});
-var frgroups=cron_mod.get_fr_groups();
-frgroups.then(groups=>{
-	myfrgroups=JSON.stringify(groups);
-	
-var syncdata=cron_mod.save_fr_group_in_server(myfrgroups);
-syncdata.then(res=>{
- 
-});
-});
-var dor=cron_mod.get_fr_doors();
-dor.then(groups=>{
-	frdoors=JSON.stringify(groups);
-	
-var syncdata=cron_mod.save_fr_doors_in_server(frdoors);
-syncdata.then(res=>{
- 
-});
-});
-var access_groups=cron_mod.get_gallagher_access_groups();
-access_groups.then(groups=>{
-mygroups=JSON.stringify(groups);
-var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var access_zones=cron_mod.get_gallagher_zones();
-access_zones.then(zones=>{
-	myzones=JSON.stringify(zones);
-	var syncdata=cron_mod.save_gg_access_zones_in_server(myzones);
-syncdata.then(res=>{
-// console.log(res);
-});
-});
-var access_doors=cron_mod.get_gallagher_doors();
-
-access_doors.then(doors=>{
-// console.log(doors);
-mydoors=JSON.stringify(doors);
-var syncdata=cron_mod.save_gg_doors_in_server(mydoors);
-syncdata.then(res=>{
-//  console.log(res);
-});
-});
-var access_types=cron_mod.get_gallagher_card_types();
-access_types.then(types=>{
-	mycardtypes=JSON.stringify(types);
-	var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes);
-syncdata.then(res=>{
-// console.log(res);
-});
-});
-
-
-//*****************************Camera Listings**********************************
-//******************************************************************************
-
-// function get_camera_thumbnail(cameraIndexCode) {
-// 	return new Promise(resolve => {
-// 		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
-// 		thumbnail.then(b64_image=>{
-			
-// 			resolve(b64_image);
-// 		});
-// 	});
-// }
-
-// function get_camera_listings(){
-
-// 	return new Promise(resolve => {
-// 		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
-
-// 		cameras.then(cameras=>{
-// 			resolve(cameras);
-// 		});
-// 	});
-// }
-  
-// async function asyncCall_for_camera_listing() {
-	
-// 	const cameras = await get_camera_listings();
-
-// 	for (var i = cameras.length - 1; i >= 0; i--) {
-
-// 		var cameraIndexCode = cameras[i].cameraIndexCode;
-// 		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
-// 		cameras[i].port = 9999-1;
-		
-// 	}
-	
-// 	//console.log(cameras);
-// 	cam_data=JSON.stringify(cameras);
-	
-	
-// 	var syncdata=cron_mod.save_cameras_in_server(cam_data);
-// 	syncdata.then(res=>{
-// 		//console.log(res);
-// 	});
-	
-// }
-
-// asyncCall_for_camera_listing();
-
-//******************************************************************************
-//******************************************************************************
-
-
-
-//============BIO START CONFIGS===============
-//=============================================
-		//ADD SCAN DEVICES===========
-		// if(mylogin){
-		// var devices_res=cron_mod.get_bs_scan_devices(mylogin);
-		// devices_res.then(getdevices=>{
-		// 	if(getdevices==2){
-		// 	var bs_scan=cron_mod.Login_into_device();
-		// 	bs_scan.then(login=>{
-		// 		if(login)
-		// 		{
-		// 			mylogin=login;
-		// 		}else{
-		// 			mylogin=false;
-		// 		}
-		// 	});
-		// }
-		// else if(getdevices==3){
-			
-		// }else{
-		// 	var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
-		// 	syncdata.then(res=>{
-		// 	// console.log(res);
-		// 	});
-		// }
-		// });
-		// 		}else{
-					
-		// 			var bs_scan=cron_mod.Login_into_device();
-		// 			bs_scan.then(login=>{
-		// 				if(login)
-		// 				{
-		// 					mylogin=login;
-		// 				}else{
-		// 					mylogin=false;
-		// 				}
-		// 			});
-		// 		}
-	//==================ADD USER GROUPS===================
-			//ADD SCAN DEVICES===========
-			// if(mylogin){
-			// 	var devices_res=cron_mod.get_bs_user_groups(mylogin);
-			// 	devices_res.then(getdevices=>{
-			// 		if(getdevices==2){
-			// 		var bs_scan=cron_mod.Login_into_device();
-			// 		bs_scan.then(login=>{
-			// 			if(login)
-			// 			{
-			// 				mylogin=login;
-			// 			}else{
-			// 				mylogin=false;
-			// 			}
-			// 		});
-			// 	}
-			// 	else if(getdevices==3){
-					
-			// 	}else{
-			// 		var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
-			// 		syncdata.then(res=>{
-			// 	//	 console.log(res);
-			// 		});
-			// 	}
-			// 	});
-			// 			}else{
-							
-			// 				var bs_scan=cron_mod.Login_into_device();
-			// 				bs_scan.then(login=>{
-			// 					if(login)
-			// 					{
-			// 						mylogin=login;
-			// 					}else{
-			// 						mylogin=false;
-			// 					}
-			// 				});
-			// 			}
-
-
-//===================NEW CHANGES================
-
-	
-
-
+var intervalss = setInterval(function() {	
+		clearInterval(intervalss);
 
 //================================================
   }, constants.DEFAULT_GG_CONFIGURATION_CRON_TIME);
 
 }
+//====================================================
+//===============RUN EVENTS ONLY ONE TIME==========
+//======================================================
+//*****************Gallagher************************ */
+GG_config();
+function GG_config(){
 
+	gallagher_access_groups();
+	gallagher_access_zones();
+	gallagher_access_doors();
+	gallagher_card_types();
+	gallagher_access_divisions();
+}
+function gallagher_access_groups()
+{
+	var access_groups=cron_mod.get_gallagher_access_groups();
+	access_groups.then(groups=>{
+	var mygroups=JSON.stringify(groups);
+	var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,'');
+	syncdata.then(res=>{
+	//  console.log(res);
+	});
+	});
+}
+function gallagher_access_zones()
+{
+var access_zones=cron_mod.get_gallagher_zones();
+access_zones.then(zones=>{
+	var  myzones=JSON.stringify(zones);
+	var syncdata=cron_mod.save_gg_access_zones_in_server(myzones,'');
+syncdata.then(res=>{
+// console.log(res);
+});
+});
+}
+function gallagher_access_doors()
+{
+	var access_doors=cron_mod.get_gallagher_doors();
+	access_doors.then(doors=>{
+	// console.log(doors);
+	var mydoors=JSON.stringify(doors);
+	var syncdata=cron_mod.save_gg_doors_in_server(mydoors,'');
+	syncdata.then(res=>{
+	//  console.log(res);
+	});
+	});
+}
+function gallagher_card_types()
+{
+	var access_types=cron_mod.get_gallagher_card_types();
+	access_types.then(types=>{
+		var mycardtypes=JSON.stringify(types);
+		var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes);
+	syncdata.then(res=>{
+	// console.log(res);
+	});
+	});
+}
+function gallagher_access_divisions(){
+	var divisions=cron_mod.get_gallagher_divisions();
+	divisions.then(groups=>{
+		var mydivisions=JSON.stringify(groups);
+	var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions,'');
+	syncdata.then(res=>{
+	//  console.log(res);
+	});
+	});
+}
+
+//**************FR CONFIG**************** */
+FR_config();
+function FR_config()
+{
+		fr_access_divisions();
+		fr_access_groups();
+		fr_access_doors();
+		fr_vehicle_groups();
+		asyncCall_for_camera_listing();
+}
+function fr_access_divisions(){
+	var orginazations=cron_mod.get_fr_organizations();
+	orginazations.then(groups=>{
+		var myorgs=JSON.stringify(groups);	
+	var syncdata=cron_mod.save_fr_org_in_server(myorgs);
+	syncdata.then(res=>{
+	//   console.log(res);
+	});
+	});
+}
+function fr_access_groups()
+{
+	
+	var frgroups=cron_mod.get_fr_groups();
+	frgroups.then(groups=>{
+		var myfrgroups=JSON.stringify(groups);
+	var syncdata=cron_mod.save_fr_group_in_server(myfrgroups);
+	syncdata.then(res=>{ 
+	});
+	});
+}
+
+function fr_access_doors()
+{
+	var dor=cron_mod.get_fr_doors();
+	dor.then(groups=>{	
+		var frdoors=JSON.stringify(groups);	
+	var syncdata=cron_mod.save_fr_doors_in_server(frdoors);
+	syncdata.then(res=>{ 
+	});
+	});
+}
+function get_camera_thumbnail(cameraIndexCode) {
+	return new Promise(resolve => {
+		var thumbnail =cron_mod.get_cameras_thumbnail(cameraIndexCode);
+		thumbnail.then(b64_image=>{
+			
+			resolve(b64_image);
+		});
+	});
+}
+
+function get_camera_listings(){
+
+	return new Promise(resolve => {
+		var cameras=cron_mod.get_cameras_listing_from_hikcentral();
+
+		cameras.then(cameras=>{
+			resolve(cameras);
+		});
+	});
+}
+  
+async function asyncCall_for_camera_listing() {
+	
+	const cameras = await get_camera_listings();
+
+	for (var i = cameras.length - 1; i >= 0; i--) {
+
+		var cameraIndexCode = cameras[i].cameraIndexCode;
+		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+		cameras[i].port = 9999-1;
+		
+	}
+	
+	//console.log(cameras);
+	cam_data=JSON.stringify(cameras);
+	
+	
+	var syncdata=cron_mod.save_cameras_in_server(cam_data);
+	syncdata.then(res=>{
+		//console.log(res);
+	});
+	
+}
+function fr_vehicle_groups()
+{
+	var frvehicle=cron_mod.get_fr_vehicle_groups();
+frvehicle.then(groups=>{
+	
+	var vehgroup=JSON.stringify(groups);
+	
+	cron_mod.save_fr_vehicle_group_in_server(vehgroup);
+});
+}
+//============BIO START CONFIGS===============
+BS_config();
+function BS_config()
+    {
+		bs_access_devices();
+		bs_access_user_groups();
+		bs_access_groups();
+		bs_access_levels();
+		bs_access_doors();
+	}
+
+function bs_access_devices(){
+		if(mylogin){
+		var devices_res=cron_mod.get_bs_scan_devices(mylogin);
+		devices_res.then(getdevices=>{
+		if(getdevices==2){
+		var bs_scan=cron_mod.Login_into_device();
+		bs_scan.then(login=>{
+		if(login)
+		{
+		mylogin=login;
+		}else{
+		mylogin=false;
+		}
+		});
+		}
+		else if(getdevices==3){
+
+		}else{
+		var syncdata=cron_mod.save_bs_scan_devices_in_server(getdevices);
+		syncdata.then(res=>{
+		// console.log(res);
+		});
+		}
+		});
+		}else{
+
+		var bs_scan=cron_mod.Login_into_device();
+		bs_scan.then(login=>{
+			if(login)
+			{
+				mylogin=login;
+				bs_access_devices();
+			}else{
+				mylogin=false;
+			}
+		});
+		}
+}
+function bs_access_user_groups()
+{
+	if(mylogin)
+	{
+				var devices_res=cron_mod.get_bs_user_groups(mylogin);
+				devices_res.then(getdevices=>{
+				if(getdevices==2)
+				{
+						var bs_scan=cron_mod.Login_into_device();
+						bs_scan.then(login=>{
+						if(login)
+						{
+						mylogin=login;
+						}else{
+						mylogin=false;
+						}
+						});
+				}
+				else if(getdevices==3)
+				{
+	
+				}else
+				{
+				var syncdata=cron_mod.save_bs_user_groups_in_server(getdevices);
+				syncdata.then(res=>{
+				//	 console.log(res);
+				});
+				}
+				});
+	}else{
+						var bs_scan=cron_mod.Login_into_device();
+						bs_scan.then(login=>{
+						if(login)
+						{
+						mylogin=login;
+						bs_access_user_groups()
+						}else{
+						mylogin=false;
+						}
+						});
+	}
+}
+function bs_access_groups()
+{
+	if(mylogin)
+	{
+		
+				var devices_res=cron_mod.get_bs_access_groups(mylogin);
+			
+				devices_res.then(getdevices=>{
+				
+				if(getdevices){
+				
+				var syncdata=cron_mod.save_bs_access_groups_in_server(getdevices);
+				syncdata.then(res=>{
+				//	 console.log(res);
+				});
+				
+			}
+				});
+	}else{
+						var bs_scan=cron_mod.Login_into_device();
+						bs_scan.then(login=>{
+						if(login)
+						{
+						mylogin=login;
+						bs_access_groups();
+						}else{
+						mylogin=false;
+						}
+						});
+	}
+}
+function bs_access_levels()
+{
+	if(mylogin)
+	{
+				var devices_res=cron_mod.get_bs_access_levels(mylogin);
+				devices_res.then(getdevices=>{
+				
+				if(getdevices)
+				{
+				var syncdata=cron_mod.save_bs_access_levels_in_server(getdevices);
+				syncdata.then(res=>{
+				//	 console.log(res);
+				});
+				}
+				});
+	}else{
+						var bs_scan=cron_mod.Login_into_device();
+						bs_scan.then(login=>{
+						if(login)
+						{
+						mylogin=login;
+						bs_access_levels();
+						}else{
+						mylogin=false;
+						}
+						});
+	}
+}
+function bs_access_doors()
+{
+	if(mylogin)
+	{
+	
+				var devices_res=cron_mod.get_bs_access_doors(mylogin);
+				devices_res.then(getdevices=>{
+					//console.log(getdevices);
+				if(getdevices)
+	
+				{
+				var syncdata=cron_mod.save_bs_access_doors_in_server(getdevices);
+				syncdata.then(res=>{
+					// console.log(res);
+				});
+				}
+				});
+	}else{
+						var bs_scan=cron_mod.Login_into_device();
+						bs_scan.then(login=>{
+						if(login)
+						{
+						mylogin=login;
+						bs_access_doors();
+						}else{
+						mylogin=false;
+						}
+						});
+	}
+}
+     
+//====================================================
+//===============END EVENTS ONLY ONE TIME==========
+//======================================================
 function run_cron_for_gallagher_events(){
+	var gg_status=-1;
+	var fr_status=-1;
+	var bs_status=-1;
 	var intervaly = setInterval(function() 
 	{
 	var checkin_events;
-	var checkout_events;
-	var noentry_events;
 	var doors_events;
-	
+	cron_mod.check_event_trigger_or_not();
 	var checkin=cron_mod.get_gallagher_all_events();
 	checkin.then(groups=>{
 		if(groups.length>0){
@@ -397,34 +529,43 @@ function run_cron_for_gallagher_events(){
 	});
 		}
 	});
-	// var checkout=cron_mod.get_gallagher_checkout_events();
+//=======================checking device statuses==============
+var gg_checking=cron_mod.check_gallagher_device_status();
+gg_checking.then(res=>{
 	
-	// checkout.then(groups=>{
-	// 	if(groups.length>0){
-	// 		console.log("checkout Length"+groups.length);
-	// // checkout_events=JSON.stringify(groups);
-	// // var syncdata=cron_mod.save_gg_checkin_checkout_events_in_server(checkout_events);
-	// // syncdata.then(res=>{
-	// // //  console.log(res);
-	// // });
-	// 	}
-	// });
-	
+	if(gg_status!=res){
 
-// 	var noentry=cron_mod.get_gallagher_no_entry_events();
-	
-// 	noentry.then(groups=>{
-// 		if(groups.length>0){
-// 	// 		noentry_events=JSON.stringify(groups);
-// 	// var syncdata=cron_mod.save_gg_noentry_events_in_server(noentry_events);
-// 	// syncdata.then(res=>{
-// 	//   //console.log(res);
-// 	// });
-// 		}
-// 	});
+		gg_status=res;
+		console.log("UPDATED GG STATUS");
+   cron_mod.save_device_statuses(res,'GG');
+	}
+   
+})
+
+	var ff_checkings=cron_mod.check_fr_device_status();
+	ff_checkings.then(res=>{
+		if(fr_status!=res){
+			fr_status=res;
+			console.log("UPDATED FR STATUS");
+	   cron_mod.save_device_statuses(res,'FR');
+		}
+	   
+   })	 					
 
 
-	
+	var bschecking=cron_mod.check_biostar_device_status();
+	bschecking.then(res=>{
+		if(bs_status!=res){
+			bs_status=res;
+			console.log("UPDATED BS STATUS");
+	   cron_mod.save_device_statuses(res,'BS');
+		}
+   }) 					
+
+
+
+//=============================================================
+
 
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
@@ -599,29 +740,31 @@ if(req_method == 'checking_server'){
 	//console.log("SERVER IS WORKING");
 	 client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
  }
- if(req_method == 'checking_gallagher_device'){
-	 var gg_checking=cron_mod.check_gallagher_device_status();
-	 gg_checking.then(res=>{
-		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
-	})
-	 					
- }
- if(req_method == 'checking_fr_device'){
-	
-	 var ff_checkings=cron_mod.check_fr_device_status();
-	 ff_checkings.then(res=>{
-		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
-	})
-	 					
- }
- if(req_method == 'checking_bio_device'){
-	 var bschecking=cron_mod.check_biostar_device_status();
-	
-	 bschecking.then(res=>{
-		client.publish(msgtopic, JSON.stringify(res), { qos: 1, response: false })
-	})
-	 					
- }
+ 	////////////////////OPEN THE DDOR//////////////////////////
+	 if(req_method == 'get_devices_config'){
+		var msgcontent = 'Data Recieved';
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+		 
+			if(data_obj['code']=="GG"){		
+			   	GG_config();
+					client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			}else if(data_obj['code']=="FR"){		
+				FR_config();
+				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			 }
+			 else if(data_obj['code']=="BS"){		
+				BS_config();
+				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			   }
+			   else{
+				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })  
+			   }
+			
+
+	 }		 
+		///////////////////////////////////////////////////////////////////
+ 
+
  //======================CHECK USER EXISTIS===================
  if(req_method == 'fr_user_exist'){
 	var msgcontent = 'Data Recieved';
@@ -673,13 +816,58 @@ if(req_method == 'checking_server'){
 		 var personal_info = data_obj['personal'];
 		 var groups = data_obj['FR']['groups'].join(",");
 		 var cardtypes = data_obj['FR']['cards'];
+		 var vehicles = data_obj['FR']['vehicles'];
 		 var card_number = data_obj['FR']['cards'][0];
-							
+	     console.log(vehicles);				
 		 var face_id = fr_mod.add_fr_user(personal_info,card_number,data_obj['personal']['org'])
 		 face_id.then(facerep=>{
 			var gg = facerep[0]['FR']['person_id'];
-			console.log("USER_FR="+gg);
-		client.publish(msgtopic, JSON.stringify(facerep[0]), { qos: 1, response: false })	 
+			if(gg!=0){
+var vehicle_array=[];
+			if(vehicles)
+			{
+				for(var i=0;i<vehicles.length;i++)
+				{
+					var plate_no=vehicles[i]['plate_no'];
+				var vehl = fr_mod.add_person_vehicle(gg,vehicles[i]['plate_no'],vehicles[i]['group_id'])
+				vehl.then(vehcle=>{
+					if(vehcle!=3)
+					{
+						var newobj={
+							'plate_no':vehcle.plate_no,
+							'vehicle_id':vehcle.vehicle_id
+						}
+					
+						vehicle_array.push(newobj);
+					}
+				});
+			}
+			var intervalxxx = setInterval(function() {
+
+				clearInterval(intervalxxx);
+			if(vehicle_array){
+			
+			var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':vehicle_array}}
+				
+			client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+			}else{
+				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
+				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+				
+				
+			}
+		}, 500);
+			}else{
+				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
+				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+			}
+			
+		}else{
+			var objss={"FR":{"person_id":0,"message":"failed", 'vehicles':''}}
+			client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+		}
+
+	 
 		 });
 							
 
@@ -744,7 +932,17 @@ if(req_method == 'checking_server'){
 	 }
 	 if(req_method == 'delete_fr_users'){
 		var data_obj = JSON.parse( msg_arr[1] );
-		var fr_person_id = data_obj['FR']['person_id'];			
+		
+		var fr_person_id = data_obj['FR']['person_id'];
+		console.log("PERSON_ID"+fr_person_id);
+		var vehicles = data_obj['FR']['vehicles'];
+		if(vehicles.length>0)
+		{
+			for(var k=0;k<vehicles.length;k++)
+			{
+                   fr_mod.delete_person_vehicle(vehicles[k]);
+			}
+		}			
 		var face_id = fr_mod.delete_fr_user(fr_person_id)
 		face_id.then(facerep=>{
 		   console.log("DELETED_USER__FR="+fr_person_id);

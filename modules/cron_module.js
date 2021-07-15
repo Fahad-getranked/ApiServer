@@ -225,6 +225,148 @@ exports.get_bs_user_groups=function(token)
    
     
 }
+exports.get_bs_access_groups=function(token)
+{
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+              
+            axios({
+                method: 'GET', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/access_groups?limit=100&offset=0',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+               
+            
+                })
+            .then(response=>{
+               
+                if(response.status==200)
+                {
+                    var groups=response.data.records;
+                    groups.forEach(function(element) {   
+                    var divs={
+                        'g_id':element.id,
+                        'name':element.name
+                   };  
+                
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+              resolve(false);
+            });
+        }catch(error)
+        {
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
+exports.get_bs_access_levels=function(token)
+{
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+              
+            axios({
+                method: 'GET', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/access_levels?limit=1000&offset=0',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+               
+            
+                })
+            .then(response=>{
+                if(response.status==200)
+                {
+                    var groups=response.data.records;
+                    groups.forEach(function(element) {   
+                    var divs={
+                        'g_id':element.id,
+                        'name':element.name
+                   };  
+            //  console.log(divs);    
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+              resolve(false);
+            });
+        }catch(error)
+        {
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
+exports.get_bs_access_doors=function(token)
+{
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+              
+            axios({
+                method: 'GET', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/doors?limit=1000&offset=0',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+               
+            
+                })
+            .then(response=>{
+                if(response.status==200)
+                {
+                    var groups=response.data.records;
+                    groups.forEach(function(element) {   
+                    var divs={
+                        'd_id':element.id,
+                        'name':element.name
+                   };  
+            //  console.log(divs);    
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+              resolve(false);
+            });
+        }catch(error)
+        {
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
 exports.Login_into_device=function()
 {
     return new Promise((resolve) => {
@@ -302,6 +444,68 @@ exports. get_fr_groups= function ()
                 'g_id':element.indexCode,
                 'name':element.name,
                 'type':0
+           };  
+        obj.push(groups); 
+    });
+    resolve(obj);
+}else{
+
+}
+            }catch(error)
+            {
+
+            }
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
+exports. get_fr_vehicle_groups= function ()
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        var url=constants.FR_HOST+'/api/FrData/';
+        var data = qs.stringify({
+         'ApiKey': constants.FR_KEY,
+        'MethodType': 'POST',
+        'ApiSecret': constants.FR_SECRET_KEY,
+        'IP': '127.0.0.1',
+        'ProtocolType': constants.FR_PROTOCOL,
+        'ApiMethod': '/api/resource/v1/vehicleGroup/vehicleGroupList',
+        'BodyParameters': 
+        '{"pageNo":1,"pageSize":500}' 
+        });
+        
+        var config = {
+          method: 'post',
+          url: url,
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+           
+            try{
+            if(response.data.data.list!='')
+            {
+            var orgs=response.data.data.list;
+          
+            orgs.forEach(function(element) {
+               if(element.vehicleGroupName!="")
+               {
+                   var vname=element.vehicleGroupName;
+               }else{
+                   var vname='Default Group';
+               }
+            var groups={
+                'g_id':element.vehicleGroupIndexCode,
+                'name':vname,
+                'type':3
            };  
         obj.push(groups); 
     });
@@ -687,7 +891,7 @@ exports. get_gallagher_all_events=function()
 	return new Promise((resolve) => {
        
         lineReader.eachLine('././events.txt', function(line) {
-           
+          
             var obj = [];
             var transactions_time;
        
@@ -704,7 +908,6 @@ exports. get_gallagher_all_events=function()
                 transactions_time=line;
                // console.log(transactions_time);
             }
-               
            
         axios({
             method: 'get',
@@ -792,6 +995,7 @@ events.forEach(function(element) {
     //	console.log(error)
     
     });
+    //=======================
     axios({
         method: 'get',
         httpsAgent: extagent,
@@ -839,6 +1043,7 @@ events.forEach(function(element) {
     //	console.log(error)
     
     });
+
     fs.writeFile('././events.txt', transactions_time, function (err) {
         if (err) 
          console.log(err);
@@ -849,7 +1054,7 @@ events.forEach(function(element) {
 
         resolve(obj);
          clearInterval(intervalxxx);
-     }, 100);
+     }, 500);
              }).catch(error =>  {
         //	console.log(error)
         
@@ -1043,14 +1248,14 @@ events.forEach(function(element) {
 
 
 //===================================================
-exports. save_gg_access_groups_in_server= function (access_groups)
+exports. save_gg_access_groups_in_server= function (access_groups,tag)
 {
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  constants.BASE_SERVER_URL + '/save_data_of_access_groups_in_gallagher?code='+constants.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_groups_in_gallagher?code='+constants.CODE+'&tag='+tag,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1065,14 +1270,14 @@ exports. save_gg_access_groups_in_server= function (access_groups)
   
     });
 }
-exports. save_gg_divisions_in_server= function (divisions)
+exports. save_gg_divisions_in_server= function (divisions,tag)
 {
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  constants.BASE_SERVER_URL + '/save_data_of_divisions_in_gallagher?code='+constants.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_divisions_in_gallagher?code='+constants.CODE+'&tag='+tag,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1163,6 +1368,87 @@ exports. save_bs_user_groups_in_server= function (orgs)
   
     });
 }
+exports. save_bs_access_groups_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_access_groups_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        if(error.response.status==401)
+        {
+            resolve(2);
+        }else{
+            resolve(3);
+        }
+        
+        });
+  
+    });
+}
+exports. save_bs_access_levels_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_access_levels_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        if(error.response.status==401)
+        {
+            resolve(2);
+        }else{
+            resolve(3);
+        }
+        
+        });
+  
+    });
+}
+exports. save_bs_access_doors_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_doors_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        if(error.response.status==401)
+        {
+            resolve(2);
+        }else{
+            resolve(3);
+        }
+        
+        });
+  
+    });
+}
 exports. save_fr_group_in_server= function (orgs)
 {
     var obj = [];
@@ -1171,6 +1457,28 @@ exports. save_fr_group_in_server= function (orgs)
             method: 'post',
             httpsAgent: extagent,
             url:  constants.BASE_SERVER_URL + '/save_data_of_access_groups_in_fr?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :orgs
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        	//console.log(error)
+        
+        });
+  
+    });
+}
+exports. save_fr_vehicle_group_in_server= function (orgs)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_vehicle_access_groups_in_fr?code='+constants.CODE,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1207,14 +1515,14 @@ exports. save_fr_doors_in_server= function (orgs)
   
     });
 }
-exports. save_gg_access_zones_in_server= function (access_zones)
+exports. save_gg_access_zones_in_server= function (access_zones,tag)
 {
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  constants.BASE_SERVER_URL + '/save_data_of_access_zones_in_gallagher?code='+constants.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_zones_in_gallagher?code='+constants.CODE+'&tag='+tag,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1229,14 +1537,14 @@ exports. save_gg_access_zones_in_server= function (access_zones)
   
     });
 }
-exports. save_gg_doors_in_server= function (doors)
+exports. save_gg_doors_in_server= function (doors,tag)
 {
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  constants.BASE_SERVER_URL + '/save_data_of_access_doors_in_gallagher?code='+constants.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_access_doors_in_gallagher?code='+constants.CODE+'&tag='+tag,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -1251,14 +1559,14 @@ exports. save_gg_doors_in_server= function (doors)
   
     });
 }
-exports. save_gg_card_types_in_server= function (card_types)
+exports. save_gg_card_types_in_server= function (card_types,tag)
 {
     var obj = [];
 	return new Promise((resolve) => {
         axios({
             method: 'post',
             httpsAgent: extagent,
-            url:  constants.BASE_SERVER_URL + '/save_data_of_card_types_in_gallagher?code='+constants.CODE,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_card_types_in_gallagher?code='+constants.CODE+'&tag='+tag,
             headers: {
                 'Content-Type' : 'application/json'
               },
@@ -2184,6 +2492,7 @@ exports. check_gallagher_device_status= function ()
 }
 });
 }
+
 exports. check_fr_device_status= function ()
 {
    
@@ -2273,6 +2582,348 @@ exports. check_biostar_device_status= function ()
         resolve(0); 
     } 
 });
+}
+exports. save_device_statuses= function (status,device_code)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_device_statuses?code='+constants.CODE+"&status="+status+"&device_code="+device_code,
+            headers: {
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {
+resolve(true);
+        }).catch(error =>  {
+            resolve(false);
+        });
+  
+    });
+}
+//====================GET EVENTS OF CRON To CHECK UPDATE<ADD<DELETE=======
+exports. check_event_trigger_or_not= function ()
+{
+var dbDate = new Date().toLocaleString();
+var seconds = constants.DEFAUL_EVENT_SECONDS;
+var parsedDate = new Date(Date.parse(dbDate))
+var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
+newDate=newDate.toISOString();
+transactions_time=newDate; 
+return new Promise((resolve) => {
+    try{
+  //=================ADD GROUPSSSS===========
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=15003&after='+transactions_time,
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {  
+    var events=response.data.events;
+   if(events!=""){
+   events.forEach(function(element) 
+    {
+    var mymessages=element.message;
+    var parts = mymessages.split('"'); 
+    if(parts[2]==' Added Access Group ')
+    {
+    console.log("RUN ACCESS GROUPS CRON");
+    var access_groups=cron_mod.get_gallagher_access_groups();
+    access_groups.then(groups=>{
+    var mygroups=JSON.stringify(groups);
+    var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,'');
+    syncdata.then(res=>{
+    console.log(res);
+    });
+    });
+
+
+    }
+    else if(parts[2]==' Added Card Type ')
+    {
+    console.log("RUN ACCESS CARD TYPES CRON");
+    var access_types=cron_mod.get_gallagher_card_types();
+    access_types.then(types=>{
+    var  mycardtypes=JSON.stringify(types);
+    var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes,'');
+    syncdata.then(res=>{
+    console.log(res);
+    });
+    });
+
+
+    } 
+    else if(parts[2]==' Added Access Zone ')
+    {
+    console.log("RUN ACCESS ZONES CRON");
+    var access_zones=cron_mod.get_gallagher_zones();
+    access_zones.then(zones=>{
+    var myzones=JSON.stringify(zones);
+    var syncdata=cron_mod.save_gg_access_zones_in_server(myzones,'');
+    syncdata.then(res=>{
+    // console.log(res);
+    });
+    });
+
+    }  
+    else if(parts[2]==' Added Door ')
+    {
+    console.log("RUN ACCESS DOORS CRON");
+    var access_doors=cron_mod.get_gallagher_doors();
+    access_doors.then(doors=>{
+    var mydoors=JSON.stringify(doors);
+    var syncdata=cron_mod.save_gg_doors_in_server(mydoors,'');
+    syncdata.then(res=>{
+    //  console.log(res);
+    });
+    });
+
+    }
+    else if(parts[2]==' Added Division ')
+    {
+    console.log("RUN ACCESS DIVISIONS CRON");
+    var divisions=cron_mod.get_gallagher_divisions();
+    divisions.then(groups=>{
+    var mydivisions=JSON.stringify(groups);
+    var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions,'');
+    syncdata.then(res=>{
+    //  console.log(res);
+    });
+    });
+
+    }
+   resolve(true);
+    });
+}else{
+    resolve(false);
+}  
+    }).catch(error =>  {
+        resolve(false);
+    	console.log(error)
+    
+    });
+    //=====================UPDATE GROUPSSS======
+    axios({
+        method: 'get',
+        httpsAgent: extagent,
+        url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=15005&after='+transactions_time,
+        headers: {
+            'Authorization': apiKey,
+            'Content-Type' : 'application/json'
+          }
+      })
+    .then(function (response) {  
+    var events=response.data.events;
+   if(events!=""){
+   events.forEach(function(element) 
+    {
+       
+    var mymessages=element.message;
+    var parts = mymessages.split('"'); 
+    console.log(parts);
+    if(parts[2]==' Modified Access Group ')
+    {
+    console.log("RUN UPDATE ACCESS GROUPS CRON");
+    var access_groups=cron_mod.get_gallagher_access_groups();
+    access_groups.then(groups=>{
+    var mygroups=JSON.stringify(groups);
+    var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,'');
+    syncdata.then(res=>{
+    console.log(res);
+    });
+    });
+
+
+    }
+    else if(parts[2]==' Modified Card Type ')
+    {
+    console.log("RUN UPDATE ACCESS CARD TYPES CRON");
+    var access_types=cron_mod.get_gallagher_card_types();
+    access_types.then(types=>{
+    var  mycardtypes=JSON.stringify(types);
+    var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes,'');
+    syncdata.then(res=>{
+    console.log(res);
+    });
+    });
+
+
+    } 
+    else if(parts[2]==' Modified Access Zone ')
+    {
+    console.log("RUN UPDATE ACCESS ZONES CRON");
+    var access_zones=cron_mod.get_gallagher_zones();
+    access_zones.then(zones=>{
+    var myzones=JSON.stringify(zones);
+    var syncdata=cron_mod.save_gg_access_zones_in_server(myzones,'');
+    syncdata.then(res=>{
+    // console.log(res);
+    });
+    });
+
+    }  
+    else if(parts[2]==' Modified Door ')
+    {
+    console.log("RUN UPDATE ACCESS DOORS CRON");
+    var access_doors=cron_mod.get_gallagher_doors();
+    access_doors.then(doors=>{
+    var mydoors=JSON.stringify(doors);
+    var syncdata=cron_mod.save_gg_doors_in_server(mydoors,'');
+    syncdata.then(res=>{
+    //  console.log(res);
+    });
+    });
+
+    }
+    else if(parts[2]==' Modified Division ')
+    {
+    console.log("RUN UPDATE ACCESS DIVISIONS CRON");
+    var divisions=cron_mod.get_gallagher_divisions();
+    divisions.then(groups=>{
+    var mydivisions=JSON.stringify(groups);
+    var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions,'');
+    syncdata.then(res=>{
+    //  console.log(res);
+    });
+    });
+
+    }
+   resolve(true);
+    });
+}else{
+   
+    resolve(false);
+}  
+    }).catch(error =>  {
+        resolve(false);
+    	console.log(error)
+    
+    });
+
+    //==========================================
+ //=====================DELETED GROUPS======
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=15004&after='+transactions_time,
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+        .then(function (response) {  
+        var events=response.data.events;
+       if(events!=""){
+       events.forEach(function(element) 
+        {
+           
+        var mymessages=element.message;
+        var parts = mymessages.split('"'); 
+        console.log(parts);
+        if(parts[2]==' Deleted Access Group ')
+        {
+            var elem=parts[3].trim();
+        console.log("RUN DELETED ACCESS GROUPS CRON");
+        var access_groups=cron_mod.get_gallagher_access_groups();
+        access_groups.then(groups=>{
+        var mygroups=JSON.stringify(groups);
+        var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,elem);
+        syncdata.then(res=>{
+        console.log(res);
+        });
+        });
+    
+    
+        }
+        else if(parts[2]==' Deleted Card Type ')
+        {
+            var elem=parts[3].trim();
+        console.log("RUN UPDATE ACCESS CARD TYPES CRON");
+        var access_types=cron_mod.get_gallagher_card_types();
+        access_types.then(types=>{
+        var  mycardtypes=JSON.stringify(types);
+        var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes,elem);
+        syncdata.then(res=>{
+        console.log(res);
+        });
+        });
+    
+    
+        } 
+        else if(parts[2]==' Deleted Access Zone ')
+        {
+            var elem=parts[3].trim();
+        console.log("RUN UPDATE ACCESS ZONES CRON");
+        var access_zones=cron_mod.get_gallagher_zones();
+        access_zones.then(zones=>{
+        var myzones=JSON.stringify(zones);
+        var syncdata=cron_mod.save_gg_access_zones_in_server(myzones,elem);
+        syncdata.then(res=>{
+        // console.log(res);
+        });
+        });
+    
+        }  
+        else if(parts[2]==' Deleted Door ')
+        {
+            var elem=parts[3].trim();
+        console.log("RUN UPDATE ACCESS DOORS CRON");
+        var access_doors=cron_mod.get_gallagher_doors();
+        access_doors.then(doors=>{
+        var mydoors=JSON.stringify(doors);
+        var syncdata=cron_mod.save_gg_doors_in_server(mydoors,elem);
+        syncdata.then(res=>{
+        //  console.log(res);
+        });
+        });
+    
+        }
+        else if(parts[2]==' Deleted Division ')
+        {
+            var elem=parts[3].trim();
+        console.log("RUN UPDATE ACCESS DIVISIONS CRON");
+        var divisions=cron_mod.get_gallagher_divisions();
+        divisions.then(groups=>{
+        var mydivisions=JSON.stringify(groups);
+        var syncdata=cron_mod.save_gg_divisions_in_server(mydivisions,elem);
+        syncdata.then(res=>{
+        //  console.log(res);
+        });
+        });
+    
+        }
+       resolve(true);
+        });
+    }else{
+       
+        resolve(false);
+    }  
+        }).catch(error =>  {
+            resolve(false);
+            console.log(error)
+        
+        });
+    
+        //==========================================
+
+
+
+
+}catch(error)
+    {
+        resolve(false);
+    }
+
+
+
+    });
+
 }
 //==============================================================
 function formatDate(date){
