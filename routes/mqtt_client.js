@@ -20,46 +20,48 @@ bs_scan.then(login=>{
 	if(login)
 	{
 		mylogin=login;
+		console.log("UPDATED BS STATUS");
+	   cron_mod.save_device_statuses(1,'BS');
 	}else{
 		mylogin=false;
 	}
 });
-// router.post('/fr_camera_events', function (req, res) {
-// 	console.log("Getting Data From Camera Event....");
-// 	console.log(req.body.params.events);
-// 	var rest=true;
-// 	var maindata=[];
-// if(req.body.params.events[0]!=null)
-// { 
+router.post('/fr_camera_events', function (req, res) {
+	console.log("Getting Data From Camera Event....");
+	console.log(req.body.params.events);
+	var rest=true;
+	var maindata=[];
+if(req.body.params.events[0]!=null)
+{ 
   
-//   console.log("Transactions....");
-//   var eventData={
+  console.log("Transactions....");
+  var eventData={
 	 
-// 	  "eventId":req.body.params.events[0].eventId,
-// 	  "eventType":req.body.params.events[0].eventType,
-// 	  "srcType":req.body.params.events[0].srcType,
-// 	  "srcIndex":req.body.params.events[0].srcIndex,
-// 	  "srcName":req.body.params.events[0].srcName,
-// 	  "status":req.body.params.events[0].status,
-// 	  "happenTime":req.body.params.events[0].happenTime 
+	  "eventId":req.body.params.events[0].eventId,
+	  "eventType":req.body.params.events[0].eventType,
+	  "srcType":req.body.params.events[0].srcType,
+	  "srcIndex":req.body.params.events[0].srcIndex,
+	  "srcName":req.body.params.events[0].srcName,
+	  "status":req.body.params.events[0].status,
+	  "happenTime":req.body.params.events[0].happenTime 
 
-//   }
-
-
-//   maindata.push(eventData);
-//   maindata=JSON.stringify(maindata);
-//   console.log(maindata);
-//   var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
-//   syncdata.then(res=>{
-// console.log(res);
-//   });
-// }else{
-//   rest=false;
-// }	
+  }
 
 
-// res.send(rest);
-// 	});
+  maindata.push(eventData);
+  maindata=JSON.stringify(maindata);
+  console.log(maindata);
+  var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
+  syncdata.then(res=>{
+console.log(res);
+  });
+}else{
+  rest=false;
+}	
+
+
+res.send(rest);
+	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
 	//console.log(req.body.params.events[0]);
@@ -494,7 +496,37 @@ function bs_access_doors()
 						});
 	}
 }
-     
+//=====================================================
+function bs_access_finger_events(){
+	if(mylogin){
+	var devices_res=cron_mod.get_bs_finger_events(mylogin);
+	devices_res.then(getdevices=>{
+	
+	if(getdevices){
+		var fingerevents=JSON.stringify(getdevices);
+	//	console.log(fingerevents);
+	var syncdata=cron_mod.save_bs_save_finger_print_data(fingerevents);
+	syncdata.then(res=>{
+	 console.log(res);
+	
+	});
+}
+
+});
+	}else{
+
+	// var bs_scan=cron_mod.Login_into_device();
+	// bs_scan.then(login=>{
+	// 	if(login)
+	// 	{
+	// 		mylogin=login;
+	// 		bs_access_finger_events();
+	// 	}else{
+	// 		mylogin=false;
+	// 	}
+	// });
+	}
+}     
 //====================================================
 //===============END EVENTS ONLY ONE TIME==========
 //======================================================
@@ -553,20 +585,20 @@ gg_checking.then(res=>{
    })	 					
 
 
-	var bschecking=cron_mod.check_biostar_device_status();
-	bschecking.then(res=>{
-		if(bs_status!=res){
-			bs_status=res;
-			console.log("UPDATED BS STATUS");
-	   cron_mod.save_device_statuses(res,'BS');
-		}
-   }) 					
+// 	var bschecking=cron_mod.check_biostar_device_status();
+// 	bschecking.then(res=>{
+// 		if(bs_status!=res){
+// 			bs_status=res;
+// 			console.log("UPDATED BS STATUS");
+// 	   cron_mod.save_device_statuses(res,'BS');
+// 		}
+//    }) 					
 
 
 
 //=============================================================
 
-
+//bs_access_finger_events();
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
 }
@@ -856,7 +888,7 @@ var vehicle_array=[];
 				
 				
 			}
-		}, 500);
+		}, 1200);
 			}else{
 				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
 				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
@@ -1177,7 +1209,63 @@ var vehicle_array=[];
 			}
 			
 
-	 }		 
+	 }
+	 //================ANPR============================
+	 if(req_method == 'delete_vehicle_access'){
+		
+		var data_obj = JSON.parse( msg_arr[1] ); 
+        var vehicle_id = data_obj['vehicle_id'];		
+		var face_id = fr_mod.delete_person_vehicle(vehicle_id)
+		face_id.then(facerep=>{
+		  if(facerep==1)
+		  {
+			  console.log("Vehicle DELETED");
+			client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })	 
+		  }else{
+			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	 
+		  }
+	  
+		});
+	 }
+	 if(req_method == 'add_vehicle_access'){
+		
+		var data_obj = JSON.parse( msg_arr[1] ); 
+		var person_id = data_obj['FR']['person_id'];
+		var vehicles = data_obj['FR']['vehicles'];
+		var vehicle_array=[];
+		if(vehicles)
+		{
+			for(var i=0;i<vehicles.length;i++)
+			{
+			
+			var vehl = fr_mod.add_person_vehicle(person_id,vehicles[i]['plate_no'],vehicles[i]['group_id'])
+			vehl.then(vehcle=>{
+				if(vehcle!=3)
+				{
+					var newobj={
+						'plate_no':vehcle.plate_no,
+						'vehicle_id':vehcle.vehicle_id
+					}
+				
+					vehicle_array.push(newobj);
+				}
+			});
+		}
+	}
+	var intervalxxx = setInterval(function() {
+
+		clearInterval(intervalxxx);
+	if(vehicle_array){
+	var objss={"FR":{"person_id":person_id,"message":"success", 'vehicles':vehicle_array}}
+	client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+	}else{
+		var objss={"FR":{"person_id":person_id,"message":"failed", 'vehicles':''}}
+		client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+	}
+}, 1200);
+
+
+	 }			 
 		///////////////////////////////////////////////////////////////////
 	//=============================END================================
 	//=============================VISITORS===========================

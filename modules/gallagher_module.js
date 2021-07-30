@@ -41,11 +41,13 @@ function get_user_image(url){
 				
 				resolve(response.data);	
 			}).catch(error =>  {
+				resolve('');
 					console.log(error)
 			
 			});
 		}catch(error)
 		{
+		    	resolve('');
 				console.log(error);
 		}
 	});

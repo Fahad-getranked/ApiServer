@@ -176,6 +176,93 @@ exports.get_bs_scan_devices=function(token)
    
     
 }
+exports.get_bs_finger_events=function(token)
+{
+    
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+                var data = {
+
+                    "event_type_code": [
+                        "4865"
+                      ],
+                      "limit": 10,
+                      "offset": 1
+                    }; 
+            axios({
+                method: 'POST', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/monitoring/event_log/search',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+                  data:data
+            
+                })
+            .then(response=>{
+               
+                if(response.status==200)
+                {
+                    var events=response.data.records;
+                    events.forEach(function(element) {
+                        var date = new Date(element.datetime);
+                        var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");        
+                                    var divs={
+                                    'id':element.id,
+                                    'event_type':element.event_type.code,
+                                    'event_name':element.event_type.name,
+                                    'datetime':day,
+                                    'user_id':element.user.user_id,
+                                    'message':element.event_type.description
+                                    }
+                  
+            //  console.log(divs);    
+             obj.push(divs); 
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+                console.log(error);
+              resolve(false);
+            });
+        }catch(error)
+        {
+            console.log(error);
+            resolve(false);
+        }
+      
+        });
+   
+    
+}
+exports. save_bs_save_finger_print_data= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_bs_save_finger_print_data?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports.get_bs_user_groups=function(token)
 {
     var obj = [];
@@ -499,14 +586,13 @@ exports. get_fr_vehicle_groups= function ()
                if(element.vehicleGroupName!="")
                {
                    var vname=element.vehicleGroupName;
-               }else{
-                   var vname='Default Group';
-               }
+               
             var groups={
                 'g_id':element.vehicleGroupIndexCode,
                 'name':vname,
                 'type':3
-           };  
+           }; 
+        } 
         obj.push(groups); 
     });
     resolve(obj);
