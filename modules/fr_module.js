@@ -99,7 +99,7 @@ var config = {
 
 axios(config)
 .then(function (response) {
-  console.log(response);
+
   try{
  axios({
     method: 'POST', 
@@ -112,13 +112,14 @@ axios(config)
  
 if(restp.data.code==0)
 {			
-console.log('Added In Device');
+
 }else{
-  console.log('Added In Devices');
+ 
 }
 
 if(response.data.data!='')
    {
+    cron_mod.save_logs_into_db('FR','ADD','User added successfully',1);
     var myarray=[];
   
       myarray.push({"FR":{"person_id":response.data.data,"vehicle_id":0,"message":"success"}});
@@ -126,26 +127,27 @@ if(response.data.data!='')
   
    
    }else{
-     console.log(response);
+  
     var myarray=[];
     myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"Invalid Request"}});
    resolve(myarray);
    }
 }).catch(error =>  {
-  console.log(error);
+ 
+  cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"Invalid Request"}});
  resolve(myarray);
 });
 }catch(error)
 {
-  console.log(error);
+  cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
   var myarray=[];
   myarray.push({"FR":{"person_id":0,"vehicle_id":0,"message":"success"}});
 }
 })
 .catch(function (error) {
-  console.log(error);
+  cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
   var myarray=[];
 	myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
  resolve(myarray);
@@ -154,7 +156,7 @@ if(response.data.data!='')
             });
         }catch(error)
         {
-          console.log(error);
+          cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
           var myarray=[];
           myarray.push({"FR":{"person_id":0,"message":"Invalid Request"}});
          resolve(myarray);
@@ -203,7 +205,7 @@ axios(config)
 
 if(restp.data.code==0)
 {	
-console.log("Sync With device");
+  cron_mod.save_logs_into_db('FR','DELETE','User deleted successfully',1);
   resolve(true);
 }else{
 
@@ -220,12 +222,14 @@ console.log("Sync With device");
 }
 })
 .catch(function (error) {
+  cron_mod.save_logs_into_db('FR','DELETE',error.response.data.message,0);
   resolve(false);
 });
 
         
         }catch(error)
         {
+          cron_mod.save_logs_into_db('FR','DELETE',error.response.data.message,0);
 			resolve(false);
         }
   
@@ -278,27 +282,28 @@ axios(config)
 if(restp.data.code==0)
 {	
   fr_mod.update_fr_faceimage_for_single_user(photo,personId);
+  cron_mod.save_logs_into_db('FR','UPDATE','User updated successfully',1);
   resolve(true);
 }else{
 
 }
 
 }).catch(error =>  {
- 
+  cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
   resolve(false);
 });
 
 
 })
 .catch(function (error) {
- 
+  cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
   resolve(false);
 });
 
      
         }catch(error)
         {
-         
+          cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
             resolve(false);
         }
   
@@ -403,8 +408,6 @@ clearInterval(interval);
   
     });
 }
-
-
 exports. updat_user_face = function (image_url,personId,org_id,card_number)
 {
    
@@ -439,18 +442,19 @@ var config = {
 
 axios(config)
 .then(function (response) {
+  cron_mod.save_logs_into_db('FR','UPDATE','user updated successfully',1);
   var respp=fr_mod.update_fr_user_details(personId,org_id,card_number);
   resolve(respp);
 })
 .catch(function (error) {
- 
+  cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
   resolve(true);
 });
 
             });
         }catch(error)
         {
-
+          cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
          resolve(true);
         }
   
@@ -513,20 +517,19 @@ if(response.data.code==0)
 
 })
 .catch(function (error) {
+  cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
   resolve(false);
 });
 
             
         }catch(error)
         {
+          cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
           resolve(false);
         }
   
     });
 }
-
-
-
 exports. update_fr_faceimage_for_single_user = function (image_url,personId)
 {
    
@@ -615,6 +618,7 @@ axios(config)
   
    if(response.data.code==0)
    {
+    cron_mod.save_logs_into_db('FR','ADD','User vehicle successfully added',1);
      resolve({'vehicle_id':response.data.data.vehicleId,'plate_no':response.data.data.plateNo});
    }else{
      resolve(3);
@@ -622,14 +626,14 @@ axios(config)
 
 })
 .catch(function (error) {
- console.log(error);
+  cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
   resolve(3)
 });
 
            
         }catch(error)
         {
-         
+          cron_mod.save_logs_into_db('FR','ADD',error.response.data.message,0);
           resolve(3)
         }
   
@@ -668,6 +672,7 @@ axios(config)
  {
    if(response.data.code==0)
    {
+    cron_mod.save_logs_into_db('FR','DELETE','User vehicle deleted successfully',1);
      resolve(1);
    }else{
      resolve(0);
@@ -675,6 +680,7 @@ axios(config)
 
 })
 .catch(function (error) {
+  cron_mod.save_logs_into_db('FR','DELETE',error.response.data.message,0);
  //console.log(error);
   resolve(0)
 });
@@ -682,7 +688,7 @@ axios(config)
            
         }catch(error)
         {
-         
+          cron_mod.save_logs_into_db('FR','DELETE',error.response.data.message,0);
           resolve(0)
         }
   
@@ -721,6 +727,7 @@ axios(config)
  {
    if(response.data.code==0)
    {
+    cron_mod.save_logs_into_db('FR','UPDATE','User vehicle successfully updated',1);
      resolve(1);
    }else{
      resolve(0);
@@ -728,14 +735,14 @@ axios(config)
 
 })
 .catch(function (error) {
- console.log(error);
+  cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
   resolve(0)
 });
 
            
         }catch(error)
         {
-         
+          cron_mod.save_logs_into_db('FR','UPDATE',error.response.data.message,0);
           resolve(0)
         }
   

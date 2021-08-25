@@ -26,7 +26,20 @@ const isAuthorized = (req, res, next) => {
 		next ("error")
 	}	
 }
-
+// var mysql = require('mysql');
+// var con = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "",
+//     database : "imperium_app"
+//   });
+// con.connect(function(err) {
+//     if (err){
+// console.log("Not connected with the DB");
+//     } else{
+        
+//     }
+// });
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
@@ -35,6 +48,24 @@ extkey=apiKey;
 extagent=agent
 
 
+exports. save_logs_into_db= function (device_code,operation,message,status)
+{
+    // con.query('SELECT id FROM `devices` where code="'+device_code+'"', function (error, results, fields) {
+    //     if (error)
+    //     {
+    //    // , results[0].solution
+    //    console.log(error);
+    //     }else{
+    //         var device_id=results[0].id;
+    //         var sql = "INSERT INTO devices_logs (device_id,log_message,operation,status) VALUES ('"+device_id+"', '"+message+"', '"+operation+"', '"+status+"')";
+    //         con.query(sql, function (err, result) {
+    //           if (err) throw err;
+    //           console.log("----");
+    //         });
+    //     }
+    // });
+    console.log("");
+}
 exports. get_gallagher_divisions= function ()
 {
     var obj = [];
@@ -178,7 +209,14 @@ exports.get_bs_scan_devices=function(token)
 }
 exports.get_bs_finger_events=function(token)
 {
-    
+    var dbDate = new Date().toLocaleString();
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
+    var parsedDate = new Date(Date.parse(dbDate))
+    var newDate = new Date(parsedDate.getTime() - (1000 * 20))  
+    newDate=newDate.toISOString();  
+    var newDate2 = new Date(parsedDate.getTime())  
+    newDate2=newDate2.toISOString(); 
+    // console.log(newDate + "    "+newDate2);
     var obj = [];
         return new Promise((resolve) => {
             try {
@@ -187,6 +225,11 @@ exports.get_bs_finger_events=function(token)
                     "event_type_code": [
                         "4865"
                       ],
+                      "datetime":[
+    
+                        newDate,newDate2
+                      
+                        ],
                       "limit": 10,
                       "offset": 1
                     }; 
@@ -228,12 +271,12 @@ exports.get_bs_finger_events=function(token)
         
     
             }).catch(error=>{
-                console.log(error);
+           //     console.log(error);
               resolve(false);
             });
         }catch(error)
         {
-            console.log(error);
+          //  console.log(error);
             resolve(false);
         }
       
@@ -843,7 +886,6 @@ exports. get_gallagher_door_alarms=function()
     var parsedDate = new Date(Date.parse(dbDate))
     var newDate = new Date(parsedDate.getTime() - (1000 * seconds))  
     newDate=newDate.toISOString();
-  
     var obj = [];
 	return new Promise((resolve) => {
         axios({
@@ -861,48 +903,30 @@ exports. get_gallagher_door_alarms=function()
             
     events.forEach(function(element) {
         
-        if(element.type.id==23035 || element.type.id==3300 || element.type.id==23032  || element.type.id==20013)
+        if(element.type.id==23035 || element.type.id==3300 || element.type.id==23032  || element.type.id==20013  || element.type.id==3063  || element.type.id==30001 || element.type.id==15730 || element.type.id==15730 || element.type.id==23029 || element.type.id==20018 || element.type.id==23051 || element.type.id==22003 || element.type.id==21061 || element.type.id==23108 || element.type.id==15013 || element.type.id==506 || element.type.id==507 || element.type.id==15273)
         {
            
                         if(element.source.id)
                         {
-                        var door_id=element.source.id;
+                        var source_id=element.source.id;
+                        var source_name=element.source.nme;
                         }else{
-                        var door_id=0;
+                        var source_id=0;
+                        var source_name="";
                         }
-                        if(element.division.id)
-                        {
-                        var division_id=element.division.id;
-                        }else{
-                        var division_id=0;
-                        }
+                       
 
-                        if(element.card)
-                        {
-                        var card_number=element.card.number;
-                        }else{
-                        var card_number=0;
-                        }
-                        if(element.cardholder.id)
-                        {
-                        var cardholder_id=element.cardholder.id;
-                        }else{
-                        var cardholder_id=0;
-                        }
                 var date = new Date(element.time);
                 var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");
             var checkin_events={
                 'event_id':element.id,
+                'event_type':element.type.id,
+                'event_name':element.type.name,
                 'priority':element.priority,
-                'door_id':door_id,
-                'type':element.type.id,
+                'source_id':source_id,
+                'source_name':source_name,  
                 'datetime':day,
-                'division_id':division_id,
                 'message':element.message,
-                'card_number':card_number,
-                'cardholder_id':cardholder_id,
-
-   
            };
         obj.push(checkin_events);
     
@@ -922,6 +946,102 @@ exports. get_gallagher_door_alarms=function()
   
     });
 }
+//================
+exports. get_biostar_events_alarms=function(token)
+{
+    var dbDate = new Date().toLocaleString();
+    var seconds = constants.DEFAUL_EVENT_SECONDS;
+    var parsedDate = new Date(Date.parse(dbDate))
+    var newDate = new Date(parsedDate.getTime() - (1000 * 20))  
+    newDate=newDate.toISOString();  
+    var newDate2 = new Date(parsedDate.getTime())  
+    newDate2=newDate2.toISOString(); 
+    // console.log(newDate + "    "+newDate2);
+    var obj = [];
+        return new Promise((resolve) => {
+            try {
+                var data = {
+
+                
+                    "datetime":[
+    
+                        newDate,newDate2
+                      
+                        ],
+                      "limit": 10,
+                      "offset": 1
+                    }; 
+            axios({
+                method: 'POST', 
+                httpsAgent: extagent,
+                url: constants.BIO_STAR_URL+'/monitoring/event_log/search',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cookie':'bs-cloud-session-id='+token
+                  },
+                  data:data
+            
+                })
+            .then(response=>{
+               
+                if(response.status==200)
+                {
+                    var events=response.data.records;
+                    events.forEach(function(element) {
+                        var date = new Date(element.datetime);
+                        var day=dateFormat(date.toString(), "yyyy-mm-dd HH:MM:ss");   
+                        var src_index=0;     
+                                  if(element.type=='DEVICE')
+                                  {
+                                      if(element.device.id){ src_index=element.device.id;}else{src_index=0;}
+                                   
+                                  }else  if(element.type=='DOOR')
+                                  {
+                                      if(element.device.id){ src_index=element.door.id;}else{src_index=0;}
+                                   
+                                  }
+                                  else  if(element.type=='DOOR')
+                                  {
+                                      if(element.device.id){ src_index=element.door.id;}else{src_index=0;}
+                                   
+                                  }
+                                  if(element.type!='AUTHENTICATION')
+                                  {
+                                    var divs={
+                                        'event_id':element.id,
+                                        'event_type':element.event_type.code,
+                                        'event_name':element.event_type.name,
+                                        'priority':1,
+                                        'source_id':src_index,
+                                        'source_name':element.type,  
+                                        'datetime':day,
+                                        'message':element.event_type.description,
+                                   };
+            //  console.log(divs);    
+             obj.push(divs); 
+                                }
+                    })
+                    resolve(obj);
+                }else{
+
+                }
+        
+    
+            }).catch(error=>{
+               // console.log(error);
+              resolve(false);
+            });
+        }catch(error)
+        {
+           // console.log(error);
+            resolve(false);
+        }
+      
+        });
+   
+}
+
+//================
 exports. check_gallagher_delete_cardholder_events=function()
 {
     try{
@@ -1755,6 +1875,28 @@ exports. save_gg_ndoor_alarms_events_in_server= function (user_data)
   
     });
 }
+exports. save_bs_ndoor_alarms_events_in_server= function (user_data)
+{
+    var obj = [];
+	return new Promise((resolve) => {
+        axios({
+            method: 'post',
+            httpsAgent: extagent,
+            url:  constants.BASE_SERVER_URL + '/save_data_of_alarm_events_in_biostar?code='+constants.CODE,
+            headers: {
+                'Content-Type' : 'application/json'
+              },
+              data :user_data
+          })
+        .then(function (response) {
+       resolve(response.data);
+             }).catch(error =>  {
+        //	console.log(error)
+        
+        });
+  
+    });
+}
 exports. save_fr_transactions= function (user_data)
 {
     var obj = [];
@@ -1893,6 +2035,7 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
            }
        })
      .then(function (cardholderlist) {
+      
          if(cardholderlist.status==200)//check data available
          {
             
@@ -1915,11 +2058,15 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
                             phone= cardholderlist.data.personalDataDefinitions[t]["@Phone"]["value"];
                          }
                  }
-          if(email!=""){
+                }//Shifted here
+       //   if(email!=""){
+        var divisons=cardholderlist.data.division.href;
+        var division_id=divisons.match(/([^\/]*)\/*$/)[1];
             var personal_info={
                  'personID':card_holder_id,    
                  'firstname':cardholderlist.data.firstName,
                  'lastname':cardholderlist.data.lastName,
+                 'division':division_id,
                  'phone':phone,
                  'email':email   
                              }
@@ -1995,7 +2142,8 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
                     }   
                  }
                 }
-             if(array_cards!=''){
+                
+             if(array_cards!='' && groups!=""){
                 var mydata={
                     "personal":personal_info,
                     "groups":groups,
@@ -2003,37 +2151,42 @@ exports.get_cardholders_details_from_events = function(card_holder_id)
                  }
               
             resolve(mydata); 
-                } 
                 }else{
+                    resolve(false);
+                } 
+                // }else{
                   
-                    // resolve(''); //if email and phone exisits
-                }
-                        }else{
+                //     resolve(false); //if email and phone exisits
+                // }
+                        // }else{
                           
-                            // resolve(''); //Personal Fields
-                        }
+                        //     // resolve(''); //Personal Fields
+                        // }
              }else{
                 
                 // resolve('');//if cardholder info exists
+                resolve(false);
              }
             
 
                                     }else{
                                         // resolve('');//if api call is valid
+                                        resolve(false);
                                     }
 
 
 
      }).catch(error =>  {
       // console.log(error);
-     
+      resolve(false);
      });
     }catch(error)
     {
-
+        resolve(false);
     }
  }).catch(error =>  {
    // console.log(error);
+   resolve(false);
  });
 }
 exports. save_gg_cardholders_on_server= function (user_data)
@@ -2050,9 +2203,10 @@ exports. save_gg_cardholders_on_server= function (user_data)
               data :user_data
           })
         .then(function (response) {
+       
        resolve(response.data);
              }).catch(error =>  {
-        //	console.log(error)
+        	console.log(error)
         
         });
   
@@ -2689,6 +2843,16 @@ resolve(true);
   
     });
 }
+// exports. update_device_statuses_into_db= function (status,device_code)
+// {
+//             var sql = "UPDATE devices SET status="+status+" WHERE code='"+device_code+"'";
+//             con.query(sql, function (err, result) {
+//               if (err) throw err;
+//               console.log("----");
+//             });
+        
+    
+// }
 //====================GET EVENTS OF CRON To CHECK UPDATE<ADD<DELETE=======
 exports. check_event_trigger_or_not= function ()
 {
@@ -2719,13 +2883,13 @@ return new Promise((resolve) => {
     var parts = mymessages.split('"'); 
     if(parts[2]==' Added Access Group ')
     {
-    console.log("RUN ACCESS GROUPS CRON");
+   // console.log("RUN ACCESS GROUPS CRON");
     var access_groups=cron_mod.get_gallagher_access_groups();
     access_groups.then(groups=>{
     var mygroups=JSON.stringify(groups);
     var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,'');
     syncdata.then(res=>{
-    console.log(res);
+    //console.log(res);
     });
     });
 
@@ -2733,13 +2897,13 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Added Card Type ')
     {
-    console.log("RUN ACCESS CARD TYPES CRON");
+  //  console.log("RUN ACCESS CARD TYPES CRON");
     var access_types=cron_mod.get_gallagher_card_types();
     access_types.then(types=>{
     var  mycardtypes=JSON.stringify(types);
     var syncdata=cron_mod.save_gg_card_types_in_server(mycardtypes,'');
     syncdata.then(res=>{
-    console.log(res);
+  //  console.log(res);
     });
     });
 
@@ -2747,7 +2911,7 @@ return new Promise((resolve) => {
     } 
     else if(parts[2]==' Added Access Zone ')
     {
-    console.log("RUN ACCESS ZONES CRON");
+    //console.log("RUN ACCESS ZONES CRON");
     var access_zones=cron_mod.get_gallagher_zones();
     access_zones.then(zones=>{
     var myzones=JSON.stringify(zones);
@@ -2760,7 +2924,7 @@ return new Promise((resolve) => {
     }  
     else if(parts[2]==' Added Door ')
     {
-    console.log("RUN ACCESS DOORS CRON");
+  //  console.log("RUN ACCESS DOORS CRON");
     var access_doors=cron_mod.get_gallagher_doors();
     access_doors.then(doors=>{
     var mydoors=JSON.stringify(doors);
@@ -2773,7 +2937,7 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Added Division ')
     {
-    console.log("RUN ACCESS DIVISIONS CRON");
+  //  console.log("RUN ACCESS DIVISIONS CRON");
     var divisions=cron_mod.get_gallagher_divisions();
     divisions.then(groups=>{
     var mydivisions=JSON.stringify(groups);
@@ -2791,7 +2955,7 @@ return new Promise((resolve) => {
 }  
     }).catch(error =>  {
         resolve(false);
-    	console.log(error)
+    	//console.log(error)
     
     });
     //=====================UPDATE GROUPSSS======
@@ -2812,7 +2976,7 @@ return new Promise((resolve) => {
        
     var mymessages=element.message;
     var parts = mymessages.split('"'); 
-    console.log(parts);
+    //console.log(parts);
     if(parts[2]==' Modified Access Group ')
     {
     console.log("RUN UPDATE ACCESS GROUPS CRON");
@@ -2888,7 +3052,7 @@ return new Promise((resolve) => {
 }  
     }).catch(error =>  {
         resolve(false);
-    	console.log(error)
+    //	console.log(error)
     
     });
 
@@ -2911,17 +3075,17 @@ return new Promise((resolve) => {
            
         var mymessages=element.message;
         var parts = mymessages.split('"'); 
-        console.log(parts);
+      //  console.log(parts);
         if(parts[2]==' Deleted Access Group ')
         {
             var elem=parts[3].trim();
-        console.log("RUN DELETED ACCESS GROUPS CRON");
+      //  console.log("RUN DELETED ACCESS GROUPS CRON");
         var access_groups=cron_mod.get_gallagher_access_groups();
         access_groups.then(groups=>{
         var mygroups=JSON.stringify(groups);
         var syncdata=cron_mod.save_gg_access_groups_in_server(mygroups,elem);
         syncdata.then(res=>{
-        console.log(res);
+     //   console.log(res);
         });
         });
     
@@ -2945,7 +3109,7 @@ return new Promise((resolve) => {
         else if(parts[2]==' Deleted Access Zone ')
         {
             var elem=parts[3].trim();
-        console.log("RUN UPDATE ACCESS ZONES CRON");
+       // console.log("RUN UPDATE ACCESS ZONES CRON");
         var access_zones=cron_mod.get_gallagher_zones();
         access_zones.then(zones=>{
         var myzones=JSON.stringify(zones);
@@ -2959,7 +3123,7 @@ return new Promise((resolve) => {
         else if(parts[2]==' Deleted Door ')
         {
             var elem=parts[3].trim();
-        console.log("RUN UPDATE ACCESS DOORS CRON");
+      //  console.log("RUN UPDATE ACCESS DOORS CRON");
         var access_doors=cron_mod.get_gallagher_doors();
         access_doors.then(doors=>{
         var mydoors=JSON.stringify(doors);
@@ -2973,7 +3137,7 @@ return new Promise((resolve) => {
         else if(parts[2]==' Deleted Division ')
         {
             var elem=parts[3].trim();
-        console.log("RUN UPDATE ACCESS DIVISIONS CRON");
+      //  console.log("RUN UPDATE ACCESS DIVISIONS CRON");
         var divisions=cron_mod.get_gallagher_divisions();
         divisions.then(groups=>{
         var mydivisions=JSON.stringify(groups);
@@ -2992,7 +3156,7 @@ return new Promise((resolve) => {
     }  
         }).catch(error =>  {
             resolve(false);
-            console.log(error)
+          //  console.log(error)
         
         });
     
@@ -3010,6 +3174,75 @@ return new Promise((resolve) => {
 
     });
 
+}
+exports.trigger_events_add_modify= function(){
+//console.log("TRIGGER");
+var dbDate = new Date().toLocaleString();
+var seconds = 15;
+var parsedDate = new Date(Date.parse(dbDate))
+var newDate = new Date(parsedDate.getTime() - (1000 * 2))  
+newDate=newDate.toISOString();
+    return new Promise((resolve) => {
+        try{
+    
+        axios({
+            method: 'get',
+            httpsAgent: extagent,
+            url:  constants.GALLAGHER_HOST + '/api/events?bottom=5000&type=15005&after='+newDate,
+            headers: {
+                'Authorization': apiKey,
+                'Content-Type' : 'application/json'
+              }
+          })
+            .then(function (response) {  
+            var events=response.data.events;
+            if(events!=""){
+            
+                var event_id=0;
+            events.forEach(function(element) 
+            {
+             if(element.cardholder)
+             {
+                 if(event_id==0){
+                event_id=element.id;
+              //   console.log("EVENT_ID"+element.id);
+                 var cardholder_id=element.cardholder.id;
+                 var records=cron_mod.get_cardholders_details_from_events(cardholder_id);
+                 records.then(rest=>{
+                     if(rest)
+                     {
+                      var intervalxxx = setInterval(function() {
+                         console.log("ENTERED");
+                        var add_user_events=JSON.stringify(rest);
+                        console.log(add_user_events);
+                        var syncdata=cron_mod.save_gg_cardholders_on_server(add_user_events);
+                        
+                        syncdata.then(res=>{
+                       console.log(res);
+                        });
+                        
+                        clearInterval(intervalxxx);
+                    }, 500);
+                     }else{
+                        // console.log("NO VALID");
+                     } 
+                 
+                  
+                 });
+                 
+                }
+             }
+
+            })
+
+        
+            }
+            })
+        }catch(error)
+        {
+            console.log("ERROR");
+        }
+    });
 }
 //==============================================================
 function formatDate(date){

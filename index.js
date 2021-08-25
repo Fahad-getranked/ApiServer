@@ -29,6 +29,9 @@ app.use("/cron_api_gateway",cron_api_gateway);
 const mqtt_client=require("./routes/mqtt_client");
 app.use("/mqtt_client",mqtt_client);
 //====================================================================
+//======================PTZ Controls========================
+const ptz_controls = require("./routes/ptz_controls");
+app.use("/ptz_controls",ptz_controls);
 //================================================================
 //=========================CONFIG READING END HERE=================
 clearInterval(myinterv);
@@ -48,8 +51,8 @@ app.get('/', function (req, res) {
 // });
 
 
-app.listen(3005,function(){
+app.listen(3008,function(){
   
-    console.log("server listen on port 3005");
+    console.log("server listen on port 3008");
    
 });

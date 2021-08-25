@@ -3,6 +3,7 @@ const axios = require('axios');
 var bodyParser = require('body-parser');
 
 var constants=require("../constants.js");
+var cron_mod = require('../modules/cron_module');
 var gr_mod = require('../modules/gallagher_module');
 const https=require("https");
 var apiKey;
@@ -144,6 +145,7 @@ function get_user_image(url){
 		.then(function (response){
 		
 			if (response.status == 201) {
+				cron_mod.save_logs_into_db('GG','ADD','User '+ personal_info['firstname']+' '+personal_info['lastname']+' added successfully',1);
 				var valssss=response.headers.location;
 				var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
 				var interval = setInterval(function() {
@@ -164,7 +166,7 @@ clearInterval(interval);
 				resolve(myarray);
 			}
 		}).catch(error =>  {
-		console.log(error);
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -172,7 +174,7 @@ clearInterval(interval);
 		});
 		}catch(error)
 		{
-			console.log(error);
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -290,18 +292,20 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-		console.log(response)
+			cron_mod.save_logs_into_db('GG','DELETE','User #'+card_holder_id+' deleted successfully',1);
 			resolve(true);
 			
 				
 					
 			
 		}).catch(error =>  {
+			cron_mod.save_logs_into_db('GG','DELETE',error.response.data.message,0);
 			resolve(false);
 			});
 	
 		}catch(error)
 		{
+			cron_mod.save_logs_into_db('GG','DELETE',error.response.data.message,0);
 			resolve(false);
 		}
 		});
@@ -323,7 +327,7 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-		console.log("success");
+			cron_mod.save_logs_into_db('GG','DELETE','User card #'+card_id+' deleted successfully',1);
 			var myarray=[];
 			myarray.push({"GG":{"person_id":0,"message":"success"}});
 			resolve(myarray)
@@ -332,7 +336,7 @@ resolve(myarray);
 					
 			
 		}).catch(error =>  {
-			console.log(error);
+			cron_mod.save_logs_into_db('GG','DELETE',error.response.data.message,0);
 			var myarray=[];
 			myarray.push({"GG":{"person_id":1,"message":"failed"}});
 			resolve(myarray)
@@ -340,7 +344,7 @@ resolve(myarray);
 	
 		}catch(error)
 		{
-			console.log(error);
+			cron_mod.save_logs_into_db('GG','DELETE',error.response.data.message,0);
 			var myarray=[];
 			myarray.push({"GG":{"person_id":1,"message":"failed"}});
 			resolve(myarray)
@@ -364,13 +368,13 @@ resolve(myarray);
 			})
 		.then(function (response){
 		
-			//resolve(true);
+			cron_mod.save_logs_into_db('GG','DELETE','Access Group #'+group_id+' deleted successfully',1);
 			
 				
 					
 			
 		}).catch(error =>  {
-			//resolve(true);
+			cron_mod.save_logs_into_db('GG','DELETE',error.response.data.message,0);
 			});
 	
 		
@@ -421,18 +425,20 @@ resolve(myarray);
 				}
 			})
 		.then(function (response){
-	
+			cron_mod.save_logs_into_db('GG','UPDATE',firstname+' '+lastname+ ' card successfully updated',1);
 			resolve(true);
 			
 				
 					
 			
 		}).catch(error =>  {
+			cron_mod.save_logs_into_db('GG','UPDATE',error.response.data.message,0);
 			resolve(false);
 			});
 	
 		}catch(error)
 		{
+			cron_mod.save_logs_into_db('GG','UPDATE',error.response.data.message,0);
 			resolve(false);
 		}
 		});
@@ -598,7 +604,8 @@ resolve(myarray);
 				var interval = setInterval(function() {
 				var cardholder_detail=gr_mod.get_cardholder_details(card_holder_id);
 				cardholder_detail.then(rest=>{
-                    if(rest){ 
+                    if(rest){
+						cron_mod.save_logs_into_db('GG','ADD','User#'+card_holder_id+' card successfully added',1); 
 					resolve(rest);
 clearInterval(interval);
 					}
@@ -614,7 +621,7 @@ clearInterval(interval);
 				
 			
 		}).catch(error =>  {
-			//console.log(error);
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -622,7 +629,7 @@ clearInterval(interval);
 	
 		}catch(error)
 		{
-		//	console.log(error);
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			var myarray=[];
 				myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 				resolve(myarray);
@@ -668,11 +675,11 @@ clearInterval(interval);
 				}
 			})
 		.then(function (response){
-			
+			cron_mod.save_logs_into_db('GG','ADD','User#'+card_holder_id+' access group successfully added',1);
 				resolve(true);	
 			
 		}).catch(error =>  {
-			console.log(error);
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			var myarray=[];
 			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 			resolve(false);	
@@ -680,6 +687,7 @@ clearInterval(interval);
 	
 		}catch(error)
 		{
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 			resolve(false);	
 		}
 		});
@@ -803,6 +811,49 @@ console.log(response.data.accessGroups.length+"   "+count);
 		}
 		});
 	}
+	//===========acknowledge_alarm============
+	exports.acknowledge_alarm_by_id = function(alarm_id)
+	{
+	
+		return new Promise((resolve) => {
+			try {  
+				let obj = {
+					"authorised": true,
+					
+				};
+	
+		var url=constants.GALLAGHER_HOST+'/api/alarms/'+alarm_id+'/acknowledge';
+		axios({
+			method: 'POST', 
+			 httpsAgent: extagent,
+			url: url,
+			data : obj,
+			headers: {
+				  'Authorization': apiKey,
+				  'Content-Type' : 'application/json'
+				}
+			})
+		.then(function (response){
+			if (response.status == 200) {
+			cron_mod.save_logs_into_db('GG','ADD','Alarm acknowledged successfully',1);
+				resolve(true);
+			}else{
+				cron_mod.save_logs_into_db('GG','ADD','invalid record:Alarm not acknowledged',0);
+				resolve(false);
+			}	
+			
+		}).catch(error =>  {
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
+			resolve(false);	
+			});
+	
+		}catch(error)
+		{
+			cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
+			resolve(false);	
+		}
+		});
+	}
 //======================================VISITORS SECTION============================
 //==================================================================================
 exports.save_visitor_in_gallagher = function(personal_info,cardtypes,access_groups)
@@ -879,19 +930,17 @@ var accessgroupdetails=[];
 		if (response.status == 201) {
 			var valssss=response.headers.location;
 			var cardholder_id=valssss.match(/([^\/]*)\/*$/)[1];	
-	
+			cron_mod.save_logs_into_db('GG','ADD','User '+personal_info['firstname']+' '+personal_info['lastname']+' added successfully',1); 
 			var myarray=[];
 			myarray.push({"GG":{"person_id":cardholder_id,"message":"success"}});
-			resolve(myarray);
-				
-	
-          	
+			resolve(myarray);	
 		}else{
 			var myarray=[];
 			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 			resolve(myarray);
         }
 	}).catch(error =>  {
+		cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 		var myarray=[];
 			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 			resolve(myarray);
@@ -899,6 +948,7 @@ var accessgroupdetails=[];
 	});
 	}catch(error)
 	{
+		cron_mod.save_logs_into_db('GG','ADD',error.response.data.message,0);
 		var myarray=[];
 			myarray.push({"GG":{"person_id":0,"message":"Invalid Request"}});
 			resolve(myarray);

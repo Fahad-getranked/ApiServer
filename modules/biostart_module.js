@@ -2,6 +2,7 @@ const express= require("express");
 const axios = require('axios');
 var constants=require("../constants.js");
 var BIOSTAR = require('../modules/biostart_module');
+var cron_mod = require('../modules/cron_module');
 const fs=require("fs");
 const https=require("https");
 var apiKey;
@@ -29,7 +30,7 @@ extagent=agent
 
 exports.get_bs_scan_finger=function(token,device_id)
 {
-	console.log("FINGER SCANNING");
+	
     var obj = [];
         return new Promise((resolve) => {
             try {
@@ -53,17 +54,18 @@ exports.get_bs_scan_finger=function(token,device_id)
 				
                 if(response.status==200)
                 {
-					console.log('INSIDE THE ADDRESS');
+				
 					var obj={
 						 'image':response.data.template_image0,
 						 'template':response.data.template0
 					}
 				resolve(obj);
-                 
+				cron_mod.save_logs_into_db('BS','SCAN FINGERS','finger scanned successfully',1);
 				}
 			
 				else{
 					resolve(3);
+					
                 }
         
     
@@ -74,10 +76,11 @@ exports.get_bs_scan_finger=function(token,device_id)
 				}else{
 					resolve(4);
 				}
-				
+				save_logs_into_db('BS','SCAN FINGERS',error.response.data.message,0);
             });
         }catch(error)
         {
+			save_logs_into_db('BS','SCAN FINGERS',error.response.data.message,0);
            resolve(1);
         }
       
@@ -139,16 +142,21 @@ exports.add_user_in_biostart=function(token,personal_info,finger_prints)
 					});
 				 var myarray=[];
 				 myarray.push({"BS":{"person_id":response.data.user_id,"message":"success"}});
+				 cron_mod.save_logs_into_db('BS','ADD','User added successfully',1);
 				 resolve(myarray);
 				}
 				else if(response.status==500)
                 {
+					//save_logs_into_db('BS','ADD',error.response.data.message,0);
+				
+				
 					var myarray=[];
 					myarray.push({"BS":{"person_id":0,"message":"Invalid Request"}});
 					resolve(myarray);
                      
 				}
 				else{
+				//	save_logs_into_db('BS','ADD',error.response.data.message,0);
 					var myarray=[];
 					myarray.push({"BS":{"person_id":0,"message":"Invalid Request"}});
 					resolve(myarray);
@@ -156,6 +164,7 @@ exports.add_user_in_biostart=function(token,personal_info,finger_prints)
         
     
             }).catch(error=>{
+				cron_mod.save_logs_into_db('BS','ADD',error.response.data.message,0);
 				if(error.response.status==401)
 				{
 					var myarray=[];
@@ -170,6 +179,7 @@ exports.add_user_in_biostart=function(token,personal_info,finger_prints)
             });
         }catch(error)
         {
+			cron_mod.save_logs_into_db('BS','ADD',error.response.data.message,0);
 			var myarray=[];
 			myarray.push({"BS":{"person_id":0,"message":"Invalid Request"}});
 			resolve(myarray);
@@ -216,7 +226,9 @@ exports.update_user_in_biostart=function(token,personal_info)
                 {
 				 var myarray=[];
 				 myarray.push({"BS":{"person_id":personal_info['person_code'],"message":"success"}});
+				 cron_mod.save_logs_into_db('BS','UPDATE','Code: '+personal_info['full_name']+' successfully updated',1);
 				 resolve(myarray);
+				
 				}
 				else if(response.status==500)
                 {
@@ -233,6 +245,7 @@ exports.update_user_in_biostart=function(token,personal_info)
         
     
             }).catch(error=>{
+				cron_mod.save_logs_into_db('BS','UPDATE',error.response.data.message,0);
 				if(error.response.status==401)
 				{
 					var myarray=[];
@@ -247,6 +260,7 @@ exports.update_user_in_biostart=function(token,personal_info)
             });
         }catch(error)
         {
+			cron_mod.save_logs_into_db('BS','UPDATE',error.response.data.message,0);
 			var myarray=[];
 			myarray.push({"BS":{"person_id":0,"message":"Invalid Request"}});
 			resolve(myarray);
@@ -280,7 +294,7 @@ exports.add_csn_card=function(token,card_no)
 			
                 if(response.status==201)
                 {
-					
+		
 				resolve(response.data.id);
                  
 				}
@@ -291,11 +305,13 @@ exports.add_csn_card=function(token,card_no)
         
     
             }).catch(error=>{
+			
 				if(error.response.status==401)
 				{
 					resolve(0);
 				}else if(error.response.status==500)
 				{
+					
 					var oldnumber=BIOSTAR.get_csn_card(token,card_no);
 					oldnumber.then(restp=>{
 						resolve(restp);
@@ -310,6 +326,7 @@ exports.add_csn_card=function(token,card_no)
             });
         }catch(error)
         {
+		
            resolve(0);
         }
       
@@ -392,7 +409,7 @@ exports.assign_card_to_bio_user=function(token,user_id,card_id)
 			
                 if(response.status==201)
                 {
-				
+					cron_mod.save_logs_into_db('BS','ADD','User card successfully added',1);
 				resolve(1);
                  
 				}
@@ -403,7 +420,7 @@ exports.assign_card_to_bio_user=function(token,user_id,card_id)
         
     
             }).catch(error=>{
-				console.log(error);
+				cron_mod.save_logs_into_db('BS','ADD','USER CARD:  '+error.response.data.message,0);
 				if(error.response.status==401)
 				{
 					resolve(0);
@@ -415,6 +432,7 @@ exports.assign_card_to_bio_user=function(token,user_id,card_id)
             });
         }catch(error)
         {
+			save_logs_into_db('BS','ADD','USER CARD:  '+ error.response.data.message,0);
            resolve(0);
         }
       
@@ -445,9 +463,9 @@ exports.assign_image_to_bio_user=function(token,user_id,image)
 			
                 if(response.status==201)
                 {
-				
+			   cron_mod.save_logs_into_db('BS','ADD','User image successfully added',1);
 				resolve(1);
-                 
+				
 				}
 				
 				else{
@@ -456,9 +474,10 @@ exports.assign_image_to_bio_user=function(token,user_id,image)
         
     
             }).catch(error=>{
-				console.log(error);
+				cron_mod.save_logs_into_db('BS','ADD','USER IMAGE: '+error.response.data.message,0);
 				if(error.response.status==401)
 				{
+				
 					resolve(0);
 				}
 					else{
@@ -468,6 +487,7 @@ exports.assign_image_to_bio_user=function(token,user_id,image)
             });
         }catch(error)
         {
+			cron_mod.save_logs_into_db('BS','ADD','USER IMAGE: '+error.response.data.message,0);
            resolve(0);
         }
       
@@ -511,7 +531,7 @@ exports.assign_fingerprint_to_bio_user=function(token,user_id,fingerprints)
 			
                 if(response.status==201)
                 {
-				
+					cron_mod.save_logs_into_db('BS','ADD','User fingers successfully added',1);
 				resolve(1);
                  
 				}
@@ -522,9 +542,11 @@ exports.assign_fingerprint_to_bio_user=function(token,user_id,fingerprints)
         
     
             }).catch(error=>{
-				console.log(error);
+				cron_mod.save_logs_into_db('BS','ADD','USER FINGERS: '+error.response.data.message,0);
+				
 				if(error.response.status==401)
 				{
+				
 					resolve(0);
 				}
 					else{
@@ -537,6 +559,7 @@ exports.assign_fingerprint_to_bio_user=function(token,user_id,fingerprints)
 		}
         }catch(error)
         {
+			cron_mod.save_logs_into_db('BS','ADD','USER_FINGERS: '+error.response.data.message,0);
            resolve(0);
         }
       
@@ -546,7 +569,7 @@ exports.assign_fingerprint_to_bio_user=function(token,user_id,fingerprints)
 }
 exports.delete_user_from_biostar=function(token,user_id)
 {
-	console.log("DELETING BIOSTAR");
+	
     var obj = [];
         return new Promise((resolve) => {
 			obj={
@@ -568,7 +591,7 @@ exports.delete_user_from_biostar=function(token,user_id)
 			
                 if(response.status==200)
                 {
-				
+					cron_mod.save_logs_into_db('BS','DELETE','User deleted successfully',1);
 				resolve(true);
                  
 				}
@@ -579,11 +602,13 @@ exports.delete_user_from_biostar=function(token,user_id)
         
     
             }).catch(error=>{
+				cron_mod.save_logs_into_db('BS','DELETE',error.response.data.message,0);
 				resolve(false);
 				
             });
         }catch(error)
         {
+			cron_mod.save_logs_into_db('BS','DELETE',error.response.data.message,0);
 			resolve(false);
         }
       
