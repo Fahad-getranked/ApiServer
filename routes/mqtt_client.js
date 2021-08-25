@@ -15,55 +15,55 @@ var host;
 var options;
 let router=express.Router();
 var mylogin=false;
-// var bs_scan=cron_mod.Login_into_device();
-// bs_scan.then(login=>{
-// 	if(login)
-// 	{
-// 		mylogin=login;
-// 		console.log("UPDATED BS STATUS");
-// 	   cron_mod.save_device_statuses(1,'BS');
-// 	   cron_mod.update_device_statuses_into_db(1,'BS');
-// 	}else{
-// 		mylogin=false;
-// 		cron_mod.update_device_statuses_into_db(0,'BS');
-// 	}
-// });
-// router.post('/fr_camera_events', function (req, res) {
-// 	console.log("Getting Data From Camera Event....");
-// 	console.log(req.body.params.events);
-// 	var rest=true;
-// 	var maindata=[];
-// if(req.body.params.events[0]!=null)
-// { 
+var bs_scan=cron_mod.Login_into_device();
+bs_scan.then(login=>{
+	if(login)
+	{
+		mylogin=login;
+		console.log("UPDATED BS STATUS");
+	   cron_mod.save_device_statuses(1,'BS');
+	   cron_mod.update_device_statuses_into_db(1,'BS');
+	}else{
+		mylogin=false;
+		cron_mod.update_device_statuses_into_db(0,'BS');
+	}
+});
+router.post('/fr_camera_events', function (req, res) {
+	console.log("Getting Data From Camera Event....");
+	console.log(req.body.params.events);
+	var rest=true;
+	var maindata=[];
+if(req.body.params.events[0]!=null)
+{ 
   
-//   console.log("Transactions....");
-//   var eventData={
+  console.log("Transactions....");
+  var eventData={
 	 
-// 	  "eventId":req.body.params.events[0].eventId,
-// 	  "eventType":req.body.params.events[0].eventType,
-// 	  "srcType":req.body.params.events[0].srcType,
-// 	  "srcIndex":req.body.params.events[0].srcIndex,
-// 	  "srcName":req.body.params.events[0].srcName,
-// 	  "status":req.body.params.events[0].status,
-// 	  "happenTime":req.body.params.events[0].happenTime 
+	  "eventId":req.body.params.events[0].eventId,
+	  "eventType":req.body.params.events[0].eventType,
+	  "srcType":req.body.params.events[0].srcType,
+	  "srcIndex":req.body.params.events[0].srcIndex,
+	  "srcName":req.body.params.events[0].srcName,
+	  "status":req.body.params.events[0].status,
+	  "happenTime":req.body.params.events[0].happenTime 
 
-//   }
-
-
-//   maindata.push(eventData);
-//   maindata=JSON.stringify(maindata);
-//   console.log(maindata);
-//   var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
-//   syncdata.then(res=>{
-// console.log(res);
-//   });
-// }else{
-//   rest=false;
-// }	
+  }
 
 
-// res.send(rest);
-// 	});
+  maindata.push(eventData);
+  maindata=JSON.stringify(maindata);
+  console.log(maindata);
+  var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
+  syncdata.then(res=>{
+console.log(res);
+  });
+}else{
+  rest=false;
+}	
+
+
+res.send(rest);
+	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
 	//console.log(req.body.params.events[0]);
@@ -231,7 +231,7 @@ function FR_config()
 		fr_access_groups();
 		fr_access_doors();
 		fr_vehicle_groups();
-		// asyncCall_for_camera_listing();
+		asyncCall_for_camera_listing();
 }
 function fr_access_divisions(){
 	var orginazations=cron_mod.get_fr_organizations();
@@ -286,28 +286,28 @@ function get_camera_listings(){
 	});
 }
   
-// async function asyncCall_for_camera_listing() {
+async function asyncCall_for_camera_listing() {
 	
-// 	const cameras = await get_camera_listings();
+	const cameras = await get_camera_listings();
 
-// 	for (var i = cameras.length - 1; i >= 0; i--) {
+	for (var i = cameras.length - 1; i >= 0; i--) {
 
-// 		var cameraIndexCode = cameras[i].cameraIndexCode;
-// 		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
-// 		cameras[i].port = 9999-1;
+		var cameraIndexCode = cameras[i].cameraIndexCode;
+		cameras[i].image = await get_camera_thumbnail(cameraIndexCode);
+		cameras[i].port = 9999-1;
 		
-// 	}
+	}
 	
-// 	//console.log(cameras);
-// 	cam_data=JSON.stringify(cameras);
+	//console.log(cameras);
+	cam_data=JSON.stringify(cameras);
 	
 	
-// 	var syncdata=cron_mod.save_cameras_in_server(cam_data);
-// 	syncdata.then(res=>{
-// 		//console.log(res);
-// 	});
+	var syncdata=cron_mod.save_cameras_in_server(cam_data);
+	syncdata.then(res=>{
+		//console.log(res);
+	});
 	
-// }
+}
 function fr_vehicle_groups()
 {
 	var frvehicle=cron_mod.get_fr_vehicle_groups();
@@ -319,15 +319,15 @@ frvehicle.then(groups=>{
 });
 }
 //============BIO START CONFIGS===============
-// BS_config();
-// function BS_config()
-//     {
-// 		bs_access_devices();
-// 		bs_access_user_groups();
-// 		bs_access_groups();
-// 		bs_access_levels();
-// 		bs_access_doors();
-// 	}
+BS_config();
+function BS_config()
+    {
+		bs_access_devices();
+		bs_access_user_groups();
+		bs_access_groups();
+		bs_access_levels();
+		bs_access_doors();
+	}
 
 function bs_access_devices(){
 		if(mylogin){
@@ -499,36 +499,36 @@ function bs_access_doors()
 	}
 }
 //=====================================================
-// function bs_access_finger_events(){
-// 	if(mylogin){
-// 	var devices_res=cron_mod.get_bs_finger_events(mylogin);
-// 	devices_res.then(getdevices=>{
+function bs_access_finger_events(){
+	if(mylogin){
+	var devices_res=cron_mod.get_bs_finger_events(mylogin);
+	devices_res.then(getdevices=>{
 	
-// 	if(getdevices){
-// 		var fingerevents=JSON.stringify(getdevices);
-// 	//	console.log(fingerevents);
-// 	var syncdata=cron_mod.save_bs_save_finger_print_data(fingerevents);
-// 	syncdata.then(res=>{
-// 	// console.log(res);
+	if(getdevices){
+		var fingerevents=JSON.stringify(getdevices);
+	//	console.log(fingerevents);
+	var syncdata=cron_mod.save_bs_save_finger_print_data(fingerevents);
+	syncdata.then(res=>{
+	// console.log(res);
 	
-// 	});
-// }
+	});
+}
 
-// });
-// 	}else{
+});
+	}else{
 
-// 	// var bs_scan=cron_mod.Login_into_device();
-// 	// bs_scan.then(login=>{
-// 	// 	if(login)
-// 	// 	{
-// 	// 		mylogin=login;
-// 	// 		bs_access_finger_events();
-// 	// 	}else{
-// 	// 		mylogin=false;
-// 	// 	}
-// 	// });
-// 	}
-// }     
+	// var bs_scan=cron_mod.Login_into_device();
+	// bs_scan.then(login=>{
+	// 	if(login)
+	// 	{
+	// 		mylogin=login;
+	// 		bs_access_finger_events();
+	// 	}else{
+	// 		mylogin=false;
+	// 	}
+	// });
+	}
+}     
 //====================================================
 //===============END EVENTS ONLY ONE TIME==========
 //======================================================
@@ -541,7 +541,7 @@ function run_cron_for_gallagher_events(){
 	var checkin_events;
 	var doors_events;
 	cron_mod.check_event_trigger_or_not();
-	//cron_mod.trigger_events_add_modify();
+	cron_mod.trigger_events_add_modify();
 	
 	var checkin=cron_mod.get_gallagher_all_events();
 	checkin.then(groups=>{
@@ -555,55 +555,55 @@ function run_cron_for_gallagher_events(){
 	});
 		}
 	});	
-// 	var dooeevent=cron_mod.get_gallagher_door_alarms();
-// 	dooeevent.then(groups=>{
-// 		if(groups.length>0){
-// 			doors_events=JSON.stringify(groups);
-// 		//	console.log(doors_events);
-// 	var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(doors_events);
-// 	syncdata.then(res=>{
-// //console.log(res);
-// 	});
-// 		}
-// 	});
+	var dooeevent=cron_mod.get_gallagher_door_alarms();
+	dooeevent.then(groups=>{
+		if(groups.length>0){
+			doors_events=JSON.stringify(groups);
+		//	console.log(doors_events);
+	var syncdata=cron_mod.save_gg_ndoor_alarms_events_in_server(doors_events);
+	syncdata.then(res=>{
+//console.log(res);
+	});
+		}
+	});
 	//=============BIOSTAR EVENTS============
-// 	if(mylogin){
-// 	var bioevents=cron_mod.get_biostar_events_alarms(mylogin);
-// 	bioevents.then(groups=>{
-// 		if(groups.length>0){
-// 			var doors_events=JSON.stringify(groups);
-// 			console.log(doors_events);
-// 	var syncdata=cron_mod.save_bs_ndoor_alarms_events_in_server(doors_events);
-// 	syncdata.then(res=>{
+	if(mylogin){
+	var bioevents=cron_mod.get_biostar_events_alarms(mylogin);
+	bioevents.then(groups=>{
+		if(groups.length>0){
+			var doors_events=JSON.stringify(groups);
+			console.log(doors_events);
+	var syncdata=cron_mod.save_bs_ndoor_alarms_events_in_server(doors_events);
+	syncdata.then(res=>{
 
-// 	});
-// 		}
-// 	});
-// }
+	});
+		}
+	});
+}
 //=======================checking device statuses==============
-// var gg_checking=cron_mod.check_gallagher_device_status();
-// gg_checking.then(res=>{
+var gg_checking=cron_mod.check_gallagher_device_status();
+gg_checking.then(res=>{
 	
-// 	if(gg_status!=res){
+	if(gg_status!=res){
 
-// 		gg_status=res;
-// 		console.log("UPDATED GG STATUS");
-//    cron_mod.save_device_statuses(res,'GG');
-//    cron_mod.update_device_statuses_into_db(res,'GG');
-// 	}
+		gg_status=res;
+		console.log("UPDATED GG STATUS");
+   cron_mod.save_device_statuses(res,'GG');
+   cron_mod.update_device_statuses_into_db(res,'GG');
+	}
    
-// })
+})
 
-// 	var ff_checkings=cron_mod.check_fr_device_status();
-// 	ff_checkings.then(res=>{
-// 		if(fr_status!=res){
-// 			fr_status=res;
-// 			console.log("UPDATED FR STATUS");
-// 	   cron_mod.save_device_statuses(res,'FR');
-// 	   cron_mod.update_device_statuses_into_db(res,'FR');
-// 		}
+	var ff_checkings=cron_mod.check_fr_device_status();
+	ff_checkings.then(res=>{
+		if(fr_status!=res){
+			fr_status=res;
+			console.log("UPDATED FR STATUS");
+	   cron_mod.save_device_statuses(res,'FR');
+	   cron_mod.update_device_statuses_into_db(res,'FR');
+		}
 	   
-//    })	 					
+   })	 					
 
 
 // 	var bschecking=cron_mod.check_biostar_device_status();
@@ -619,7 +619,7 @@ function run_cron_for_gallagher_events(){
 
 //=============================================================
 
-// bs_access_finger_events();
+bs_access_finger_events();
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
 }
@@ -806,7 +806,7 @@ if(req_method == 'checking_server'){
 				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
 			 }
 			 else if(data_obj['code']=="BS"){		
-				//BS_config();
+				BS_config();
 				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
 			   }
 			   else{
@@ -942,33 +942,33 @@ var vehicle_array=[];
 			 
 		 });				
 	 }
-	//  if(req_method == 'add_bs_users'){
-	// 	if(mylogin){
-	// 	var msgcontent = 'BIOSTAR Data Recieved';
+	 if(req_method == 'add_bs_users'){
+		if(mylogin){
+		var msgcontent = 'BIOSTAR Data Recieved';
 		
-	// 	 var data_obj = JSON.parse( msg_arr[1] ); 
-	// 	 var personal_info = data_obj['personal'];
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+		 var personal_info = data_obj['personal'];
 		
-	// 	 if(data_obj['personal']['tag']=="Add")
-	// 	 {
-	// 		var finger_prints = data_obj['BS']['finger_prints'];
-	// 		var lift_id = BIOSTART.add_user_in_biostart(mylogin ,personal_info,finger_prints)
-	// 	 }else{
-	// 	console.log("UPDATED");
-	// 		var lift_id = BIOSTART.update_user_in_biostart(mylogin ,personal_info)
-	// 	 }
+		 if(data_obj['personal']['tag']=="Add")
+		 {
+			var finger_prints = data_obj['BS']['finger_prints'];
+			var lift_id = BIOSTART.add_user_in_biostart(mylogin ,personal_info,finger_prints)
+		 }else{
+		console.log("UPDATED");
+			var lift_id = BIOSTART.update_user_in_biostart(mylogin ,personal_info)
+		 }
 		
-	// 	 lift_id.then( liftrep => {
+		 lift_id.then( liftrep => {
 			 
-	// 		var gg = liftrep[0]['BS']['person_id'];
-	// 		console.log("USER_BS="+gg);
-	// 	client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
+			var gg = liftrep[0]['BS']['person_id'];
+			console.log("USER_BS="+gg);
+		client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
 			 
-	// 	 });
-	// 	}else{
-    //           console.log("NOT LOGIN IN BS");      
-	// 	}				
-	//  }
+		 });
+		}else{
+              console.log("NOT LOGIN IN BS");      
+		}				
+	 }
 	///////////////////////////////////////////////////////////////////
 	
 	////////////////////delete profile to devices////////////////////////
@@ -1012,20 +1012,20 @@ var vehicle_array=[];
 		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
 		 });				
 	 }
-	//  if(req_method == 'delete_bs_users'){
-	// 	if(mylogin){
-	// 	var msgcontent = 'Data Recieved';
-	// 	 var data_obj = JSON.parse( msg_arr[1] ); 
-	// 	 var person_id_bs = data_obj['BS']['person_id'];
-	// 	 var lift_id = BIOSTART.delete_user_from_biostar(mylogin,person_id_bs)
-	// 	 lift_id.then( liftrep => {	 	
-	// 		console.log("DELETED_USER_BS="+person_id_bs);
-	// 	client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
-	// 	 });	
-	// 	}else{
-	// 		console.log("NO LOGIN");
-	// 	}			
-	//  }
+	 if(req_method == 'delete_bs_users'){
+		if(mylogin){
+		var msgcontent = 'Data Recieved';
+		 var data_obj = JSON.parse( msg_arr[1] ); 
+		 var person_id_bs = data_obj['BS']['person_id'];
+		 var lift_id = BIOSTART.delete_user_from_biostar(mylogin,person_id_bs)
+		 lift_id.then( liftrep => {	 	
+			console.log("DELETED_USER_BS="+person_id_bs);
+		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
+		 });	
+		}else{
+			console.log("NO LOGIN");
+		}			
+	 }
 	////////////////////update cards to devices////////////////////////
 	if(req_method == 'update_gg_users'){
 		var msgcontent = 'Data Recieved';
@@ -1239,7 +1239,8 @@ var vehicle_array=[];
 	if(req_method == 'acknowledge_alarm'){
 		var msgcontent = 'Data Recieved';
 		 var data_obj = JSON.parse( msg_arr[1] ); 
-			if(data_obj['GG']){		
+			if(data_obj['GG']){
+				
 			var alarm_rec = gr_mod.acknowledge_alarm_by_id(data_obj['GG']['alarm_id'])
 			alarm_rec.then(gala_resp=>{				
 			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
@@ -1355,53 +1356,53 @@ var vehicle_array=[];
 
 		///////////////////////////////////////////////////////////////////
   //==========================BIO STAR======================
-//   if(req_method=="scan_finger")
-//   {
-// 	var msgcontent = 'Data Recieved';
-// 	var data_obj = JSON.parse( msg_arr[1] ); 
-// 	var device_id = data_obj['device_id'];
-// 	if(mylogin)
-// 	{
-// 		//console.log("SUCCESSFULLY LOGIN");
-// 		var devices_res=BIOSTART.get_bs_scan_finger(mylogin,device_id);
-// 		devices_res.then(getdevices=>{
+  if(req_method=="scan_finger")
+  {
+	var msgcontent = 'Data Recieved';
+	var data_obj = JSON.parse( msg_arr[1] ); 
+	var device_id = data_obj['device_id'];
+	if(mylogin)
+	{
+		//console.log("SUCCESSFULLY LOGIN");
+		var devices_res=BIOSTART.get_bs_scan_finger(mylogin,device_id);
+		devices_res.then(getdevices=>{
 			
-// 		if(getdevices==2)
-// 		{
-// 			var bs_scan=cron_mod.Login_into_device();
-// 			bs_scan.then(login=>{
-// 				if(login)
-// 				{
-// 					mylogin=login;
-// 					var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
-// 					devices_res.then(resp=>{
-// 						client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
-// 					})
-// 				}else{
-// 					mylogin=false;
-// 				}
-// 			});
-// 		}else{
-// 			client.publish(msgtopic, JSON.stringify(getdevices), { qos: 1, response: false })
-// 		}
-// 		});
-// 	}else{
-// 		var bs_scan=cron_mod.Login_into_device();
-// 		bs_scan.then(login=>{
-// 			if(login)
-// 			{
-// 				mylogin=login;
-// 				var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
-// 				devices_res.then(resp=>{
-// 					client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
-// 				})
-// 			}else{
-// 				mylogin=false;
-// 			}
-// 		});
-// 	}
+		if(getdevices==2)
+		{
+			var bs_scan=cron_mod.Login_into_device();
+			bs_scan.then(login=>{
+				if(login)
+				{
+					mylogin=login;
+					var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+					devices_res.then(resp=>{
+						client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+					})
+				}else{
+					mylogin=false;
+				}
+			});
+		}else{
+			client.publish(msgtopic, JSON.stringify(getdevices), { qos: 1, response: false })
+		}
+		});
+	}else{
+		var bs_scan=cron_mod.Login_into_device();
+		bs_scan.then(login=>{
+			if(login)
+			{
+				mylogin=login;
+				var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+				devices_res.then(resp=>{
+					client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+				})
+			}else{
+				mylogin=false;
+			}
+		});
+	}
 
-//   }
+  }
 	//===============================================================
 	}	
 })

@@ -26,20 +26,20 @@ const isAuthorized = (req, res, next) => {
 		next ("error")
 	}	
 }
-// var mysql = require('mysql');
-// var con = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "",
-//     database : "imperium_app"
-//   });
-// con.connect(function(err) {
-//     if (err){
-// console.log("Not connected with the DB");
-//     } else{
+var mysql = require('mysql');
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database : "imperium_app"
+  });
+con.connect(function(err) {
+    if (err){
+console.log("Not connected with the DB");
+    } else{
         
-//     }
-// });
+    }
+});
 const agent = new https.Agent({
     rejectUnauthorized: false
 })
@@ -50,21 +50,20 @@ extagent=agent
 
 exports. save_logs_into_db= function (device_code,operation,message,status)
 {
-    // con.query('SELECT id FROM `devices` where code="'+device_code+'"', function (error, results, fields) {
-    //     if (error)
-    //     {
-    //    // , results[0].solution
-    //    console.log(error);
-    //     }else{
-    //         var device_id=results[0].id;
-    //         var sql = "INSERT INTO devices_logs (device_id,log_message,operation,status) VALUES ('"+device_id+"', '"+message+"', '"+operation+"', '"+status+"')";
-    //         con.query(sql, function (err, result) {
-    //           if (err) throw err;
-    //           console.log("----");
-    //         });
-    //     }
-    // });
-    console.log("");
+    con.query('SELECT id FROM `devices` where code="'+device_code+'"', function (error, results, fields) {
+        if (error)
+        {
+       // , results[0].solution
+       console.log(error);
+        }else{
+            var device_id=results[0].id;
+            var sql = "INSERT INTO devices_logs (device_id,log_message,operation,status) VALUES ('"+device_id+"', '"+message+"', '"+operation+"', '"+status+"')";
+            con.query(sql, function (err, result) {
+              if (err) throw err;
+              console.log("----");
+            });
+        }
+    });
 }
 exports. get_gallagher_divisions= function ()
 {
@@ -2843,16 +2842,16 @@ resolve(true);
   
     });
 }
-// exports. update_device_statuses_into_db= function (status,device_code)
-// {
-//             var sql = "UPDATE devices SET status="+status+" WHERE code='"+device_code+"'";
-//             con.query(sql, function (err, result) {
-//               if (err) throw err;
-//               console.log("----");
-//             });
+exports. update_device_statuses_into_db= function (status,device_code)
+{
+            var sql = "UPDATE devices SET status="+status+" WHERE code='"+device_code+"'";
+            con.query(sql, function (err, result) {
+              if (err) throw err;
+              console.log("----");
+            });
         
     
-// }
+}
 //====================GET EVENTS OF CRON To CHECK UPDATE<ADD<DELETE=======
 exports. check_event_trigger_or_not= function ()
 {
