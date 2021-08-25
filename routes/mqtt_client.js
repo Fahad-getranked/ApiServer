@@ -794,27 +794,27 @@ if(req_method == 'checking_server'){
 	 client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
  }
  	////////////////////OPEN THE DDOR//////////////////////////
-	//  if(req_method == 'get_devices_config'){
-	// 	var msgcontent = 'Data Recieved';
-	// 	 var data_obj = JSON.parse( msg_arr[1] ); 
+	 if(req_method == 'get_devices_config'){
+		var msgcontent = 'Data Recieved';
+		 var data_obj = JSON.parse( msg_arr[1] ); 
 		 
-	// 		if(data_obj['code']=="GG"){		
-	// 		   	GG_config();
-	// 				client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-	// 		}else if(data_obj['code']=="FR"){		
-	// 			FR_config();
-	// 			 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-	// 		 }
-	// 		 else if(data_obj['code']=="BS"){		
-	// 			BS_config();
-	// 			 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-	// 		   }
-	// 		   else{
-	// 			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })  
-	// 		   }
+			if(data_obj['code']=="GG"){		
+			   	GG_config();
+					client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			}else if(data_obj['code']=="FR"){		
+				FR_config();
+				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			 }
+			 else if(data_obj['code']=="BS"){		
+				//BS_config();
+				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+			   }
+			   else{
+				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })  
+			   }
 			
 
-	//  }		 
+	 }		 
 		///////////////////////////////////////////////////////////////////
  
 
