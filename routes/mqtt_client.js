@@ -15,6 +15,7 @@ var host;
 var options;
 let router=express.Router();
 var mylogin=false;
+if(constants.BIO_STAR_NAME){
 var bs_scan=cron_mod.Login_into_device();
 bs_scan.then(login=>{
 	if(login)
@@ -28,6 +29,7 @@ bs_scan.then(login=>{
 		cron_mod.update_device_statuses_into_db(0,'BS');
 	}
 });
+}
 router.post('/fr_camera_events', function (req, res) {
 	console.log("Getting Data From Camera Event....");
 	console.log(req.body.params.events);
@@ -319,7 +321,9 @@ frvehicle.then(groups=>{
 });
 }
 //============BIO START CONFIGS===============
+if(constants.BIO_STAR_NAME){
 BS_config();
+}
 function BS_config()
     {
 		bs_access_devices();
@@ -499,7 +503,9 @@ function bs_access_doors()
 	}
 }
 //=====================================================
+
 function bs_access_finger_events(){
+	
 	if(mylogin){
 	var devices_res=cron_mod.get_bs_finger_events(mylogin);
 	devices_res.then(getdevices=>{
@@ -515,18 +521,6 @@ function bs_access_finger_events(){
 }
 
 });
-	}else{
-
-	// var bs_scan=cron_mod.Login_into_device();
-	// bs_scan.then(login=>{
-	// 	if(login)
-	// 	{
-	// 		mylogin=login;
-	// 		bs_access_finger_events();
-	// 	}else{
-	// 		mylogin=false;
-	// 	}
-	// });
 	}
 }     
 //====================================================
@@ -618,8 +612,9 @@ gg_checking.then(res=>{
 
 
 //=============================================================
-
+if(constants.BIO_STAR_NAME){
 bs_access_finger_events();
+}
 	  }, constants.DEFAULT_EVENT_CRON_JOB_TIME);
 	
 }
@@ -644,47 +639,7 @@ function run_cron_for_gallagher_delete_user(){
 	  }, constants.DEFAULT_DELETE_EVENT_CRON_TIME);
 	
 }
-// function run_cron_for_gallagher_add_user(){
-// 	var intervalz = setInterval(function() 
-// 	{
-// 	var add_user_events;
-// 	var add_user=cron_mod.check_gallagher_add_cardholder_events();
-// 	add_user.then(groups=>{
-// 		if(groups.length>0){
-// 	add_user_events=JSON.stringify(groups);
-// 	var syncdata=cron_mod.save_gg_cardholders_on_server(add_user_events);
-// 	syncdata.then(res=>{
-//    console.log(res);
-// 	});
-	 
-// 		}
-// 	});	
-	
-	
-// 	  }, constants.DEFAULT_ADD_CARDHOLDER_EVENT_CRON_TIME);
-	
-// }
-// function run_cron_for_fr_add_user(){
-// 	var intervalz = setInterval(function() 
-// 	{
-// 	var add_user_events;
-// 	var add_user=cron_mod.check_fr_add_users_events();
-// 	add_user.then(groups=>{
-// 		if(groups.length>0){
-// 	add_user_events=JSON.stringify(groups);
 
-// 	var syncdata=cron_mod.save_fr_users_on_server(add_user_events);
-// 	syncdata.then(res=>{
-//    console.log(res);
-// 	});
-	 
-// 		}
-// 	});	
-	
-	
-// 	  }, constants.DEFAULT_ADD_FR_USER_EVENT_CRON_TIME);
-	
-// }
 function run_cron_for_fr_event_subscription(){
 	var face_thermal_events = setInterval(function() 
 	{
