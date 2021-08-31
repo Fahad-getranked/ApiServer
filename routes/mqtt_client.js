@@ -1283,12 +1283,34 @@ var vehicle_array=[];
 			var msgcontent = 'Data Recieved';
 			 var data_obj = JSON.parse( msg_arr[1] ); 
 			 var personal_info = data_obj['personal'];
-			 var card_number = data_obj['FR']['cards'][0];				
+			 var card_number = data_obj['FR']['cards'][0];	
+			 var vehicles = data_obj['FR']['vehicles'][0];
+	        			
 			 var face_id = fr_mod.add_fr_user(personal_info,card_number,data_obj['personal']['org'])
 			 face_id.then(facerep=>{ 	 
 				 var fr = facerep[0]['FR']['person_id'];
 				 console.log("FR="+fr);
-			 client.publish(msgtopic, JSON.stringify(facerep[0]), { qos: 1, response: false })					
+             if(vehicles){
+				 var vehl = fr_mod.add_person_vehicle(fr,vehicles['plate_no'],vehicles['group_id']);
+				 vehl.then(vehcle=>{
+					if(vehcle!=3)
+					{
+						var newobj={
+							'plate_no':vehcle.plate_no,
+							'vehicle_id':vehcle.vehicle_id
+						}
+					console.log(newobj);
+						var objss={"FR":{"person_id":fr,"message":"success", 'vehicles':newobj}}
+						client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+					}else{
+						var objss={"FR":{"person_id":0,"message":"failed", 'vehicles':''}}
+						client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+					}
+				});
+			}else{
+				 var objss={"FR":{"person_id":fr,"message":"success", 'vehicles':''}}
+				 client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+			}    				
 
 			 });
 	 }

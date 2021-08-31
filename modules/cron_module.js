@@ -2532,7 +2532,7 @@ function get_gallagher_door_info(id)
           }
       })
     .then(function (responsey) {
-       
+        if(responsey.data.entryAccessZone){
         var s=responsey.data.entryAccessZone.href;
         var zone_id=s.match(/([^\/]*)\/*$/)[1];
 doorsarray={
@@ -2542,9 +2542,14 @@ doorsarray={
 }; 
 
 resolve(doorsarray);
-
+    }else{
+      //  console.log("No Zone define");
+        resolve('');
+    }
     });
-});
+}).catch(error=>{
+   // console.log("Wweqwe");
+})
 
 
 }
