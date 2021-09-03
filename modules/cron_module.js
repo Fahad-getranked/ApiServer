@@ -27,25 +27,36 @@ const isAuthorized = (req, res, next) => {
 	}	
 }
 var mysql = require('mysql');
-var con="";
+var db_config = {
+    host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'imperium_app'
+  };
+  var con;
 
-function myconnection()
-{
-    con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database : "imperium_app"
-  });
-con.connect(function(err) {
-    if (err){
-console.log("Not connected with the DB");
-    } else{
-        
-    }
-});
-}
-myconnection();
+  function handleDisconnect() {
+    con = mysql.createConnection(db_config); // Recreate the connection, since
+                                                    // the old one cannot be reused.
+  
+    con.connect(function(err) {              // The server is either down
+      if(err) {                                     // or restarting (takes a while sometimes).
+        console.log('error when connecting to db:', err);
+        setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+      }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+                                            // If you're also serving http, display a 503 error.
+    con.on('error', function(err) {
+      console.log('db error', err);
+      if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+        handleDisconnect();                         // lost due to either server restart, or a
+      } else {                                      // connnection idle timeout (the wait_timeout
+        throw err;                                  // server variable configures this)
+      }
+    });
+  }
+  
+  handleDisconnect()
 
 const agent = new https.Agent({
     rejectUnauthorized: false
@@ -2734,6 +2745,7 @@ return new Promise((resolve) => {
     var parts = mymessages.split('"'); 
     if(parts[2]==' Added Access Group ')
     {
+        cron_mod.save_logs_into_db('GG','ADD',mymessages,1);
    // console.log("RUN ACCESS GROUPS CRON");
     var access_groups=cron_mod.get_gallagher_access_groups();
     access_groups.then(groups=>{
@@ -2748,6 +2760,7 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Added Card Type ')
     {
+        cron_mod.save_logs_into_db('GG','ADD',mymessages,1);
   //  console.log("RUN ACCESS CARD TYPES CRON");
     var access_types=cron_mod.get_gallagher_card_types();
     access_types.then(types=>{
@@ -2762,6 +2775,7 @@ return new Promise((resolve) => {
     } 
     else if(parts[2]==' Added Access Zone ')
     {
+        cron_mod.save_logs_into_db('GG','ADD',mymessages,1);
     //console.log("RUN ACCESS ZONES CRON");
     var access_zones=cron_mod.get_gallagher_zones();
     access_zones.then(zones=>{
@@ -2775,6 +2789,7 @@ return new Promise((resolve) => {
     }  
     else if(parts[2]==' Added Door ')
     {
+        cron_mod.save_logs_into_db('GG','ADD',mymessages,1);
   //  console.log("RUN ACCESS DOORS CRON");
     var access_doors=cron_mod.get_gallagher_doors();
     access_doors.then(doors=>{
@@ -2788,6 +2803,7 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Added Division ')
     {
+        cron_mod.save_logs_into_db('GG','ADD',mymessages,1);
   //  console.log("RUN ACCESS DIVISIONS CRON");
     var divisions=cron_mod.get_gallagher_divisions();
     divisions.then(groups=>{
@@ -2830,6 +2846,7 @@ return new Promise((resolve) => {
     //console.log(parts);
     if(parts[2]==' Modified Access Group ')
     {
+    cron_mod.save_logs_into_db('GG','UPDATE',mymessages,1);
     console.log("RUN UPDATE ACCESS GROUPS CRON");
     var access_groups=cron_mod.get_gallagher_access_groups();
     access_groups.then(groups=>{
@@ -2844,6 +2861,7 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Modified Card Type ')
     {
+        cron_mod.save_logs_into_db('GG','UPDATE',mymessages,1);
     console.log("RUN UPDATE ACCESS CARD TYPES CRON");
     var access_types=cron_mod.get_gallagher_card_types();
     access_types.then(types=>{
@@ -2858,6 +2876,7 @@ return new Promise((resolve) => {
     } 
     else if(parts[2]==' Modified Access Zone ')
     {
+        cron_mod.save_logs_into_db('GG','UPDATE',mymessages,1);
     console.log("RUN UPDATE ACCESS ZONES CRON");
     var access_zones=cron_mod.get_gallagher_zones();
     access_zones.then(zones=>{
@@ -2872,6 +2891,7 @@ return new Promise((resolve) => {
     else if(parts[2]==' Modified Door ')
     {
     console.log("RUN UPDATE ACCESS DOORS CRON");
+    cron_mod.save_logs_into_db('GG','UPDATE',mymessages,1);
     var access_doors=cron_mod.get_gallagher_doors();
     access_doors.then(doors=>{
     var mydoors=JSON.stringify(doors);
@@ -2884,6 +2904,7 @@ return new Promise((resolve) => {
     }
     else if(parts[2]==' Modified Division ')
     {
+        cron_mod.save_logs_into_db('GG','UPDATE',mymessages,1);
     console.log("RUN UPDATE ACCESS DIVISIONS CRON");
     var divisions=cron_mod.get_gallagher_divisions();
     divisions.then(groups=>{
@@ -2929,6 +2950,7 @@ return new Promise((resolve) => {
       //  console.log(parts);
         if(parts[2]==' Deleted Access Group ')
         {
+            cron_mod.save_logs_into_db('GG','DELETE',mymessages,1);
             var elem=parts[3].trim();
       //  console.log("RUN DELETED ACCESS GROUPS CRON");
         var access_groups=cron_mod.get_gallagher_access_groups();
@@ -2944,6 +2966,7 @@ return new Promise((resolve) => {
         }
         else if(parts[2]==' Deleted Card Type ')
         {
+            cron_mod.save_logs_into_db('GG','DELETE',mymessages,1);
             var elem=parts[3].trim();
         console.log("RUN UPDATE ACCESS CARD TYPES CRON");
         var access_types=cron_mod.get_gallagher_card_types();
@@ -2959,6 +2982,7 @@ return new Promise((resolve) => {
         } 
         else if(parts[2]==' Deleted Access Zone ')
         {
+            cron_mod.save_logs_into_db('GG','DELETE',mymessages,1);
             var elem=parts[3].trim();
        // console.log("RUN UPDATE ACCESS ZONES CRON");
         var access_zones=cron_mod.get_gallagher_zones();
@@ -2973,6 +2997,7 @@ return new Promise((resolve) => {
         }  
         else if(parts[2]==' Deleted Door ')
         {
+            cron_mod.save_logs_into_db('GG','DELETE',mymessages,1);
             var elem=parts[3].trim();
       //  console.log("RUN UPDATE ACCESS DOORS CRON");
         var access_doors=cron_mod.get_gallagher_doors();
@@ -2987,6 +3012,7 @@ return new Promise((resolve) => {
         }
         else if(parts[2]==' Deleted Division ')
         {
+            cron_mod.save_logs_into_db('GG','DELETE',mymessages,1);
             var elem=parts[3].trim();
       //  console.log("RUN UPDATE ACCESS DIVISIONS CRON");
         var divisions=cron_mod.get_gallagher_divisions();

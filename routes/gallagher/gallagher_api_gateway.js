@@ -50,5 +50,13 @@ router.route('/delete_cardholder').post((req,res)=>{
 			
 			});
 		
+	router.route('/test').get((req,res)=>{
+		//var card_id= gr_mod.delete_access_group_details(req.body.cardholder_id,req.body.group_id);
+		// 	card_id.then(restt=>{
+		// res.json(restt);
+		// 	});
+		res.send("Test Works");
+		
+		});	
 
 module.exports=router;

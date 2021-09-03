@@ -21,7 +21,7 @@ bs_scan.then(login=>{
 	if(login)
 	{
 		mylogin=login;
-		console.log("UPDATED BS STATUS");
+	//	console.log("UPDATED BS STATUS");
 	   cron_mod.save_device_statuses(1,'BS');
 	   cron_mod.update_device_statuses_into_db(1,'BS');
 	}else{
@@ -68,7 +68,7 @@ res.send(rest);
 	});
 router.post('/fr_transactions', function (req, res) {
 	console.log("Getting Data....");
-	//console.log(req.body.params.events[0]);
+	console.log(req.body.params.events[0]);
 	var rest=true;
 	  var maindata=[];
 if(req.body.params.events[0].data!=null)
@@ -581,7 +581,7 @@ gg_checking.then(res=>{
 	if(gg_status!=res){
 
 		gg_status=res;
-		console.log("UPDATED GG STATUS");
+	//	console.log("UPDATED GG STATUS");
    cron_mod.save_device_statuses(res,'GG');
    cron_mod.update_device_statuses_into_db(res,'GG');
 	}
@@ -592,7 +592,7 @@ gg_checking.then(res=>{
 	ff_checkings.then(res=>{
 		if(fr_status!=res){
 			fr_status=res;
-			console.log("UPDATED FR STATUS");
+		//	console.log("UPDATED FR STATUS");
 	   cron_mod.save_device_statuses(res,'FR');
 	   cron_mod.update_device_statuses_into_db(res,'FR');
 		}
@@ -717,7 +717,7 @@ return client;
 }
 client.on('error', function (err) {
 	console.log(err)
-	client.end()
+	configuration_mqtt();
 })
 
 
