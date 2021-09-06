@@ -768,47 +768,69 @@ console.log(response.data.accessGroups.length+"   "+count);
 	}
 	//===========open the door===================
 	exports.open_the_door = function(door_id)
-	{
+	{	
+		console.log('Open the door => '+door_id);
 		return new Promise((resolve) => {
 			try {  
-		let obj = {
-			"eventType": 1,
-			"eventID": 0,
-			"hasRestoral": 0,
-			"itemID": door_id,
-			"message": "Security Guard has opened door manually",
-			"details": "door open"
-		  };
-		  console.log(obj);
-		var url=constants.EXTERNAL_SYSTEM_URL+'/api/Event/logEvent';
-		axios({
-			method: 'POST', 
-			httpsAgent: extagent,
-			url: url,
-			data : obj,
-			headers: {
-				  'Content-Type' : 'application/json'
-				}
-			})
-		.then(function (response){
-			if(response.status==200)
-			{
-			resolve(true);
-			}else{
+
+				var config = {
+					method: 'post',
+					httpsAgent: extagent,
+					url: constants.GALLAGHER_HOST+'/api/doors/'+door_id+'/open',
+					headers: { 
+					  'Authorization': constants.GALLAGHER_KEY
+					}
+				};
+				axios(config)
+				.then(function (response) {
+					
+					if(response.status==204) {
+						resolve(true);
+					}else{
+						resolve(false);
+					}
+				})
+				.catch(function (error) {
+					resolve(false);
+				});
+				// let obj = {
+				// 	"eventType": 1,
+				// 	"eventID": 0,
+				// 	"hasRestoral": 0,
+				// 	"itemID": door_id,
+				// 	"message": "Security Guard has opened door manually",
+				// 	"details": "door open" 
+				// };
+		  		// console.log(obj);
+				// var url=constants.EXTERNAL_SYSTEM_URL+'/api/Event/logEvent';
+				// axios({
+				// 	method: 'POST', 
+				// 	httpsAgent: extagent,
+				// 	url: url,
+				// 	data : obj,
+				// 	headers: {
+				// 		'Content-Type' : 'application/json'
+				// 		}
+				// 	})
+				// .then(function (response){
+				// 	if(response.status==200)
+				// 	{
+				// 	resolve(true);
+				// 	}else{
+				// 		resolve(false);
+				// 	}
+						
+						
+					
+				// }).catch(error =>  {
+				
+				// 	resolve(false);
+				// });
+	
+			}catch(error) {
+				
 				resolve(false);
 			}
-				
-				
-			
-		}).catch(error =>  {
-		
-				resolve(false);
-			});
-	
-		}catch(error)
-		{
-			resolve(false);
-		}
 		});
 	}
 	//===========acknowledge_alarm============

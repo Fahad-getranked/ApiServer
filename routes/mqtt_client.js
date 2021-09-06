@@ -57,7 +57,7 @@ if(req.body.params.events[0]!=null)
   console.log(maindata);
   var syncdata=cron_mod.save_fr_motion_detection_events(maindata);
   syncdata.then(res=>{
-console.log(res);
+	console.log(res);
   });
 }else{
   rest=false;
@@ -111,31 +111,29 @@ router.post('/fr_faces_transactions', function (req, res) {
 	console.log("Getting Face Data....");
 	
 	var rest=true;
-		var maindata=[];
-if(req.body.params.events[0].data!=null)
-{ 
-	var mydata=cron_mod.download_fr_image(req.body.params.events[0].data.picUri);
-	mydata.then(respp=>{
-	var eventData={
-		'pic':respp,
-		"temperature":req.body.params.events[0].data.temperatureData,
-		"door_id":req.body.params.events[0].srcIndex,
+	var maindata=[];
+	if(req.body.params.events[0].data!=null)
+	{ 
+		var mydata=cron_mod.download_fr_image(req.body.params.events[0].data.picUri);
+		mydata.then(respp=>{
+		var eventData={
+			'pic':respp,
+			"temperature":req.body.params.events[0].data.temperatureData,
+			"door_id":req.body.params.events[0].srcIndex,
+		}
+		maindata.push(eventData);
+		maindata=JSON.stringify(maindata);
+	var syncdata=cron_mod.save_fr_images(maindata);
+			syncdata.then(res=>{
+	console.log(res);
+		});
+		});
+
+	}else{
+		rest=false;
 	}
-	maindata.push(eventData);
-	maindata=JSON.stringify(maindata);
-var syncdata=cron_mod.save_fr_images(maindata);
-		syncdata.then(res=>{
-console.log(res);
-	});
-	});
-
-}else{
-	rest=false;
-}	
-
-
-res.send(rest);
-	});
+	res.send(rest);
+});
 //=====================SECTION to RUN Cron JOBS===============
 run_cron_for_gallagher_configuration();
 run_cron_for_gallagher_events();
@@ -743,321 +741,321 @@ client.on('message', function (topic, message, packet) {
 	
 	if(req_code==constants.CODE){
 		
-//=============================PERMANENT USERS============================//
-if(req_method == 'checking_server'){
-	//console.log("SERVER IS WORKING");
-	 client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
- }
- 	////////////////////OPEN THE DDOR//////////////////////////
-	 if(req_method == 'get_devices_config'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 
-			if(data_obj['code']=="GG"){		
-			   	GG_config();
-					client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-			}else if(data_obj['code']=="FR"){		
-				FR_config();
-				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-			 }
-			 else if(data_obj['code']=="BS"){		
-				BS_config();
-				 client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
-			   }
-			   else{
-				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })  
-			   }
+		//=============================PERMANENT USERS============================//
+		if(req_method == 'checking_server'){
+			//console.log("SERVER IS WORKING");
+			client.publish(msgtopic, JSON.stringify('success'), { qos: 1, response: false })					
+		}
+		////////////////////OPEN THE DDOR//////////////////////////
+		if(req_method == 'get_devices_config'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
 			
+				if(data_obj['code']=="GG"){		
+					GG_config();
+						client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+				}else if(data_obj['code']=="FR"){		
+					FR_config();
+					client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+				}
+				else if(data_obj['code']=="BS"){		
+					BS_config();
+					client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })
+				}
+				else{
+					client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })  
+				}
+				
 
-	 }		 
+		}		 
 		///////////////////////////////////////////////////////////////////
  
 
- //======================CHECK USER EXISTIS===================
- if(req_method == 'fr_user_exist'){
-	var msgcontent = 'Data Recieved';
-	 var data_obj = JSON.parse( msg_arr[1] ); 
-	 var personal_info = data_obj['person_name'];
+		//======================CHECK USER EXISTIS===================
+		if(req_method == 'fr_user_exist'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var personal_info = data_obj['person_name'];
 
-	 var fr_user = fr_mod.get_existing_users_by_name(personal_info)
-	 fr_user.then(frr_resp=>{	
-	 client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
-
-	 });
-
- }
- //======================Update Face===================
- if(req_method == 'fr_update_user_face'){
-	var msgcontent = 'Data Recieved';
-	 var data_obj = JSON.parse( msg_arr[1] ); 
-	 var image_url = data_obj['image_url'];
-	 var user_id = data_obj['person_id'];
-	 var org_id = data_obj['org_id'];
-	 var card_number = data_obj['card_number'];
-
-	 var fr_user = fr_mod.updat_user_face(image_url,user_id,org_id,card_number);
-	 fr_user.then(frr_resp=>{	
-	 client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
-
-	 });
-
- }
-	////////////////////add cards to devices///////////////////////////
-	if(req_method == 'add_gg_users'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var personal_info = data_obj['personal'];
-		 var groups = data_obj['GG']['groups'].join(",");
-		 var cardtypes = data_obj['GG']['cards'];
-		 var cardholder_id = gr_mod.save_user_in_gallagher(personal_info,cardtypes,groups)
-		 cardholder_id.then(gala_resp=>{		
-				 var gg = gala_resp[0]['GG']['person_id'];
-			 console.log("USER_GG="+gg);
-		 client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })					
-
-		 });
-
-	 }
-	 if(req_method == 'add_fr_users'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var personal_info = data_obj['personal'];
-		 var groups = data_obj['FR']['groups'].join(",");
-		 var cardtypes = data_obj['FR']['cards'];
-		 var vehicles = data_obj['FR']['vehicles'];
-		 var card_number = data_obj['FR']['cards'][0];
-	     console.log(vehicles);				
-		 var face_id = fr_mod.add_fr_user(personal_info,card_number,data_obj['personal']['org'])
-		 face_id.then(facerep=>{
-			var gg = facerep[0]['FR']['person_id'];
-			if(gg!=0){
-var vehicle_array=[];
-			if(vehicles)
-			{
-				for(var i=0;i<vehicles.length;i++)
-				{
-					var plate_no=vehicles[i]['plate_no'];
-				var vehl = fr_mod.add_person_vehicle(gg,vehicles[i]['plate_no'],vehicles[i]['group_id'])
-				vehl.then(vehcle=>{
-					if(vehcle!=3)
-					{
-						var newobj={
-							'plate_no':vehcle.plate_no,
-							'vehicle_id':vehcle.vehicle_id
-						}
-					
-						vehicle_array.push(newobj);
-					}
-				});
-			}
-			var intervalxxx = setInterval(function() {
-
-				clearInterval(intervalxxx);
-			if(vehicle_array){
-			
-			var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':vehicle_array}}
-				
-			client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
-			}else{
-				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
-				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
-				
-				
-			}
-		}, 1200);
-			}else{
-				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
-				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
-			}
-			
-		}else{
-			var objss={"FR":{"person_id":0,"message":"failed", 'vehicles':''}}
-			client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
-		}
-
-	 
-		 });
-							
-
-
-	 }
-	 if(req_method == 'add_sl_users'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var personal_info = data_obj['personal'];
-		 var lift_groups = data_obj['SL']['groups'].join(",") ;
-		 var lift_cards = data_obj['SL']['cards'][0];
-		 var person_id=data_obj['SL']['personID'];
-		 var lift_id = lift_mod.add_lift_user(personal_info,person_id,lift_groups,lift_cards)
-		 lift_id.then( liftrep => {
-			 
-			var gg = liftrep[0]['SL']['person_id'];
-			console.log("USER_SL="+gg);
-		client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
-			 
-		 });				
-	 }
-	 if(req_method == 'add_bs_users'){
-		if(mylogin){
-		var msgcontent = 'BIOSTAR Data Recieved';
-		
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var personal_info = data_obj['personal'];
-		
-		 if(data_obj['personal']['tag']=="Add")
-		 {
-			var finger_prints = data_obj['BS']['finger_prints'];
-			var lift_id = BIOSTART.add_user_in_biostart(mylogin ,personal_info,finger_prints)
-		 }else{
-		console.log("UPDATED");
-			var lift_id = BIOSTART.update_user_in_biostart(mylogin ,personal_info)
-		 }
-		
-		 lift_id.then( liftrep => {
-			 
-			var gg = liftrep[0]['BS']['person_id'];
-			console.log("USER_BS="+gg);
-		client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
-			 
-		 });
-		}else{
-              console.log("NOT LOGIN IN BS");      
-		}				
-	 }
-	///////////////////////////////////////////////////////////////////
-	
-	////////////////////delete profile to devices////////////////////////
-    if(req_method == 'delete_gg_users'){
-		var msgcontent = 'Data Recieved';
-		var data_obj = JSON.parse( msg_arr[1] ); 
-		var gg_person_id = data_obj['GG']['person_id'];
-		var cardholder_id = gr_mod.delete_cardholder_details(gg_person_id)
-		cardholder_id.then(gala_resp=>{	
-		   console.log("DELETED_USER__GG="+gg_person_id);
-	   client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })	 
-		});
-
-	 }
-	 if(req_method == 'delete_fr_users'){
-		var data_obj = JSON.parse( msg_arr[1] );
-		
-		var fr_person_id = data_obj['FR']['person_id'];
-		console.log("PERSON_ID"+fr_person_id);
-		var vehicles = data_obj['FR']['vehicles'];
-		if(vehicles.length>0)
-		{
-			for(var k=0;k<vehicles.length;k++)
-			{
-                   fr_mod.delete_person_vehicle(vehicles[k]);
-			}
-		}			
-		var face_id = fr_mod.delete_fr_user(fr_person_id)
-		face_id.then(facerep=>{
-		   console.log("DELETED_USER__FR="+fr_person_id);
-	   client.publish(msgtopic, JSON.stringify(facerep), { qos: 1, response: false })	 
-		});
-	 }
-	 if(req_method == 'delete_sl_users'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var lift_person_id = data_obj['SL']['person_id'];
-		 var lift_id = lift_mod.delete_lift_user(lift_person_id)
-		 lift_id.then( liftrep => {	 	
-			console.log("DELETED_USER__SL="+lift_person_id);
-		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
-		 });				
-	 }
-	 if(req_method == 'delete_bs_users'){
-		if(mylogin){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var person_id_bs = data_obj['BS']['person_id'];
-		 var lift_id = BIOSTART.delete_user_from_biostar(mylogin,person_id_bs)
-		 lift_id.then( liftrep => {	 	
-			console.log("DELETED_USER_BS="+person_id_bs);
-		client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
-		 });	
-		}else{
-			console.log("NO LOGIN");
-		}			
-	 }
-	////////////////////update cards to devices////////////////////////
-	if(req_method == 'update_gg_users'){
-		var msgcontent = 'Data Recieved';
-		var data_obj = JSON.parse( msg_arr[1] ); 
-		var gg_person_id = data_obj['GG']['person_id'];
-		var gg_cards = data_obj['GG']['cards'];
-			var cardholder_id = gr_mod.update_card_status(data_obj['GG']['firstname'],data_obj['GG']['lastname'],data_obj['GG']['photo'],gg_person_id,gg_cards)
-		try{
-			cardholder_id.then(gala_resp=>{				
-				if(gala_resp){
-					console.log("GG EXPIRY UPDATED");	
-			 client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
-				}else{
-					console.log("GG EXPIRY FAILED TO UPDATE");
-			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
-				}	
-			});	
-		}catch(error)
-		{
-			console.log("GG EXPIRY FAILED TO UPDATE");	
-			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })
-		}
-	 }
-	 if(req_method == 'update_fr_users'){
-		var data_obj = JSON.parse( msg_arr[1] );
-		var fr_person_id = data_obj['FR']['person_id'];
-		var fr_cards = data_obj['FR']['cards'];
-		var face_id = fr_mod.add_update_fr_card(data_obj['FR']['firstname'],data_obj['FR']['lastname'],data_obj['FR']['photo'],fr_person_id,fr_cards[0])
-		try{
-		face_id.then(face_resp=>{		
-
-			if(face_resp){
-				console.log("FR EXPIRY UPDATED");
-			client.publish(msgtopic, JSON.stringify(face_resp), { qos: 1, response: false })
-			}else{
-				console.log("FR EXPIRY FAILED TO UPDATE");
-			client.publish(msgtopic, JSON.stringify(face_resp), { qos: 1, response: false })
-			}
+			var fr_user = fr_mod.get_existing_users_by_name(personal_info)
+			fr_user.then(frr_resp=>{	
+			client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
 
 			});
-		}catch(error)
-		{
-			console.log("FR EXPIRY FAILED TO UPDATE");
-			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	
+
 		}
-	 }
-	 if(req_method == 'update_sl_users'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-		 var sl_person_id = data_obj['SL']['person_id'];
-		 var sl_cards = data_obj['SL']['cards'];
-		 var lift_groups = data_obj['SL']['groups'].join(",") ;
-		 var flift_id = lift_mod.update_lift_user(data_obj['SL']['firstname'],data_obj['SL']['lastname'],data_obj['SL']['pname'],sl_person_id,sl_cards[0],data_obj['SL']['level'],lift_groups)
-		 flift_id.then(lift_resp=>{					
-						 if(lift_resp){
-							console.log("SL EXPIRY UPDATED");	 
-							client.publish(msgtopic, JSON.stringify(lift_resp), { qos: 1, response: false })
-						 }else{
-							console.log("SL EXPIRY FAILED TO UPDATE");
-							client.publish(msgtopic, JSON.stringify(lift_resp), { qos: 1, response: false })
-						 }
+		//======================Update Face===================
+		if(req_method == 'fr_update_user_face'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var image_url = data_obj['image_url'];
+			var user_id = data_obj['person_id'];
+			var org_id = data_obj['org_id'];
+			var card_number = data_obj['card_number'];
+
+			var fr_user = fr_mod.updat_user_face(image_url,user_id,org_id,card_number);
+			fr_user.then(frr_resp=>{	
+			client.publish(msgtopic, JSON.stringify(frr_resp), { qos: 1, response: false })					
+
+			});
+
+		}
+		////////////////////add cards to devices///////////////////////////
+		if(req_method == 'add_gg_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var personal_info = data_obj['personal'];
+			var groups = data_obj['GG']['groups'].join(",");
+			var cardtypes = data_obj['GG']['cards'];
+			var cardholder_id = gr_mod.save_user_in_gallagher(personal_info,cardtypes,groups)
+			cardholder_id.then(gala_resp=>{		
+					var gg = gala_resp[0]['GG']['person_id'];
+				console.log("USER_GG="+gg);
+			client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })					
+
+			});
+
+		}
+		if(req_method == 'add_fr_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var personal_info = data_obj['personal'];
+			var groups = data_obj['FR']['groups'].join(",");
+			var cardtypes = data_obj['FR']['cards'];
+			var vehicles = data_obj['FR']['vehicles'];
+			var card_number = data_obj['FR']['cards'][0];
+			console.log(vehicles);				
+			var face_id = fr_mod.add_fr_user(personal_info,card_number,data_obj['personal']['org'])
+			face_id.then(facerep=>{
+				var gg = facerep[0]['FR']['person_id'];
+				if(gg!=0){
+					var vehicle_array=[];
+				if(vehicles)
+				{
+					for(var i=0;i<vehicles.length;i++)
+					{
+						var plate_no=vehicles[i]['plate_no'];
+					var vehl = fr_mod.add_person_vehicle(gg,vehicles[i]['plate_no'],vehicles[i]['group_id'])
+					vehl.then(vehcle=>{
+						if(vehcle!=3)
+						{
+							var newobj={
+								'plate_no':vehcle.plate_no,
+								'vehicle_id':vehcle.vehicle_id
+							}
 						
-					 });				
-	 }
-	///////////////////////////////////////////////////////////////////
-	////////////////////update Card Info//////////////////////////
+							vehicle_array.push(newobj);
+						}
+					});
+				}
+				var intervalxxx = setInterval(function() {
+
+					clearInterval(intervalxxx);
+				if(vehicle_array){
+				
+				var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':vehicle_array}}
+					
+				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+				}else{
+					var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
+					client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+					
+					
+				}
+			}, 1200);
+				}else{
+					var objss={"FR":{"person_id":gg,"message":"success", 'vehicles':''}}
+					client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+				}
+				
+			}else{
+				var objss={"FR":{"person_id":0,"message":"failed", 'vehicles':''}}
+				client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })	
+			}
+
+		
+			});
+								
+
+
+		}
+		if(req_method == 'add_sl_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var personal_info = data_obj['personal'];
+			var lift_groups = data_obj['SL']['groups'].join(",") ;
+			var lift_cards = data_obj['SL']['cards'][0];
+			var person_id=data_obj['SL']['personID'];
+			var lift_id = lift_mod.add_lift_user(personal_info,person_id,lift_groups,lift_cards)
+			lift_id.then( liftrep => {
+				
+				var gg = liftrep[0]['SL']['person_id'];
+				console.log("USER_SL="+gg);
+			client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
+				
+			});				
+		}
+		if(req_method == 'add_bs_users'){
+			if(mylogin){
+			var msgcontent = 'BIOSTAR Data Recieved';
+			
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var personal_info = data_obj['personal'];
+			
+			if(data_obj['personal']['tag']=="Add")
+			{
+				var finger_prints = data_obj['BS']['finger_prints'];
+				var lift_id = BIOSTART.add_user_in_biostart(mylogin ,personal_info,finger_prints)
+			}else{
+			console.log("UPDATED");
+				var lift_id = BIOSTART.update_user_in_biostart(mylogin ,personal_info)
+			}
+			
+			lift_id.then( liftrep => {
+				
+				var gg = liftrep[0]['BS']['person_id'];
+				console.log("USER_BS="+gg);
+			client.publish(msgtopic, JSON.stringify(liftrep[0]), { qos: 1, response: false })
+				
+			});
+			}else{
+				console.log("NOT LOGIN IN BS");      
+			}				
+		}
+		///////////////////////////////////////////////////////////////////
+	
+		////////////////////delete profile to devices////////////////////////
+		if(req_method == 'delete_gg_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var gg_person_id = data_obj['GG']['person_id'];
+			var cardholder_id = gr_mod.delete_cardholder_details(gg_person_id)
+			cardholder_id.then(gala_resp=>{	
+			console.log("DELETED_USER__GG="+gg_person_id);
+		client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })	 
+			});
+
+		}
+		if(req_method == 'delete_fr_users'){
+			var data_obj = JSON.parse( msg_arr[1] );
+			
+			var fr_person_id = data_obj['FR']['person_id'];
+			console.log("PERSON_ID"+fr_person_id);
+			var vehicles = data_obj['FR']['vehicles'];
+			if(vehicles.length>0)
+			{
+				for(var k=0;k<vehicles.length;k++)
+				{
+					fr_mod.delete_person_vehicle(vehicles[k]);
+				}
+			}			
+			var face_id = fr_mod.delete_fr_user(fr_person_id)
+			face_id.then(facerep=>{
+			console.log("DELETED_USER__FR="+fr_person_id);
+		client.publish(msgtopic, JSON.stringify(facerep), { qos: 1, response: false })	 
+			});
+		}
+		if(req_method == 'delete_sl_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var lift_person_id = data_obj['SL']['person_id'];
+			var lift_id = lift_mod.delete_lift_user(lift_person_id)
+			lift_id.then( liftrep => {	 	
+				console.log("DELETED_USER__SL="+lift_person_id);
+			client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
+			});				
+		}
+		if(req_method == 'delete_bs_users'){
+			if(mylogin){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var person_id_bs = data_obj['BS']['person_id'];
+			var lift_id = BIOSTART.delete_user_from_biostar(mylogin,person_id_bs)
+			lift_id.then( liftrep => {	 	
+				console.log("DELETED_USER_BS="+person_id_bs);
+			client.publish(msgtopic, JSON.stringify(liftrep), { qos: 1, response: false })	 
+			});	
+			}else{
+				console.log("NO LOGIN");
+			}			
+		}
+		////////////////////update cards to devices////////////////////////
+		if(req_method == 'update_gg_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var gg_person_id = data_obj['GG']['person_id'];
+			var gg_cards = data_obj['GG']['cards'];
+				var cardholder_id = gr_mod.update_card_status(data_obj['GG']['firstname'],data_obj['GG']['lastname'],data_obj['GG']['photo'],gg_person_id,gg_cards)
+			try{
+				cardholder_id.then(gala_resp=>{				
+					if(gala_resp){
+						console.log("GG EXPIRY UPDATED");	
+				client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
+					}else{
+						console.log("GG EXPIRY FAILED TO UPDATE");
+				client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
+					}	
+				});	
+			}catch(error)
+			{
+				console.log("GG EXPIRY FAILED TO UPDATE");	
+				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })
+			}
+		}
+		if(req_method == 'update_fr_users'){
+			var data_obj = JSON.parse( msg_arr[1] );
+			var fr_person_id = data_obj['FR']['person_id'];
+			var fr_cards = data_obj['FR']['cards'];
+			var face_id = fr_mod.add_update_fr_card(data_obj['FR']['firstname'],data_obj['FR']['lastname'],data_obj['FR']['photo'],fr_person_id,fr_cards[0])
+			try{
+			face_id.then(face_resp=>{		
+
+				if(face_resp){
+					console.log("FR EXPIRY UPDATED");
+				client.publish(msgtopic, JSON.stringify(face_resp), { qos: 1, response: false })
+				}else{
+					console.log("FR EXPIRY FAILED TO UPDATE");
+				client.publish(msgtopic, JSON.stringify(face_resp), { qos: 1, response: false })
+				}
+
+				});
+			}catch(error)
+			{
+				console.log("FR EXPIRY FAILED TO UPDATE");
+				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	
+			}
+		}
+		if(req_method == 'update_sl_users'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var sl_person_id = data_obj['SL']['person_id'];
+			var sl_cards = data_obj['SL']['cards'];
+			var lift_groups = data_obj['SL']['groups'].join(",") ;
+			var flift_id = lift_mod.update_lift_user(data_obj['SL']['firstname'],data_obj['SL']['lastname'],data_obj['SL']['pname'],sl_person_id,sl_cards[0],data_obj['SL']['level'],lift_groups)
+			flift_id.then(lift_resp=>{					
+							if(lift_resp){
+								console.log("SL EXPIRY UPDATED");	 
+								client.publish(msgtopic, JSON.stringify(lift_resp), { qos: 1, response: false })
+							}else{
+								console.log("SL EXPIRY FAILED TO UPDATE");
+								client.publish(msgtopic, JSON.stringify(lift_resp), { qos: 1, response: false })
+							}
+							
+						});				
+		}
+		///////////////////////////////////////////////////////////////////
+		////////////////////update Card Info//////////////////////////
 		if(req_method == 'update_user_card_details'){
 			var msgcontent = 'Data Recieved';
 			console.log(msgcontent);
-			 var data_obj = JSON.parse( msg_arr[1] ); 
+			var data_obj = JSON.parse( msg_arr[1] ); 
 				if(data_obj['GG']){
 				var cardholder_id = gr_mod.delete_card_details(data_obj['GG']['user_id'],data_obj['GG']['card_id'])
 				cardholder_id.then(gala_resp=>{		
 				var gg = gala_resp[0]['GG']['person_id'];
 				if(gg==0)
 				{
-				   
+				
 					client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
 				}else
 				{
@@ -1104,15 +1102,15 @@ var vehicle_array=[];
 							});
 							}
 	
-		 }
+		}
 		 
-	 //////////////////////////////////////////////////////////////
+	 	//////////////////////////////////////////////////////////////
 	 	////////////////////update Group Info//////////////////////////
-		 if(req_method == 'delete_user_groups_details'){
+		if(req_method == 'delete_user_groups_details'){
 			var msgcontent = 'Deleting data';
 			console.log(msgcontent);
-			 var data_obj = JSON.parse( msg_arr[1] ); 
-				if(data_obj['GG']){
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			if(data_obj['GG']){
 				var cardholder_id = gr_mod.get_cardholder_group_details(data_obj['GG']['user_id'])
 				cardholder_id.then(gala_resp=>{	
 					if(gala_resp){	
@@ -1122,145 +1120,143 @@ var vehicle_array=[];
 						client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })			
 					}
 				});
-				}
-				
-	
-		 }
+			}
+		}
 		
-		 if(req_method == 'update_user_groups_details'){
-			var msgcontent = 'Adding Group Receved';
-			console.log(msgcontent);
-			 var data_obj = JSON.parse( msg_arr[1] ); 
-				if(data_obj['GG']){
-					var cardholder_id = gr_mod.get_cardholder_group_details(data_obj['GG']['user_id'])
-					cardholder_id.then(gala_resp=>{	
-						if(gala_resp){	
-							var groups = data_obj['GG']['groups'].join(",");
-			
-							var newreq=gr_mod.add_new_groups_in_gallagher(data_obj['GG']['user_id'],groups);
-							newreq.then(newreps=>{	
-								if(newreps){
-							client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
-								}else{
-									client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
-								}
-						
-						});
-					
-						}else{
-							client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })			
-						}
-					});	
-					
-				}
-				
-		 }
-     //////////////////////////////////////////////////////////////
-	////////////////////ADD NEW Card Info//////////////////////////
-		 if(req_method == 'add_user_card_details'){
-			var msgcontent = 'Data Recieved';
-			 var data_obj = JSON.parse( msg_arr[1] ); 
-				if(data_obj['GG']){
-				var cardholder_id = gr_mod.add_new_card_in_gallagher(data_obj['GG']['user_id'],data_obj['GG']['cards'])
-				cardholder_id.then(gala_resp=>{		
-					var gg = gala_resp[0]['GG']['person_id'];
-					console.log("USER_GG="+gg);
-				client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })
-								
-
-				});
-				}
-				
-	
-		 }	 
-	////////////////////OPEN THE DDOR//////////////////////////
-	if(req_method == 'open_the_door'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
+		if(req_method == 'update_user_groups_details'){
+		var msgcontent = 'Adding Group Receved';
+		console.log(msgcontent);
+			var data_obj = JSON.parse( msg_arr[1] ); 
 			if(data_obj['GG']){
+				var cardholder_id = gr_mod.get_cardholder_group_details(data_obj['GG']['user_id'])
+				cardholder_id.then(gala_resp=>{	
+					if(gala_resp){	
+						var groups = data_obj['GG']['groups'].join(",");
+		
+						var newreq=gr_mod.add_new_groups_in_gallagher(data_obj['GG']['user_id'],groups);
+						newreq.then(newreps=>{	
+							if(newreps){
+						client.publish(msgtopic, JSON.stringify({"message":"success"}), { qos: 1, response: false })	
+							}else{
+								client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })	
+							}
+					
+					});
 				
-			var cardholder_id = gr_mod.open_the_door(data_obj['GG']['door_id'])
+					}else{
+						client.publish(msgtopic, JSON.stringify({"message":"failed"}), { qos: 1, response: false })			
+					}
+				});	
+				
+			}
+			
+		}
+     	//////////////////////////////////////////////////////////////
+		////////////////////ADD NEW Card Info//////////////////////////
+		if(req_method == 'add_user_card_details'){
+		var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			if(data_obj['GG']){
+			var cardholder_id = gr_mod.add_new_card_in_gallagher(data_obj['GG']['user_id'],data_obj['GG']['cards'])
 			cardholder_id.then(gala_resp=>{		
-				
-			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
+				var gg = gala_resp[0]['GG']['person_id'];
+				console.log("USER_GG="+gg);
+			client.publish(msgtopic, JSON.stringify(gala_resp[0]), { qos: 1, response: false })
 							
 
 			});
 			}
 			
 
-	 }
-	 ////////////////////ACknowledge Alarm//////////////////////////
-	if(req_method == 'acknowledge_alarm'){
-		var msgcontent = 'Data Recieved';
-		 var data_obj = JSON.parse( msg_arr[1] ); 
-			if(data_obj['GG']){
-				
-			var alarm_rec = gr_mod.acknowledge_alarm_by_id(data_obj['GG']['alarm_id'])
-			alarm_rec.then(gala_resp=>{				
-			client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
-			});
-			}
-	 }
-	 //================ANPR============================
-	 if(req_method == 'delete_vehicle_access'){
-		
-		var data_obj = JSON.parse( msg_arr[1] ); 
-        var vehicle_id = data_obj['vehicle_id'];		
-		var face_id = fr_mod.delete_person_vehicle(vehicle_id)
-		face_id.then(facerep=>{
-		  if(facerep==1)
-		  {
-			  console.log("Vehicle DELETED");
-			client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })	 
-		  }else{
-			client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	 
-		  }
-	  
-		});
-	 }
-	 if(req_method == 'add_vehicle_access'){
-		
-		var data_obj = JSON.parse( msg_arr[1] ); 
-		var person_id = data_obj['FR']['person_id'];
-		var vehicles = data_obj['FR']['vehicles'];
-		var vehicle_array=[];
-		if(vehicles)
-		{
-			for(var i=0;i<vehicles.length;i++)
-			{
-			
-			var vehl = fr_mod.add_person_vehicle(person_id,vehicles[i]['plate_no'],vehicles[i]['group_id'])
-			vehl.then(vehcle=>{
-				if(vehcle!=3)
-				{
-					var newobj={
-						'plate_no':vehcle.plate_no,
-						'vehicle_id':vehcle.vehicle_id
-					}
-				
-					vehicle_array.push(newobj);
+		}	 
+		////////////////////OPEN THE DDOR//////////////////////////
+		if(req_method == 'open_the_door'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+					
+					var cardholder_id = gr_mod.open_the_door(data_obj['GG']['door_id'])
+					cardholder_id.then(gala_resp=>{		
+						console.log(gala_resp);
+					client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
+									
+
+					});
 				}
+				
+
+		}
+		////////////////////ACknowledge Alarm//////////////////////////
+		if(req_method == 'acknowledge_alarm'){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+				if(data_obj['GG']){
+					
+				var alarm_rec = gr_mod.acknowledge_alarm_by_id(data_obj['GG']['alarm_id'])
+				alarm_rec.then(gala_resp=>{				
+				client.publish(msgtopic, JSON.stringify(gala_resp), { qos: 1, response: false })
+				});
+				}
+		}
+		//================ANPR============================
+		if(req_method == 'delete_vehicle_access'){
+			
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var vehicle_id = data_obj['vehicle_id'];		
+			var face_id = fr_mod.delete_person_vehicle(vehicle_id)
+			face_id.then(facerep=>{
+			if(facerep==1)
+			{
+				console.log("Vehicle DELETED");
+				client.publish(msgtopic, JSON.stringify(true), { qos: 1, response: false })	 
+			}else{
+				client.publish(msgtopic, JSON.stringify(false), { qos: 1, response: false })	 
+			}
+		
 			});
 		}
-	}
-	var intervalxxx = setInterval(function() {
+		if(req_method == 'add_vehicle_access'){
+			
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var person_id = data_obj['FR']['person_id'];
+			var vehicles = data_obj['FR']['vehicles'];
+			var vehicle_array=[];
+			if(vehicles)
+			{
+				for(var i=0;i<vehicles.length;i++)
+				{
+				
+				var vehl = fr_mod.add_person_vehicle(person_id,vehicles[i]['plate_no'],vehicles[i]['group_id'])
+				vehl.then(vehcle=>{
+					if(vehcle!=3)
+					{
+						var newobj={
+							'plate_no':vehcle.plate_no,
+							'vehicle_id':vehcle.vehicle_id
+						}
+					
+						vehicle_array.push(newobj);
+					}
+				});
+			}
+		}
+		var intervalxxx = setInterval(function() {
 
-		clearInterval(intervalxxx);
-	if(vehicle_array){
-	var objss={"FR":{"person_id":person_id,"message":"success", 'vehicles':vehicle_array}}
-	client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
-	}else{
-		var objss={"FR":{"person_id":person_id,"message":"failed", 'vehicles':''}}
+			clearInterval(intervalxxx);
+		if(vehicle_array){
+		var objss={"FR":{"person_id":person_id,"message":"success", 'vehicles':vehicle_array}}
 		client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
-	}
-}, 1200);
+		}else{
+			var objss={"FR":{"person_id":person_id,"message":"failed", 'vehicles':''}}
+			client.publish(msgtopic, JSON.stringify(objss), { qos: 1, response: false })
+		}
+	}, 1200);
 
 
-	 }			 
+		}			 
 		///////////////////////////////////////////////////////////////////
-	//=============================END================================
-	//=============================VISITORS===========================
+		//=============================END================================
+		//=============================VISITORS===========================
 
 		////////////////////add IN ///////////////////////////
 		if(req_method === 'add_gg_visitor'){
@@ -1313,7 +1309,7 @@ var vehicle_array=[];
 			}    				
 
 			 });
-	 }
+	 	}
 		if(req_method === 'add_sl_visitor'){
 				var msgcontent = 'Data Recieved';
 				var data_obj = JSON.parse( msg_arr[1] ); 
@@ -1332,55 +1328,54 @@ var vehicle_array=[];
 		}
 
 		///////////////////////////////////////////////////////////////////
-  //==========================BIO STAR======================
-  if(req_method=="scan_finger")
-  {
-	var msgcontent = 'Data Recieved';
-	var data_obj = JSON.parse( msg_arr[1] ); 
-	var device_id = data_obj['device_id'];
-	if(mylogin)
-	{
-		//console.log("SUCCESSFULLY LOGIN");
-		var devices_res=BIOSTART.get_bs_scan_finger(mylogin,device_id);
-		devices_res.then(getdevices=>{
-			
-		if(getdevices==2)
-		{
-			var bs_scan=cron_mod.Login_into_device();
-			bs_scan.then(login=>{
-				if(login)
-				{
-					mylogin=login;
-					var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
-					devices_res.then(resp=>{
-						client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
-					})
-				}else{
-					mylogin=false;
-				}
-			});
-		}else{
-			client.publish(msgtopic, JSON.stringify(getdevices), { qos: 1, response: false })
-		}
-		});
-	}else{
-		var bs_scan=cron_mod.Login_into_device();
-		bs_scan.then(login=>{
-			if(login)
+		//==========================BIO STAR======================
+		if(req_method=="scan_finger"){
+			var msgcontent = 'Data Recieved';
+			var data_obj = JSON.parse( msg_arr[1] ); 
+			var device_id = data_obj['device_id'];
+			if(mylogin)
 			{
-				mylogin=login;
-				var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
-				devices_res.then(resp=>{
-					client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
-				})
+				//console.log("SUCCESSFULLY LOGIN");
+				var devices_res=BIOSTART.get_bs_scan_finger(mylogin,device_id);
+				devices_res.then(getdevices=>{
+					
+				if(getdevices==2)
+				{
+					var bs_scan=cron_mod.Login_into_device();
+					bs_scan.then(login=>{
+						if(login)
+						{
+							mylogin=login;
+							var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+							devices_res.then(resp=>{
+								client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+							})
+						}else{
+							mylogin=false;
+						}
+					});
+				}else{
+					client.publish(msgtopic, JSON.stringify(getdevices), { qos: 1, response: false })
+				}
+				});
 			}else{
-				mylogin=false;
+				var bs_scan=cron_mod.Login_into_device();
+				bs_scan.then(login=>{
+					if(login)
+					{
+						mylogin=login;
+						var devices_res=BIOSTART.get_bs_scan_finger(mylogin,541618936);
+						devices_res.then(resp=>{
+							client.publish(msgtopic, JSON.stringify(resp), { qos: 1, response: false })
+						})
+					}else{
+						mylogin=false;
+					}
+				});
 			}
-		});
-	}
 
-  }
-	//===============================================================
+		}
+		//===============================================================
 	}	
 })
 
